@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ShoppingBag, Heart, User, Menu, X } from 'lucide-react';
+import { Search, ShoppingBag, Heart, User, Menu, X, LogOut } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { cartCount } = useCart();
+  const { user, logout } = useAuth();
 
   return (
     <nav className="fixed w-full top-0 z-50 bg-gemDark/80 backdrop-blur-md border-b border-gemBorder">
@@ -27,7 +31,7 @@ function Navbar() {
             <Link to="/contact" className="text-sm uppercase tracking-widest text-gray-300 hover:text-gemGold transition-colors duration-300">Contact</Link>
           </div>
 
-          {/* Icons (Desktop & Mobile aligned right) */}
+          {/* Icons (Desktop) */}
           <div className="hidden md:flex items-center space-x-6">
             <button className="text-gray-300 hover:text-gemGold transition-colors duration-300">
               <Search size={20} strokeWidth={1.5} />
@@ -38,18 +42,30 @@ function Navbar() {
             <Link to="/cart" className="text-gray-300 hover:text-gemGold transition-colors duration-300 relative">
               <ShoppingBag size={20} strokeWidth={1.5} />
               <span className="absolute -top-2 -right-2 bg-gemGold text-black text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                0
+                {cartCount}
               </span>
             </Link>
-            <Link to="/login" className="text-gray-300 hover:text-gemGold transition-colors duration-300 ml-4">
-              <User size={20} strokeWidth={1.5} />
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-3 ml-4">
+                <span className="text-gemGold text-sm">{user.name}</span>
+                <button onClick={logout} className="text-gray-300 hover:text-red-400 transition-colors duration-300">
+                  <LogOut size={18} strokeWidth={1.5} />
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="text-gray-300 hover:text-gemGold transition-colors duration-300 ml-4">
+                <User size={20} strokeWidth={1.5} />
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden space-x-4">
              <Link to="/cart" className="text-gray-300 relative">
               <ShoppingBag size={20} strokeWidth={1.5} />
+              <span className="absolute -top-2 -right-2 bg-gemGold text-black text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {cartCount}
+              </span>
             </Link>
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -68,7 +84,11 @@ function Navbar() {
             <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gray-300 hover:text-gemGold">HOME</Link>
             <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gray-300 hover:text-gemGold">SHOP</Link>
             <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gray-300 hover:text-gemGold">ABOUT</Link>
-            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold mt-4 border border-gemGold rounded-full w-32 text-center">LOGIN</Link>
+            {user ? (
+              <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block px-3 py-2 text-base font-serif tracking-widest text-red-400 mt-4">LOGOUT</button>
+            ) : (
+              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold mt-4 border border-gemGold rounded-full w-32 text-center">LOGIN</Link>
+            )}
           </div>
         </div>
       )}
