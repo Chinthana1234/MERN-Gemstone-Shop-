@@ -1,14 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-gemDark: #0a0a0a;
-  --color-gemDarker: #050505;
-  --color-gemCard: #121212;
-  --color-gemPurple: #9333ea;
-  --color-gemGold: #d4af37; /* More classic luxury gold */
+  /* Light Luxury Theme - Inspired by Wijaya Gems */
+  --color-gemBg: #ffffff;
+  --color-gemBgAlt: #f8f7f5;
+  --color-gemBgMarble: #f2f0ed;
+  --color-gemCard: #ffffff;
+  --color-gemRed: #C41230;
+  --color-gemRedDark: #9B0E26;
+  --color-gemRedLight: #E8304A;
+  --color-gemGold: #d4af37;
   --color-gemGoldLight: #f3e5ab;
-  --color-gemGray: #a3a3a3;
-  --color-gemBorder: #262626;
+  --color-gemText: #1a1a1a;
+  --color-gemTextLight: #6b6b6b;
+  --color-gemTextMuted: #9a9a9a;
+  --color-gemBorder: #e8e5e0;
+  --color-gemBorderDark: #d4d0c8;
   
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
@@ -16,25 +23,38 @@
 
 @layer base {
   body {
-    @apply bg-gemDark text-white font-sans antialiased overflow-x-hidden selection:bg-gemGold selection:text-black;
+    @apply bg-gemBg text-gemText font-sans antialiased overflow-x-hidden selection:bg-gemRed selection:text-white;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif tracking-wide text-gray-100;
+    @apply font-serif tracking-wide text-gemText;
   }
 }
 
-/* Custom Scrollbar for a premium feel */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #f8f7f5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: #d4d0c8;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #d4af37;
+  background: #C41230;
+}
+
+/* Marble texture background */
+.marble-bg {
+  background: linear-gradient(135deg, #f8f7f5 0%, #ffffff 25%, #f2f0ed 50%, #ffffff 75%, #f8f7f5 100%);
+  background-size: 400% 400%;
+  animation: marble-shift 15s ease infinite;
+}
+
+@keyframes marble-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

@@ -38,18 +38,10 @@ export const getProductById = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, imageUrl, category, stock, carat, origin } = req.body;
-
     const product = new Product({
-      name,
-      description,
-      price,
-      imageUrl,
-      category,
-      stock: stock || 0,
-      carat: carat || 0,
-      origin: origin || ''
+      name, description, price, imageUrl, category,
+      stock: stock || 0, carat: carat || 0, origin: origin || ''
     });
-
     const savedProduct = await product.save();
     res.status(201).json(savedProduct);
   } catch (error) {
@@ -64,9 +56,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
     const { name, description, price, imageUrl, category, stock, carat, origin } = req.body;
     product.name = name || product.name;
@@ -92,9 +82,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
     await product.deleteOne();
     res.json({ message: 'Product removed' });
   } catch (error) {

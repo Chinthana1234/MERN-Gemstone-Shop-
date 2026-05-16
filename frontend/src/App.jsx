@@ -15,7 +15,7 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <div className="min-h-screen bg-gemDark text-white font-sans flex flex-col">
+        <div className="min-h-screen bg-gemBg text-gemText font-sans flex flex-col">
           <Navbar />
           <div className="flex-1">
             <Routes>
