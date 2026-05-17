@@ -4,12 +4,18 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import PrivateRoute from './components/common/PrivateRoute';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Checkout from './pages/Checkout';
+import OrderConfirmation from './pages/OrderConfirmation';
+import MyOrders from './pages/MyOrders';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -25,6 +31,17 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/checkout" element={
+                <PrivateRoute><Checkout /></PrivateRoute>
+              } />
+              <Route path="/order/:id" element={
+                <PrivateRoute><OrderConfirmation /></PrivateRoute>
+              } />
+              <Route path="/my-orders" element={
+                <PrivateRoute><MyOrders /></PrivateRoute>
+              } />
             </Routes>
           </div>
           <Footer />

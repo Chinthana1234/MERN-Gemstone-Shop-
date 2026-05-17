@@ -48,9 +48,12 @@ function Navbar() {
               )}
             </Link>
             {user ? (
-              <div className="flex items-center gap-3 ml-4">
+              <div className="flex items-center gap-4 ml-4">
+                <Link to="/my-orders" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
+                  Orders
+                </Link>
                 <span className="text-gemRed text-sm font-medium">{user.name}</span>
-                <button onClick={logout} className="text-gemTextLight hover:text-gemRed transition-colors duration-300">
+                <button onClick={logout} className="text-gemTextLight hover:text-gemRed transition-colors duration-300" title="Logout">
                   <LogOut size={18} strokeWidth={1.5} />
                 </button>
               </div>
@@ -88,8 +91,12 @@ function Navbar() {
             <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">HOME</Link>
             <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">SHOP</Link>
             <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">ABOUT US</Link>
+            <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">CONTACT</Link>
             {user ? (
-              <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block px-3 py-2 text-base font-serif tracking-widest text-gemRed mt-4">LOGOUT</button>
+              <>
+                <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">MY ORDERS</Link>
+                <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block px-3 py-2 text-base font-serif tracking-widest text-gemRed mt-4">LOGOUT</button>
+              </>
             ) : (
               <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemRed mt-4 border border-gemRed rounded-full w-32 text-center">LOGIN</Link>
             )}

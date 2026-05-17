@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -68,7 +68,7 @@ function Cart() {
               <div className="flex justify-between text-gemTextLight text-sm"><span>Shipping</span><span className="text-green-600">Free</span></div>
             </div>
             <div className="flex justify-between text-gemText text-lg mb-8"><span className="font-serif">Total</span><span className="font-semibold">${cartTotal.toLocaleString()}</span></div>
-            <button className="w-full bg-gemRed text-white font-semibold uppercase tracking-widest text-sm py-3.5 hover:bg-gemRedDark transition-all duration-300 rounded">Proceed to Checkout</button>
+            <Link to="/checkout" className="block w-full text-center bg-gemRed text-white font-semibold uppercase tracking-widest text-sm py-3.5 hover:bg-gemRedDark transition-all duration-300 rounded">Proceed to Checkout</Link>
             <p className="text-center text-gemTextMuted text-xs mt-4 uppercase tracking-wider">Secure & Encrypted Payment</p>
           </div>
         </div>
