@@ -5,9 +5,38 @@ import Product from '../models/Product.js';
 // @access  Public
 export const getProducts = async (req, res) => {
   try {
-    const { category } = req.query;
-    const filter = category ? { category: new RegExp(category, 'i') } : {};
-    const products = await Product.find(filter);
+    const { category, minPrice, maxPrice, minCarat, maxCarat, sort } = req.query;
+    let filter = {};
+
+    // Categories (comma separated)
+    if (category && category !== 'All') {
+      const categories = category.split(',').map(c => new RegExp(c.trim(), 'i'));
+      filter.category = { $in: categories };
+    }
+
+    // Price range
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    // Carat range
+    if (minCarat || maxCarat) {
+      filter.carat = {};
+      if (minCarat) filter.carat.$gte = Number(minCarat);
+      if (maxCarat) filter.carat.$lte = Number(maxCarat);
+    }
+
+    // Determine sort option
+    let sortOption = { createdAt: -1 }; // default to newest
+    if (sort === 'priceAsc') sortOption = { price: 1 };
+    if (sort === 'priceDesc') sortOption = { price: -1 };
+    if (sort === 'oldest') sortOption = { createdAt: 1 };
+    if (sort === 'nameAsc') sortOption = { name: 1 };
+    if (sort === 'nameDesc') sortOption = { name: -1 };
+
+    const products = await Product.find(filter).sort(sortOption);
     res.json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
