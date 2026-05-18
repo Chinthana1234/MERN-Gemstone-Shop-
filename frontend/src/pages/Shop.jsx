@@ -60,7 +60,7 @@ function Shop() {
               className={`px-6 py-2 text-sm uppercase tracking-widest font-semibold border-2 transition-all duration-300 rounded ${
                 activeCategory === cat
                   ? 'bg-gemRed text-white border-gemRed'
-                  : 'bg-white text-gemTextLight border-gemBorder hover:border-gemRed hover:text-gemRed'
+                  : 'bg-gemCard text-gemTextLight border-gemBorder hover:border-gemRed hover:text-gemRed'
               }`}
             >
               {cat}
@@ -87,7 +87,7 @@ function Shop() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {products.map(product => (
               <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block">
-                <div className="relative overflow-hidden bg-white aspect-[4/5] mb-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                <div className="relative overflow-hidden bg-gemCard aspect-[4/5] mb-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img src={product.imageUrl} alt={product.name}
                     className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
                   
@@ -100,11 +100,11 @@ function Shop() {
                   <div className="absolute inset-0 bg-black/15 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button onClick={(e) => handleAddToCart(e, product)}
                       className={`p-3 rounded-full transition-colors shadow-lg ${
-                        addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-gemText hover:bg-gemRed hover:text-white'
+                        addedId === product._id ? 'bg-green-500 text-white' : 'bg-gemCard text-gemText hover:bg-gemRed hover:text-white'
                       }`}>
                       <ShoppingBag size={20} />
                     </button>
-                    <button className="bg-white text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
+                    <button className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
                       <Heart size={20} />
                     </button>
                   </div>

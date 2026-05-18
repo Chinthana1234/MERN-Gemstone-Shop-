@@ -52,10 +52,10 @@ function FeaturedGems() {
                 
                 {/* Hover Actions Overlay */}
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button className="bg-white text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
+                  <button className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
                     <ShoppingBag size={20} />
                   </button>
-                  <button className="bg-white text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
+                  <button className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
                     <Heart size={20} />
                   </button>
                 </div>

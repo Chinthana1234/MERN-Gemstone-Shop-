@@ -72,7 +72,7 @@ function Contact() {
                     {/* Contact Form */}
                     <div className="lg:col-span-3">
                         {submitted ? (
-                            <div className="bg-white border border-gemBorder rounded-lg p-12 text-center shadow-sm">
+                            <div className="bg-gemCard border border-gemBorder rounded-lg p-12 text-center shadow-sm">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <CheckCircle size={32} className="text-green-500" />
                                 </div>
@@ -84,7 +84,7 @@ function Contact() {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="bg-white border border-gemBorder rounded-lg p-8 shadow-sm space-y-6">
+                            <form onSubmit={handleSubmit} className="bg-gemCard border border-gemBorder rounded-lg p-8 shadow-sm space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 block">Your Name *</label>

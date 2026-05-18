@@ -88,7 +88,7 @@ function About() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {VALUES.map((val, i) => (
-                        <div key={i} className="bg-white border border-gemBorder rounded-lg p-8 text-center hover:shadow-lg hover:border-gemRed/30 transition-all duration-500 group">
+                        <div key={i} className="bg-gemCard border border-gemBorder rounded-lg p-8 text-center hover:shadow-lg hover:border-gemRed/30 transition-all duration-500 group">
                             <div className="w-14 h-14 mx-auto mb-5 bg-gemRed/10 rounded-full flex items-center justify-center group-hover:bg-gemRed/20 transition-colors duration-500">
                                 <val.icon size={24} className="text-gemRed" />
                             </div>
@@ -101,7 +101,7 @@ function About() {
 
             {/* CTA */}
             <section className="max-w-4xl mx-auto px-4 text-center">
-                <div className="bg-white border border-gemBorder rounded-2xl p-12 shadow-sm">
+                <div className="bg-gemCard border border-gemBorder rounded-2xl p-12 shadow-sm">
                     <h2 className="text-2xl md:text-3xl font-serif text-gemText mb-4">Ready to Find Your Perfect Gem?</h2>
                     <p className="text-gemTextLight font-light max-w-xl mx-auto mb-8">
                         Browse our curated collection of certified gemstones, each hand-selected for exceptional quality.

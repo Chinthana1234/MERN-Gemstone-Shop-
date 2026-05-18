@@ -38,7 +38,7 @@ function MyOrders() {
                         <div className="h-8 bg-gemBorder w-48 mx-auto rounded animate-pulse"></div>
                     </div>
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="bg-white border border-gemBorder rounded-lg p-6 mb-4 animate-pulse">
+                        <div key={i} className="bg-gemCard border border-gemBorder rounded-lg p-6 mb-4 animate-pulse">
                             <div className="flex justify-between">
                                 <div className="space-y-3 flex-1">
                                     <div className="h-3 bg-gemBorder w-1/4 rounded"></div>
@@ -86,7 +86,7 @@ function MyOrders() {
 
                             return (
                                 <div key={order._id}
-                                    className="bg-white border border-gemBorder rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                    className="bg-gemCard border border-gemBorder rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
                                     {/* Order Header */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-gemBorder">
                                         <div>

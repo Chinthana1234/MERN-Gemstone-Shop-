@@ -71,7 +71,7 @@ function OrderConfirmation() {
                     {/* Order Details */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Status & Timeline */}
-                        <div className="bg-white border border-gemBorder rounded-lg p-6 shadow-sm">
+                        <div className="bg-gemCard border border-gemBorder rounded-lg p-6 shadow-sm">
                             <h3 className="text-lg font-serif text-gemText mb-4 flex items-center gap-2">
                                 <Clock size={18} className="text-gemRed" /> Order Status
                             </h3>
@@ -107,7 +107,7 @@ function OrderConfirmation() {
                         </div>
 
                         {/* Items */}
-                        <div className="bg-white border border-gemBorder rounded-lg p-6 shadow-sm">
+                        <div className="bg-gemCard border border-gemBorder rounded-lg p-6 shadow-sm">
                             <h3 className="text-lg font-serif text-gemText mb-4 flex items-center gap-2">
                                 <Package size={18} className="text-gemRed" /> Order Items
                             </h3>
@@ -126,7 +126,7 @@ function OrderConfirmation() {
                         </div>
 
                         {/* Shipping Address */}
-                        <div className="bg-white border border-gemBorder rounded-lg p-6 shadow-sm">
+                        <div className="bg-gemCard border border-gemBorder rounded-lg p-6 shadow-sm">
                             <h3 className="text-lg font-serif text-gemText mb-4 flex items-center gap-2">
                                 <MapPin size={18} className="text-gemRed" /> Shipping Address
                             </h3>
@@ -138,7 +138,7 @@ function OrderConfirmation() {
                     </div>
 
                     {/* Price Summary */}
-                    <div className="bg-white border border-gemBorder p-6 h-fit sticky top-28 rounded-lg shadow-sm">
+                    <div className="bg-gemCard border border-gemBorder p-6 h-fit sticky top-28 rounded-lg shadow-sm">
                         <h3 className="text-lg font-serif text-gemText mb-5 pb-4 border-b border-gemBorder">Price Summary</h3>
                         <div className="space-y-3 mb-5">
                             <div className="flex justify-between text-sm text-gemTextLight">

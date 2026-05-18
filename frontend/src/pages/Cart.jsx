@@ -36,7 +36,7 @@ function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map(item => (
-              <div key={item._id} className="flex gap-6 bg-white border border-gemBorder p-4 rounded-lg shadow-sm">
+              <div key={item._id} className="flex gap-6 bg-gemCard border border-gemBorder p-4 rounded-lg shadow-sm">
                 <Link to={`/product/${item._id}`} className="flex-shrink-0">
                   <img src={item.imageUrl} alt={item.name} className="w-28 h-28 object-cover rounded" />
                 </Link>
@@ -61,7 +61,7 @@ function Cart() {
             ))}
           </div>
 
-          <div className="bg-white border border-gemBorder p-8 h-fit sticky top-28 rounded-lg shadow-sm">
+          <div className="bg-gemCard border border-gemBorder p-8 h-fit sticky top-28 rounded-lg shadow-sm">
             <h3 className="text-xl font-serif text-gemText mb-6">Order Summary</h3>
             <div className="space-y-3 mb-6 pb-6 border-b border-gemBorder">
               <div className="flex justify-between text-gemTextLight text-sm"><span>Subtotal</span><span>${cartTotal.toLocaleString()}</span></div>

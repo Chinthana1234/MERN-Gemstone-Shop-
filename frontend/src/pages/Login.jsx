@@ -35,7 +35,7 @@ function Login() {
 
         {error && <div className="bg-red-50 border border-red-200 text-gemRed px-4 py-3 mb-6 text-sm text-center rounded">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 border border-gemBorder rounded-lg shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="bg-gemCard p-8 border border-gemBorder rounded-lg shadow-sm space-y-5">
           <div>
             <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 block">Email Address</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required

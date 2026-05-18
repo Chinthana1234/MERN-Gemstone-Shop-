@@ -118,7 +118,7 @@ function Checkout() {
                                         ? 'bg-green-500 border-green-500 text-white'
                                         : currentStep === step.id
                                             ? 'bg-gemRed border-gemRed text-white scale-110 shadow-lg shadow-gemRed/25'
-                                            : 'bg-white border-gemBorder text-gemTextMuted'
+                                            : 'bg-gemCard border-gemBorder text-gemTextMuted'
                                 }`}>
                                     {currentStep > step.id ? <Check size={20} /> : <step.icon size={20} />}
                                 </div>
@@ -146,7 +146,7 @@ function Checkout() {
                     <div className="lg:col-span-2">
                         {/* Step 1: Shipping */}
                         {currentStep === 1 && (
-                            <div className="bg-white border border-gemBorder rounded-lg p-8 shadow-sm animate-fadeIn">
+                            <div className="bg-gemCard border border-gemBorder rounded-lg p-8 shadow-sm animate-fadeIn">
                                 <h2 className="text-xl font-serif text-gemText mb-6 flex items-center gap-3">
                                     <MapPin size={20} className="text-gemRed" /> Shipping Address
                                 </h2>
@@ -188,7 +188,7 @@ function Checkout() {
 
                         {/* Step 2: Order Review */}
                         {currentStep === 2 && (
-                            <div className="bg-white border border-gemBorder rounded-lg p-8 shadow-sm animate-fadeIn">
+                            <div className="bg-gemCard border border-gemBorder rounded-lg p-8 shadow-sm animate-fadeIn">
                                 <h2 className="text-xl font-serif text-gemText mb-6 flex items-center gap-3">
                                     <Package size={20} className="text-gemRed" /> Review Your Order
                                 </h2>
@@ -231,7 +231,7 @@ function Checkout() {
 
                         {/* Step 3: Payment */}
                         {currentStep === 3 && (
-                            <div className="bg-white border border-gemBorder rounded-lg p-8 shadow-sm animate-fadeIn">
+                            <div className="bg-gemCard border border-gemBorder rounded-lg p-8 shadow-sm animate-fadeIn">
                                 <h2 className="text-xl font-serif text-gemText mb-6 flex items-center gap-3">
                                     <CreditCard size={20} className="text-gemRed" /> Payment Method
                                 </h2>
@@ -242,7 +242,7 @@ function Checkout() {
                                             className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
                                                 paymentMethod === method
                                                     ? 'border-gemRed bg-gemRed/5 shadow-sm'
-                                                    : 'border-gemBorder bg-white hover:border-gemTextMuted'
+                                                    : 'border-gemBorder bg-gemCard hover:border-gemTextMuted'
                                             }`}>
                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                                                 paymentMethod === method ? 'border-gemRed' : 'border-gemBorder'
@@ -291,7 +291,7 @@ function Checkout() {
                     </div>
 
                     {/* Order Summary Sidebar */}
-                    <div className="bg-white border border-gemBorder p-6 h-fit sticky top-28 rounded-lg shadow-sm">
+                    <div className="bg-gemCard border border-gemBorder p-6 h-fit sticky top-28 rounded-lg shadow-sm">
                         <h3 className="text-lg font-serif text-gemText mb-5 pb-4 border-b border-gemBorder">Order Summary</h3>
                         <div className="space-y-3 mb-5">
                             {cartItems.map(item => (
