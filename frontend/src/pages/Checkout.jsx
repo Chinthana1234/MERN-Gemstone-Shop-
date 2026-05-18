@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, CreditCard, Package, ChevronRight, ChevronLeft, Check, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import API from '../utils/api';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import StripePaymentForm from '../components/checkout/StripePaymentForm';
+
+// Initialize Stripe (using optional chaining for safety if env is missing)
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_PLACEHOLDER_KEY');
 
 const STEPS = [
     { id: 1, label: 'Shipping', icon: MapPin },
@@ -19,6 +25,7 @@ function Checkout() {
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [clientSecret, setClientSecret] = useState('');
 
     const [shipping, setShipping] = useState({
         fullName: user?.name || '',
@@ -29,7 +36,25 @@ function Checkout() {
         phone: ''
     });
 
-    const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+    const [paymentMethod, setPaymentMethod] = useState('Credit Card (Stripe)');
+
+    // Fetch client secret when entering step 3 with Credit Card selected
+    useEffect(() => {
+        if (currentStep === 3 && paymentMethod === 'Credit Card (Stripe)') {
+            const fetchClientSecret = async () => {
+                try {
+                    const { data } = await API.post('/payment/create-intent', {
+                        amount: Math.round(cartTotal * 100) // Convert to cents
+                    });
+                    setClientSecret(data.clientSecret);
+                } catch (err) {
+                    console.error("Failed to initialize Stripe payment", err);
+                    setError("Could not connect to payment gateway.");
+                }
+            };
+            fetchClientSecret();
+        }
+    }, [currentStep, paymentMethod, cartTotal]);
 
     // Redirect if cart is empty
     if (cartItems.length === 0) {
@@ -70,7 +95,7 @@ function Checkout() {
         setError('');
     };
 
-    const handlePlaceOrder = async () => {
+    const handlePlaceOrder = async (paymentId = null) => {
         try {
             setLoading(true);
             setError('');
@@ -84,7 +109,8 @@ function Checkout() {
                     product: item._id
                 })),
                 shippingAddress: shipping,
-                paymentMethod
+                paymentMethod,
+                paymentResult: paymentId ? { id: paymentId, status: 'succeeded', update_time: new Date().toISOString() } : undefined
             };
 
             const { data } = await API.post('/orders', orderData);
@@ -136,7 +162,7 @@ function Checkout() {
                 </div>
 
                 {error && (
-                    <div className="bg-red-50 border border-red-200 text-gemRed px-4 py-3 mb-8 text-sm text-center rounded">
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 mb-8 text-sm text-center rounded">
                         {error}
                     </div>
                 )}
@@ -236,8 +262,8 @@ function Checkout() {
                                     <CreditCard size={20} className="text-gemRed" /> Payment Method
                                 </h2>
 
-                                <div className="space-y-4">
-                                    {['Cash on Delivery', 'Bank Transfer'].map(method => (
+                                <div className="space-y-4 mb-8">
+                                    {['Credit Card (Stripe)', 'Cash on Delivery', 'Bank Transfer'].map(method => (
                                         <label key={method}
                                             className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
                                                 paymentMethod === method
@@ -252,7 +278,7 @@ function Checkout() {
                                             <div>
                                                 <p className="text-gemText font-medium">{method}</p>
                                                 <p className="text-gemTextMuted text-xs mt-0.5">
-                                                    {method === 'Cash on Delivery' 
+                                                    {method === 'Credit Card (Stripe)' ? 'Secure credit card payment via Stripe' : method === 'Cash on Delivery' 
                                                         ? 'Pay when your order arrives at your doorstep' 
                                                         : 'Transfer directly to our bank account'}
                                                 </p>
@@ -261,8 +287,27 @@ function Checkout() {
                                     ))}
                                 </div>
 
-                                <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                                    <p className="text-green-700 text-sm font-medium">🔒 Your order information is secure and encrypted</p>
+                                {paymentMethod === 'Credit Card (Stripe)' && clientSecret && (
+                                    <div className="mt-8 border-t border-gemBorder pt-8 animate-fadeIn">
+                                        <h3 className="text-lg font-serif text-gemText mb-6">Enter Card Details</h3>
+                                        <Elements stripe={stripePromise} options={{ clientSecret }}>
+                                            <StripePaymentForm 
+                                                clientSecret={clientSecret}
+                                                cartTotal={cartTotal}
+                                                onPaymentSuccess={(paymentId) => handlePlaceOrder(paymentId)}
+                                            />
+                                        </Elements>
+                                    </div>
+                                )}
+
+                                {paymentMethod === 'Credit Card (Stripe)' && !clientSecret && (
+                                    <div className="mt-8 border-t border-gemBorder pt-8 text-center text-gemTextLight">
+                                        Loading secure payment gateway...
+                                    </div>
+                                )}
+
+                                <div className="mt-8 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
+                                    <p className="text-green-500 text-sm font-medium">🔒 Your order information is secure and encrypted</p>
                                 </div>
                             </div>
                         )}
@@ -282,10 +327,12 @@ function Checkout() {
                                     Continue <ChevronRight size={16} />
                                 </button>
                             ) : (
-                                <button onClick={handlePlaceOrder} disabled={loading}
-                                    className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white uppercase tracking-widest text-sm font-semibold hover:bg-green-700 transition-all duration-300 rounded shadow-md hover:shadow-lg disabled:opacity-50">
-                                    {loading ? 'Placing Order...' : 'Place Order'}
-                                </button>
+                                paymentMethod !== 'Credit Card (Stripe)' ? (
+                                    <button onClick={() => handlePlaceOrder()} disabled={loading}
+                                        className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white uppercase tracking-widest text-sm font-semibold hover:bg-green-700 transition-all duration-300 rounded shadow-md disabled:opacity-50">
+                                        {loading ? 'Placing Order...' : 'Place Order'}
+                                    </button>
+                                ) : null
                             )}
                         </div>
                     </div>
@@ -306,7 +353,7 @@ function Checkout() {
                                 <span>Subtotal</span><span>${cartTotal.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gemTextLight">
-                                <span>Shipping</span><span className="text-green-600">Free</span>
+                                <span>Shipping</span><span className="text-green-500">Free</span>
                             </div>
                         </div>
                         <div className="flex justify-between text-gemText text-lg font-semibold mt-4 pt-4 border-t border-gemBorder">
