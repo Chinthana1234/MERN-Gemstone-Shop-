@@ -5,6 +5,7 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PrivateRoute from './components/common/PrivateRoute';
+import AdminRoute from './components/common/AdminRoute';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -16,6 +17,7 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import MyOrders from './pages/MyOrders';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -41,6 +43,9 @@ function App() {
               } />
               <Route path="/my-orders" element={
                 <PrivateRoute><MyOrders /></PrivateRoute>
+              } />
+              <Route path="/admin" element={
+                <AdminRoute><AdminDashboard /></AdminRoute>
               } />
             </Routes>
           </div>

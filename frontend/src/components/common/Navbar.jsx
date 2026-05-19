@@ -49,6 +49,11 @@ function Navbar() {
             </Link>
             {user ? (
               <div className="flex items-center gap-4 ml-4">
+                {user.isAdmin && (
+                  <Link to="/admin" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
+                    Admin
+                  </Link>
+                )}
                 <Link to="/my-orders" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
                   Orders
                 </Link>
@@ -94,6 +99,9 @@ function Navbar() {
             <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">CONTACT</Link>
             {user ? (
               <>
+                {user.isAdmin && (
+                  <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</Link>
+                )}
                 <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">MY ORDERS</Link>
                 <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block px-3 py-2 text-base font-serif tracking-widest text-gemRed mt-4">LOGOUT</button>
               </>

@@ -101,3 +101,37 @@ export const getMyOrders = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Get all orders
+// @route   GET /api/orders
+// @access  Private/Admin
+export const getOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        console.error('Get all orders error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Update order to delivered/shipped
+// @route   PUT /api/orders/:id/deliver
+// @access  Private/Admin
+export const updateOrderToDelivered = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (order) {
+            order.status = 'Shipped';
+
+            const updatedOrder = await order.save();
+            res.json(updatedOrder);
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error('Update order to delivered error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
