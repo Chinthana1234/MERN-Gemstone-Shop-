@@ -5,8 +5,18 @@ import Product from '../models/Product.js';
 // @access  Public
 export const getProducts = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, minCarat, maxCarat, sort } = req.query;
+    const pageSize = Number(req.query.pageSize) || 9; // Allow override or default to 9
+    const page = Number(req.query.pageNumber) || 1;
+
+    const { category, minPrice, maxPrice, minCarat, maxCarat, sort, keyword } = req.query;
     let filter = {};
+
+    if (keyword) {
+      filter.name = {
+        $regex: keyword,
+        $options: 'i',
+      };
+    }
 
     // Categories (comma separated)
     if (category && category !== 'All') {
@@ -36,8 +46,19 @@ export const getProducts = async (req, res) => {
     if (sort === 'nameAsc') sortOption = { name: 1 };
     if (sort === 'nameDesc') sortOption = { name: -1 };
 
-    const products = await Product.find(filter).sort(sortOption);
-    res.json(products);
+    // If we want all products (e.g. for counting in frontend), we could check a query param, but let's just use large pageSize
+    if (req.query.fetchAll === 'true') {
+        const products = await Product.find(filter).sort(sortOption);
+        return res.json({ products, page: 1, pages: 1, count: products.length });
+    }
+
+    const count = await Product.countDocuments(filter);
+    const products = await Product.find(filter)
+      .sort(sortOption)
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+
+    res.json({ products, page, pages: Math.ceil(count / pageSize), count });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Server Error" });
@@ -119,3 +140,43 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Private
+export const createProductReview = async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const product = await Product.findById(req.params.id);
+
+    if (product) {
+      const alreadyReviewed = product.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
+
+      if (alreadyReviewed) {
+        return res.status(400).json({ message: 'Product already reviewed' });
+      }
+
+      const review = {
+        name: req.user.name,
+        rating: Number(rating),
+        comment,
+        user: req.user._id,
+      };
+
+      product.reviews.push(review);
+      product.numReviews = product.reviews.length;
+      product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+
+      await product.save();
+      res.status(201).json({ message: 'Review added' });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+

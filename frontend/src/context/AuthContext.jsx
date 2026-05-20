@@ -32,13 +32,20 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const updateProfile = async (name, email, password) => {
+    const { data } = await API.put('/auth/profile', { name, email, password });
+    setUser(data);
+    localStorage.setItem('userInfo', JSON.stringify(data));
+    return data;
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('userInfo');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

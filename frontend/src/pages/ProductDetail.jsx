@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShoppingBag, Star, ArrowLeft, Shield, Truck, Award } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import API from '../utils/api';
 
 function ProductDetail() {
@@ -11,6 +12,12 @@ function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
+  const { user } = useAuth();
+
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -30,6 +37,27 @@ function ProductDetail() {
     addToCart(product, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (rating === 0) {
+      setReviewError('Please select a rating');
+      return;
+    }
+    try {
+      setReviewError('');
+      setReviewSuccess('');
+      await API.post(`/products/${id}/reviews`, { rating, comment });
+      setReviewSuccess('Review submitted successfully!');
+      setRating(0);
+      setComment('');
+      // Refetch product to show new review
+      const { data } = await API.get(`/products/${id}`);
+      setProduct(data);
+    } catch (err) {
+      setReviewError(err.response?.data?.message || 'Error submitting review');
+    }
   };
 
   if (loading) {
@@ -151,6 +179,66 @@ function ProductDetail() {
             </div>
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <div className="mt-20 border-t border-gemBorder pt-16">
+          <h2 className="text-2xl font-serif text-gemText mb-10">Customer Reviews</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div>
+              {product.reviews && product.reviews.length === 0 && <p className="text-gemTextLight">No reviews yet.</p>}
+              <div className="space-y-8">
+                {product.reviews && product.reviews.map((review) => (
+                  <div key={review._id} className="bg-gemCard border border-gemBorder p-6 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <strong className="text-gemText font-serif">{review.name}</strong>
+                      <span className="text-gemTextMuted text-xs">{new Date(review.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className={i < review.rating ? 'fill-gemGold text-gemGold' : 'text-gemBorder'} />
+                      ))}
+                    </div>
+                    <p className="text-gemTextLight text-sm leading-relaxed">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gemCard border border-gemBorder p-8 rounded-lg h-fit">
+              <h3 className="text-xl font-serif text-gemText mb-6">Write a Review</h3>
+              {user ? (
+                <form onSubmit={handleReviewSubmit}>
+                  {reviewError && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 mb-4 rounded">{reviewError}</div>}
+                  {reviewSuccess && <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-sm p-3 mb-4 rounded">{reviewSuccess}</div>}
+                  
+                  <div className="mb-5">
+                    <label className="block text-xs uppercase tracking-widest text-gemTextMuted mb-2">Rating</label>
+                    <select value={rating} onChange={(e) => setRating(Number(e.target.value))} className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-3 rounded focus:outline-none focus:border-gemRed">
+                      <option value="">Select...</option>
+                      <option value="1">1 - Poor</option>
+                      <option value="2">2 - Fair</option>
+                      <option value="3">3 - Good</option>
+                      <option value="4">4 - Very Good</option>
+                      <option value="5">5 - Excellent</option>
+                    </select>
+                  </div>
+                  <div className="mb-6">
+                    <label className="block text-xs uppercase tracking-widest text-gemTextMuted mb-2">Comment</label>
+                    <textarea row="4" value={comment} onChange={(e) => setComment(e.target.value)} required className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-3 rounded focus:outline-none focus:border-gemRed"></textarea>
+                  </div>
+                  <button type="submit" className="w-full bg-gemRed text-white py-3 uppercase tracking-widest text-sm font-semibold hover:bg-gemRedDark transition-colors rounded">
+                    Submit Review
+                  </button>
+                </form>
+              ) : (
+                <div className="text-gemTextLight bg-gemBgAlt p-6 rounded border border-gemBorder text-center">
+                  Please <Link to="/login" className="text-gemRed hover:underline">sign in</Link> to write a review.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

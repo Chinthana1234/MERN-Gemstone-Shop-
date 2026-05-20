@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -8,6 +8,20 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { cartCount } = useCart();
   const { user, logout } = useAuth();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      navigate(`/shop?keyword=${keyword}`);
+      setIsSearchOpen(false);
+      setKeyword('');
+    } else {
+      navigate('/shop');
+    }
+  };
 
   return (
     <nav className="fixed w-full top-0 z-50 bg-gemBg/90 backdrop-blur-md border-b border-gemBorder shadow-sm">
@@ -33,9 +47,27 @@ function Navbar() {
 
           {/* Icons (Desktop) */}
           <div className="hidden md:flex items-center space-x-6">
-            <button className="text-gemText hover:text-gemRed transition-colors duration-300">
-              <Search size={20} strokeWidth={1.5} />
-            </button>
+            <div className="relative">
+              {isSearchOpen ? (
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <input 
+                    type="text" 
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    placeholder="Search gems..." 
+                    className="bg-gemBgAlt border-b border-gemRed text-gemText px-2 py-1 focus:outline-none text-sm w-48"
+                    autoFocus
+                  />
+                  <button type="button" onClick={() => setIsSearchOpen(false)} className="text-gemTextLight hover:text-gemRed ml-2">
+                    <X size={16} />
+                  </button>
+                </form>
+              ) : (
+                <button onClick={() => setIsSearchOpen(true)} className="text-gemText hover:text-gemRed transition-colors duration-300">
+                  <Search size={20} strokeWidth={1.5} />
+                </button>
+              )}
+            </div>
             <Link to="/wishlist" className="text-gemText hover:text-gemRed transition-colors duration-300">
               <Heart size={20} strokeWidth={1.5} />
             </Link>
@@ -57,7 +89,10 @@ function Navbar() {
                 <Link to="/my-orders" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
                   Orders
                 </Link>
-                <span className="text-gemRed text-sm font-medium">{user.name}</span>
+                <Link to="/profile" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
+                  Profile
+                </Link>
+                <span className="text-gemRed text-sm font-medium ml-2">{user.name}</span>
                 <button onClick={logout} className="text-gemTextLight hover:text-gemRed transition-colors duration-300" title="Logout">
                   <LogOut size={18} strokeWidth={1.5} />
                 </button>

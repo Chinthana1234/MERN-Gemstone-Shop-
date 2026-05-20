@@ -21,10 +21,10 @@ function AdminDashboard() {
             setLoading(true);
             const [ordersRes, productsRes] = await Promise.all([
                 API.get('/orders'),
-                API.get('/products')
+                API.get('/products?fetchAll=true')
             ]);
             setOrders(ordersRes.data);
-            setProducts(productsRes.data);
+            setProducts(productsRes.data.products || []);
         } catch (error) {
             console.error("Error fetching admin data:", error);
         } finally {

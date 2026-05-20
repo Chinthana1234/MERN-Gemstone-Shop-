@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ShoppingBag, Heart, Star, ChevronDown, Filter, X, Check, LayoutGrid, List } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import API from '../utils/api';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -44,11 +45,18 @@ const SORT_OPTIONS = [
 function Shop() {
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]); // Used for category counts
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [addedId, setAddedId] = useState(null);
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  
+  const location = useLocation();
+  const keyword = new URLSearchParams(location.search).get('keyword') || '';
 
   // Filter States
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -60,8 +68,8 @@ function Shop() {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const { data } = await API.get('/products');
-        setAllProducts(data);
+        const { data } = await API.get('/products?fetchAll=true');
+        setAllProducts(data.products || []);
       } catch (err) {
         console.error("Error fetching all products for counts:", err);
       }
@@ -74,10 +82,15 @@ function Shop() {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [selectedCategories, sort]); // Fetch automatically on category or sort change
+    setPage(1); // Reset to page 1 on filter change
+    fetchProducts(1);
+  }, [selectedCategories, sort, caratRange, priceRange, keyword]); // Fetch automatically on category or sort change
 
-  const fetchProducts = async () => {
+  useEffect(() => {
+    fetchProducts(page);
+  }, [page]);
+
+  const fetchProducts = async (pageNumber = 1) => {
     try {
       setLoading(true);
       
@@ -90,11 +103,15 @@ function Shop() {
       queryParams.append('maxCarat', caratRange[1]);
       queryParams.append('minPrice', priceRange[0]);
       queryParams.append('maxPrice', priceRange[1]);
+      queryParams.append('pageNumber', pageNumber);
       if (sort) queryParams.append('sort', sort);
+      if (keyword) queryParams.append('keyword', keyword);
 
       const queryString = queryParams.toString();
       const { data } = await API.get(`/products${queryString ? `?${queryString}` : ''}`);
-      setProducts(data);
+      setProducts(data.products || []);
+      setPages(data.pages || 1);
+      setTotalCount(data.count || 0);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -112,7 +129,8 @@ function Shop() {
     setCaratRange([0, 15]);
     setPriceRange([0, 50000]);
     setSort('');
-    setTimeout(fetchProducts, 0); 
+    setPage(1);
+    setTimeout(() => fetchProducts(1), 0); 
   };
 
   const toggleCategory = (cat) => {
@@ -158,7 +176,6 @@ function Shop() {
               step={0.5} 
               value={caratRange} 
               onChange={setCaratRange}
-              onAfterChange={fetchProducts}
               styles={sliderStyles}
             />
             <div className="flex justify-between mt-4 text-xs text-gemText font-serif font-bold">
@@ -215,7 +232,6 @@ function Shop() {
               step={500} 
               value={priceRange} 
               onChange={setPriceRange}
-              onAfterChange={fetchProducts}
               styles={sliderStyles}
             />
             <div className="flex justify-between mt-4 text-xs text-gemText font-serif font-bold">
@@ -240,7 +256,9 @@ function Shop() {
         {/* Page Header */}
         <div className="text-center mb-10">
           <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Our Collection</span>
-          <h1 className="text-4xl md:text-5xl font-serif text-gemText mt-3 mb-4">Gemstone Gallery</h1>
+          <h1 className="text-4xl md:text-5xl font-serif text-gemText mt-3 mb-4">
+            {keyword ? `Search Results for "${keyword}"` : 'Gemstone Gallery'}
+          </h1>
           <div className="h-0.5 w-24 bg-gemRed mx-auto"></div>
         </div>
 
@@ -259,7 +277,7 @@ function Shop() {
                   <button onClick={() => setViewMode('grid')} className={`transition-colors ${viewMode === 'grid' ? 'text-gemText' : 'text-gemTextMuted'}`}><LayoutGrid size={18}/></button>
                   <button onClick={() => setViewMode('list')} className={`transition-colors ${viewMode === 'list' ? 'text-gemText' : 'text-gemTextMuted'}`}><List size={18}/></button>
               </div>
-              <div className="text-sm font-serif font-bold text-gemText">{products.length} products</div>
+              <div className="text-sm font-serif font-bold text-gemText">{totalCount} products</div>
             </div>
           </div>
 
@@ -287,7 +305,7 @@ function Shop() {
                 <button onClick={() => setViewMode('list')} className={`transition-colors ${viewMode === 'list' ? 'text-gemText' : 'text-gemTextMuted hover:text-gemTextLight'}`}><List size={20}/></button>
               </div>
 
-              <div className="text-sm font-serif font-bold text-gemText">{products.length} products</div>
+              <div className="text-sm font-serif font-bold text-gemText">{totalCount} products</div>
               
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gemText uppercase tracking-widest font-semibold">Sort By:</span>
@@ -371,8 +389,10 @@ function Shop() {
                           <div className="mt-auto flex items-center justify-between">
                             <p className="text-gemText font-medium text-xl font-serif">${product.price.toLocaleString()}</p>
                             <div className="flex items-center gap-3">
-                                <button className="border border-gemBorder text-gemText p-3 rounded hover:border-gemRed hover:text-gemRed transition-colors">
-                                  <Heart size={18} />
+                                <button 
+                                  onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+                                  className={`border p-3 rounded transition-colors ${isInWishlist(product._id) ? 'border-gemRed text-gemRed' : 'border-gemBorder text-gemText hover:border-gemRed hover:text-gemRed'}`}>
+                                  <Heart size={18} className={isInWishlist(product._id) ? 'fill-gemRed' : ''} />
                                 </button>
                                 <button onClick={(e) => handleAddToCart(e, product)}
                                   className={`flex items-center gap-2 px-6 py-3 rounded text-sm uppercase tracking-widest font-semibold transition-all shadow-md ${
@@ -407,8 +427,10 @@ function Shop() {
                             }`}>
                             <ShoppingBag size={20} />
                           </button>
-                          <button className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
-                            <Heart size={20} />
+                          <button 
+                            onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+                            className={`p-3 rounded-full transition-colors shadow-lg ${isInWishlist(product._id) ? 'bg-gemRed text-white' : 'bg-gemCard text-gemText hover:bg-gemRed hover:text-white'}`}>
+                            <Heart size={20} className={isInWishlist(product._id) ? 'fill-white' : ''} />
                           </button>
                         </div>
                       </div>
@@ -427,6 +449,25 @@ function Shop() {
                     </Link>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {!loading && pages > 1 && (
+              <div className="flex justify-center mt-12 gap-2">
+                {[...Array(pages).keys()].map(x => (
+                  <button
+                    key={x + 1}
+                    onClick={() => setPage(x + 1)}
+                    className={`w-10 h-10 flex items-center justify-center font-serif text-lg transition-colors border ${
+                      x + 1 === page
+                        ? 'border-gemRed bg-gemRed text-white'
+                        : 'border-gemBorder text-gemText hover:border-gemRed hover:text-gemRed'
+                    }`}
+                  >
+                    {x + 1}
+                  </button>
+                ))}
               </div>
             )}
 

@@ -1,32 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Heart } from 'lucide-react';
-
-const FEATURED_GEMS = [
-  {
-    id: 1,
-    name: 'Ceylon Blue Sapphire',
-    price: '$2,450',
-    image: 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?q=80&w=800&auto=format&fit=crop',
-    category: 'Sapphire'
-  },
-  {
-    id: 2,
-    name: 'Pigeon Blood Ruby',
-    price: '$3,800',
-    image: 'https://images.unsplash.com/photo-1601121853354-e6e866bd2aca?q=80&w=800&auto=format&fit=crop',
-    category: 'Ruby'
-  },
-  {
-    id: 3,
-    name: 'Colombian Emerald',
-    price: '$4,100',
-    image: 'https://images.unsplash.com/photo-1615655406736-b37c4fabf923?q=80&w=800&auto=format&fit=crop',
-    category: 'Emerald'
-  }
-];
+import API from '../../utils/api';
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 function FeaturedGems() {
+  const [featuredGems, setFeaturedGems] = useState([]);
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const { data } = await API.get('/products?sort=newest');
+        setFeaturedGems(data.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching featured gems:', error);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return (
     <section className="py-24 bg-gemBgAlt">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,23 +35,27 @@ function FeaturedGems() {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {FEATURED_GEMS.map((gem) => (
-            <div key={gem.id} className="group cursor-pointer">
+          {featuredGems.map((gem) => (
+            <Link to={`/product/${gem._id}`} key={gem._id} className="group cursor-pointer block">
               {/* Image Container */}
-              <div className="relative overflow-hidden bg-gemBgMarble aspect-[4/5] mb-4 rounded-lg shadow-md">
+              <div className="relative overflow-hidden bg-gemBgMarble aspect-[4/5] mb-4 rounded-lg shadow-md border border-transparent hover:border-gemBorder">
                 <img 
-                  src={gem.image} 
+                  src={gem.imageUrl} 
                   alt={gem.name} 
                   className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                 />
                 
                 {/* Hover Actions Overlay */}
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
+                  <button 
+                    onClick={(e) => { e.preventDefault(); addToCart(gem, 1); }}
+                    className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
                     <ShoppingBag size={20} />
                   </button>
-                  <button className="bg-gemCard text-gemText p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-lg">
-                    <Heart size={20} />
+                  <button 
+                    onClick={(e) => { e.preventDefault(); toggleWishlist(gem._id); }}
+                    className={`p-3 rounded-full transition-colors shadow-lg ${isInWishlist(gem._id) ? 'bg-gemRed text-white' : 'bg-gemCard text-gemText hover:bg-gemRed hover:text-white'}`}>
+                    <Heart size={20} className={isInWishlist(gem._id) ? 'fill-white' : ''} />
                   </button>
                 </div>
               </div>
@@ -64,10 +63,10 @@ function FeaturedGems() {
               {/* Product Info */}
               <div className="text-center">
                 <p className="text-gemRed text-xs uppercase tracking-widest mb-2">{gem.category}</p>
-                <h3 className="text-lg font-serif text-gemText mb-1">{gem.name}</h3>
-                <p className="text-gemTextLight font-light">{gem.price}</p>
+                <h3 className="text-lg font-serif text-gemText mb-1 group-hover:text-gemRed transition-colors">{gem.name}</h3>
+                <p className="text-gemText font-medium font-serif">${gem.price.toLocaleString()}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
