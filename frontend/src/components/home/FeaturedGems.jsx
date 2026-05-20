@@ -38,11 +38,11 @@ function FeaturedGems() {
           {featuredGems.map((gem) => (
             <Link to={`/product/${gem._id}`} key={gem._id} className="group cursor-pointer block">
               {/* Image Container */}
-              <div className="relative overflow-hidden bg-gemBgMarble aspect-[4/5] mb-4 rounded-lg shadow-md border border-transparent hover:border-gemBorder">
+              <div className="relative overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] aspect-[4/5] mb-4 rounded-lg shadow-md border border-transparent hover:border-gemBorder flex items-center justify-center p-6">
                 <img 
                   src={gem.imageUrl} 
                   alt={gem.name} 
-                  className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-2xl"
                 />
                 
                 {/* Hover Actions Overlay */}

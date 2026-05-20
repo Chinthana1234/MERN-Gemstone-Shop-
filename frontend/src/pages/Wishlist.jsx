@@ -28,8 +28,8 @@ function Wishlist() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {wishlistItems.map((product) => (
               <div key={product._id} className="bg-gemCard border border-gemBorder rounded-lg overflow-hidden group">
-                <div className="relative aspect-square overflow-hidden">
-                  <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="relative aspect-square overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] flex items-center justify-center p-6">
+                  <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-2xl" />
                   <button onClick={() => toggleWishlist(product._id)} className="absolute top-4 right-4 p-2 bg-gemBgAlt/80 backdrop-blur-sm rounded-full text-gemRed hover:bg-gemRed hover:text-white transition-colors">
                     <Trash2 size={18} />
                   </button>

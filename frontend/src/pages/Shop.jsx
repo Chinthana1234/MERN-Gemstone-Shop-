@@ -23,12 +23,13 @@ const sliderStyles = {
 };
 
 const GEM_TYPES = [
-  'Sapphire',
+  'Blue Sapphire',
+  'Yellow Sapphire',
+  'White Sapphire',
+  'Spessartine Garnet',
   'Ruby',
   'Emerald',
-  'Padparadscha',
-  'Spessartine Garnet',
-  'Garnet'
+  "Cat's Eye"
 ];
 
 const SORT_OPTIONS = [
@@ -364,9 +365,9 @@ function Shop() {
                   if (viewMode === 'list') {
                     return (
                       <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer flex flex-col sm:flex-row gap-6 bg-gemCard p-4 rounded-lg shadow-sm border border-transparent hover:border-gemBorder transition-all">
-                        <div className="w-full sm:w-56 h-56 shrink-0 relative overflow-hidden rounded">
+                        <div className="w-full sm:w-56 h-56 shrink-0 relative overflow-hidden rounded bg-gradient-to-b from-[#151515] to-[#0a0a0a] flex items-center justify-center p-4">
                           <img src={product.imageUrl} alt={product.name}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                            className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-700 drop-shadow-2xl" />
                           {product.stock <= 3 && product.stock > 0 && (
                             <span className="absolute top-3 left-3 bg-gemRed text-white text-xs px-2 py-1 uppercase tracking-wider rounded">
                               Only {product.stock} Left
@@ -410,9 +411,9 @@ function Shop() {
                   // Grid View Card
                   return (
                     <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block">
-                      <div className="relative overflow-hidden bg-gemCard aspect-[4/5] mb-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-transparent hover:border-gemBorder">
+                      <div className="relative overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] aspect-[4/5] mb-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-transparent hover:border-gemBorder flex items-center justify-center p-6">
                         <img src={product.imageUrl} alt={product.name}
-                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
+                          className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-2xl" />
                         
                         {product.stock <= 3 && product.stock > 0 && (
                           <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">

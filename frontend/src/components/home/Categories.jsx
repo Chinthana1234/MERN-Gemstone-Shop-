@@ -1,35 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import API from '../../utils/api';
 
-const CATEGORIES = [
-  {
-    name: 'Blue Sapphires',
-    image: 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?q=80&w=600&auto=format&fit=crop',
-    query: 'sapphire'
-  },
-  {
-    name: 'Ruby',
-    image: 'https://images.unsplash.com/photo-1601121853354-e6e866bd2aca?q=80&w=600&auto=format&fit=crop',
-    query: 'ruby'
-  },
-  {
-    name: 'Emerald',
-    image: 'https://images.unsplash.com/photo-1615655406736-b37c4fabf923?q=80&w=600&auto=format&fit=crop',
-    query: 'emerald'
-  },
-  {
-    name: 'Padparadscha',
-    image: 'https://images.unsplash.com/photo-1583937443573-bf382b52be17?q=80&w=600&auto=format&fit=crop',
-    query: 'sapphire'
-  },
-  {
-    name: 'Star Sapphires',
-    image: 'https://images.unsplash.com/photo-1598560917505-59a3ad559071?q=80&w=600&auto=format&fit=crop',
-    query: 'sapphire'
-  }
+const GEM_TYPES = [
+  'Blue Sapphire',
+  'Yellow Sapphire',
+  'White Sapphire',
+  'Spessartine Garnet',
+  'Ruby',
+  'Emerald',
+  "Cat's Eye"
 ];
 
 function Categories() {
+  const [categoriesData, setCategoriesData] = useState([]);
+
+  useEffect(() => {
+    const fetchCategoryImages = async () => {
+      try {
+        const { data } = await API.get('/products?fetchAll=true');
+        const products = data.products || [];
+        
+        // Find one image for each gem type
+        const cats = GEM_TYPES.map(type => {
+            const product = products.find(p => p.category === type);
+            return {
+                name: type,
+                image: product ? product.imageUrl : '',
+                query: type
+            };
+        }).filter(c => c.image !== ''); // Only keep categories that have an image
+        
+        setCategoriesData(cats);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCategoryImages();
+  }, []);
+
   return (
     <section className="py-24 bg-gemBg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,28 +50,25 @@ function Categories() {
           <div className="h-0.5 w-24 bg-gemRed mx-auto"></div>
         </div>
 
-        {/* Categories Grid - Wijaya Gems inspired */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {CATEGORIES.map((cat, index) => (
+        {/* Categories Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
+          {categoriesData.map((cat, index) => (
             <Link 
-              to={`/shop?category=${cat.query}`} 
+              to={`/shop?keyword=${encodeURIComponent(cat.query)}`} 
               key={index}
-              className="group text-center"
+              className="group text-center flex flex-col items-center"
             >
-              {/* Gemstone Image on light background */}
-              <div className="relative overflow-hidden bg-gemBgMarble aspect-square rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 mb-4">
+              {/* Gemstone Image with Professional Styling */}
+              <div className="w-full relative overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] aspect-square rounded-full shadow-lg border border-gemBorder group-hover:border-gemRed transition-colors duration-300 mb-4 flex items-center justify-center p-6">
                 <img 
                   src={cat.image} 
                   alt={cat.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-xl"
                 />
-                {/* Overlay with name */}
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-                  <span className="text-white font-serif text-lg tracking-wide drop-shadow-lg opacity-90 group-hover:opacity-100 transition-opacity">
-                    {cat.name}
-                  </span>
-                </div>
               </div>
+              <span className="text-gemText font-serif text-sm tracking-wide group-hover:text-gemRed transition-colors">
+                {cat.name}
+              </span>
             </Link>
           ))}
         </div>
