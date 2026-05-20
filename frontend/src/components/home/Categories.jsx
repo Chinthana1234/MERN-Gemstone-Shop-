@@ -59,7 +59,7 @@ function Categories() {
               className="group text-center flex flex-col items-center"
             >
               {/* Gemstone Image with Professional Styling */}
-              <div className="w-full relative overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] aspect-square rounded-full shadow-lg border border-gemBorder group-hover:border-gemRed transition-colors duration-300 mb-4 flex items-center justify-center p-6">
+              <div className="w-full relative overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] aspect-square rounded-lg shadow-lg border border-gemBorder group-hover:border-gemRed transition-colors duration-300 mb-4 flex items-center justify-center p-6">
                 <img 
                   src={cat.image} 
                   alt={cat.name} 

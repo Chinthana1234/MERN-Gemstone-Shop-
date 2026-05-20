@@ -14,7 +14,7 @@ function FeaturedGems() {
     const fetchFeatured = async () => {
       try {
         const { data } = await API.get('/products?sort=newest');
-        setFeaturedGems(data.slice(0, 3));
+        setFeaturedGems((data.products || []).slice(0, 3));
       } catch (error) {
         console.error('Error fetching featured gems:', error);
       }
