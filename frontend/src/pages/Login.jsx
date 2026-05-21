@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock } from 'lucide-react';
@@ -9,16 +9,40 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, syncLogin } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const adminDataParam = params.get('adminData');
+    const redirectParam = params.get('redirect');
+    if (adminDataParam) {
+      try {
+        const userData = JSON.parse(decodeURIComponent(adminDataParam));
+        syncLogin(userData);
+        if (redirectParam) {
+          window.location.href = redirectParam;
+        } else {
+          navigate('/');
+        }
+      } catch (err) {
+        console.error('Failed to sync login data', err);
+      }
+    }
+  }, [syncLogin, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
       setLoading(true);
-      await login(email, password);
-      navigate('/');
+      const userData = await login(email, password);
+      if (userData && userData.isAdmin) {
+        window.open(`http://localhost:5174/login?adminData=${encodeURIComponent(JSON.stringify(userData))}`, '_blank');
+        navigate('/');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

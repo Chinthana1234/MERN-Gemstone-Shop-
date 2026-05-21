@@ -44,8 +44,13 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('userInfo');
   };
 
+  const syncLogin = (userData) => {
+    setUser(userData);
+    localStorage.setItem('userInfo', JSON.stringify(userData));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, syncLogin }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../utils/api';
 
@@ -8,12 +8,42 @@ function AdminLogin() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const existingAdmin = localStorage.getItem('adminInfo');
+        if (existingAdmin) {
+            try {
+                const data = JSON.parse(existingAdmin);
+                if (data && data.isAdmin) {
+                    navigate('/dashboard');
+                    return;
+                }
+            } catch (e) {
+                console.error('Error parsing local adminInfo', e);
+            }
+        }
+
+        const query = new URLSearchParams(window.location.search);
+        const adminDataStr = query.get('adminData');
+        if (adminDataStr) {
+            try {
+                const data = JSON.parse(decodeURIComponent(adminDataStr));
+                if (data && data.isAdmin) {
+                    localStorage.setItem('adminInfo', JSON.stringify(data));
+                    navigate('/dashboard');
+                }
+            } catch (err) {
+                console.error('Error parsing adminData from query string', err);
+            }
+        }
+    }, [navigate]);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const { data } = await API.post('/auth/login', { email, password });
             if (data.isAdmin) {
                 localStorage.setItem('adminInfo', JSON.stringify(data));
+                window.open(`http://localhost:5173/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
                 navigate('/dashboard');
             } else {
                 setError('You do not have admin privileges.');

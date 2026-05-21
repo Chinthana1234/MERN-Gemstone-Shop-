@@ -83,16 +83,15 @@ function Navbar() {
             {user ? (
               <div className="flex items-center gap-4 ml-4">
                 {user.isAdmin && (
-                  <a href="http://localhost:5174/login" target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
+                  <a href={`http://localhost:5174/login?adminData=${encodeURIComponent(JSON.stringify(user))}`} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
                     Admin
                   </a>
                 )}
-                <Link to="/my-orders" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
-                  Orders
-                </Link>
-                <Link to="/profile" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
-                  Profile
-                </Link>
+                {!user.isAdmin && (
+                  <Link to="/my-orders" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
+                    Orders
+                  </Link>
+                )}
                 <span className="text-gemRed text-sm font-medium ml-2">{user.name}</span>
                 <button onClick={logout} className="text-gemTextLight hover:text-gemRed transition-colors duration-300" title="Logout">
                   <LogOut size={18} strokeWidth={1.5} />
@@ -137,9 +136,11 @@ function Navbar() {
             {user ? (
               <>
                 {user.isAdmin && (
-                  <a href="http://localhost:5174/login" target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</a>
+                  <a href={`http://localhost:5174/login?adminData=${encodeURIComponent(JSON.stringify(user))}`} target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</a>
                 )}
-                <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">MY ORDERS</Link>
+                {!user.isAdmin && (
+                  <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">MY ORDERS</Link>
+                )}
                 <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block px-3 py-2 text-base font-serif tracking-widest text-gemRed mt-4">LOGOUT</button>
               </>
             ) : (
