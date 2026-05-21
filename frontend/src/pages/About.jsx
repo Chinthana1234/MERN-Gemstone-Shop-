@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Gem, Shield, Award, Globe, Heart, Users } from 'lucide-react';
 import aboutBg from '../assets/images/about page/Gemini_Generated_Image_lwztsnlwztsnlwzt (1).png';
+import aboutMission from '../assets/images/about page/gemini-2.5-flash-image_and_delte_negative_pfo1m_box_and_add_text_to_like_more_proffesional-0 (2).jpg';
 
 const VALUES = [
     { icon: Gem, title: 'Ethically Sourced', description: 'Every gemstone is traced back to responsible mining operations that prioritize sustainability.' },
@@ -23,7 +24,7 @@ function About() {
     return (
         <div className="pb-20 min-h-screen bg-gemBgAlt">
             {/* Hero */}
-            <section 
+            <section
                 className="w-full h-screen bg-cover bg-center bg-no-repeat mb-20"
                 style={{ backgroundImage: `url("${aboutBg}")` }}
             >
@@ -49,12 +50,16 @@ function About() {
                             Explore Collection
                         </Link>
                     </div>
-                    <div className="relative">
-                        <div className="aspect-[4/5] bg-gradient-to-br from-gemRed/10 via-transparent to-gemRed/5 rounded-2xl overflow-hidden border border-gemBorder shadow-xl flex items-center justify-center">
-                            <Gem size={120} className="text-gemRed/20" strokeWidth={0.5} />
+                    <div className="relative group">
+                        <div className="aspect-square bg-gradient-to-br from-gemRed/10 via-transparent to-gemRed/5 rounded-2xl overflow-hidden border border-gemBorder shadow-xl flex items-center justify-center">
+                            <img
+                                src={aboutMission}
+                                alt="Ethical Gemstones"
+                                className="w-full h-full object-cover rounded-2xl animate-fade-in group-hover:scale-105 transition-transform duration-700 ease-out"
+                            />
                         </div>
-                        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gemRed/10 rounded-2xl -z-10"></div>
-                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-gemRed/5 rounded-full -z-10"></div>
+                        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gemRed/10 rounded-2xl -z-10 group-hover:-translate-x-3 group-hover:translate-y-3 transition-transform duration-500"></div>
+                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-gemRed/5 rounded-full -z-10 group-hover:translate-x-3 group-hover:-translate-y-3 transition-transform duration-500"></div>
                     </div>
                 </div>
             </section>
