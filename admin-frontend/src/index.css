@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  /* Dark Luxury Theme */
+  --color-gemBg: #050505;
+  --color-gemBgAlt: #0a0a0a;
+  --color-gemBgMarble: #111111;
+  --color-gemCard: #141414;
+  --color-gemRed: #C41230;
+  --color-gemRedDark: #9B0E26;
+  --color-gemRedLight: #E8304A;
+  --color-gemGold: #d4af37;
+  --color-gemGoldLight: #f3e5ab;
+  --color-gemText: #f5f5f5;
+  --color-gemTextLight: #a3a3a3;
+  --color-gemTextMuted: #737373;
+  --color-gemBorder: #262626;
+  --color-gemBorderDark: #404040;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+@layer base {
+  body {
+    @apply bg-gemBg text-gemText font-sans antialiased overflow-x-hidden selection:bg-gemRed selection:text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-wide text-gemText;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C41230;
+}
+
+/* Marble texture background */
+.marble-bg {
+  background: linear-gradient(135deg, #0a0a0a 0%, #111111 25%, #050505 50%, #111111 75%, #0a0a0a 100%);
+  background-size: 400% 400%;
+  animation: marble-shift 15s ease infinite;
+}
+
+@keyframes marble-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Fade-in animation for step transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Bounce-in for success icon */
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-bounceIn {
+  animation: bounceIn 0.6s ease-out;
+}

@@ -82,9 +82,9 @@ function Navbar() {
             {user ? (
               <div className="flex items-center gap-4 ml-4">
                 {user.isAdmin && (
-                  <Link to="/admin" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
+                  <a href="http://localhost:5174/login" target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
                     Admin
-                  </Link>
+                  </a>
                 )}
                 <Link to="/my-orders" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">
                   Orders
@@ -135,7 +135,7 @@ function Navbar() {
             {user ? (
               <>
                 {user.isAdmin && (
-                  <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</Link>
+                  <a href="http://localhost:5174/login" target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</a>
                 )}
                 <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">MY ORDERS</Link>
                 <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block px-3 py-2 text-base font-serif tracking-widest text-gemRed mt-4">LOGOUT</button>

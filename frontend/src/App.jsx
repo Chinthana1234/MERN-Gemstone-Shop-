@@ -6,7 +6,6 @@ import { WishlistProvider } from './context/WishlistContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PrivateRoute from './components/common/PrivateRoute';
-import AdminRoute from './components/common/AdminRoute';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -18,7 +17,6 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import MyOrders from './pages/MyOrders';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import AdminDashboard from './pages/AdminDashboard';
 import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
 
@@ -53,9 +51,6 @@ function App() {
                 } />
                 <Route path="/profile" element={
                   <PrivateRoute><Profile /></PrivateRoute>
-                } />
-                <Route path="/admin" element={
-                  <AdminRoute><AdminDashboard /></AdminRoute>
                 } />
               </Routes>
             </div>
