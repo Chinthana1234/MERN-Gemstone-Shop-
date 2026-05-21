@@ -22,6 +22,7 @@ function Footer() {
               <li><Link to="/shop" className="text-gray-400 hover:text-gemRed text-sm transition-colors">Shop</Link></li>
               <li><Link to="/about" className="text-gray-400 hover:text-gemRed text-sm transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-400 hover:text-gemRed text-sm transition-colors">Contact</Link></li>
+              <li><Link to="/reviews" className="text-gray-400 hover:text-gemRed text-sm transition-colors">Reviews</Link></li>
             </ul>
           </div>
 

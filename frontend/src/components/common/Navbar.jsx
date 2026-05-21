@@ -27,7 +27,7 @@ function Navbar() {
     <nav className="fixed w-full top-0 z-50 bg-gemBg/90 backdrop-blur-md border-b border-gemBorder shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          
+
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center gap-2 group">
@@ -43,6 +43,7 @@ function Navbar() {
             <Link to="/shop" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Shop</Link>
             <Link to="/about" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">About Us</Link>
             <Link to="/contact" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Contact</Link>
+            <Link to="/reviews" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Reviews</Link>
           </div>
 
           {/* Icons (Desktop) */}
@@ -50,11 +51,11 @@ function Navbar() {
             <div className="relative">
               {isSearchOpen ? (
                 <form onSubmit={handleSearch} className="flex items-center">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
-                    placeholder="Search gems..." 
+                    placeholder="Search gems..."
                     className="bg-gemBgAlt border-b border-gemRed text-gemText px-2 py-1 focus:outline-none text-sm w-48"
                     autoFocus
                   />
@@ -114,7 +115,7 @@ function Navbar() {
                 </span>
               )}
             </Link>
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-gemText hover:text-gemRed transition-colors"
             >
@@ -132,6 +133,7 @@ function Navbar() {
             <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">SHOP</Link>
             <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">ABOUT US</Link>
             <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">CONTACT</Link>
+            <Link to="/reviews" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">REVIEWS</Link>
             {user ? (
               <>
                 {user.isAdmin && (

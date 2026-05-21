@@ -19,6 +19,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
+import Reviews from './pages/Reviews';
 
 function App() {
   const location = useLocation();
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/reviews" element={<Reviews />} />
                 <Route path="/checkout" element={
                   <PrivateRoute><Checkout /></PrivateRoute>
                 } />
