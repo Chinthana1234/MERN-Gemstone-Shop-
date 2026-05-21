@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -21,12 +21,15 @@ import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
 
 function App() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
   return (
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
           <div className="min-h-screen bg-gemBg text-gemText font-sans flex flex-col">
-            <Navbar />
+            {!isAuthPage && <Navbar />}
             <div className="flex-1">
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -54,7 +57,7 @@ function App() {
                 } />
               </Routes>
             </div>
-            <Footer />
+            {!isAuthPage && <Footer />}
           </div>
         </WishlistProvider>
       </CartProvider>

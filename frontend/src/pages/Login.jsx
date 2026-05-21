@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Mail, Lock } from 'lucide-react';
+import loginBg from '../assets/images/login register pages/gpt-image-2_Prompt_Macro_product_photography_of_a_loose_sparkling_insert_gemstone_e.g._ruby_-0.jpg';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -25,37 +27,69 @@ function Login() {
   };
 
   return (
-    <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-serif text-gemText mb-2">Welcome Back</h2>
-          <div className="h-0.5 w-16 bg-gemRed mx-auto mb-4"></div>
-          <p className="text-gemTextLight text-sm">Sign in to your Aura Gems account</p>
+    <div className="min-h-screen flex flex-col md:flex-row bg-white">
+      
+      {/* Form Side (Left) */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 lg:px-24 py-12">
+        <div className="max-w-md w-full mx-auto">
+          
+          <div className="mb-10 text-left">
+            <h1 className="text-xl font-serif text-black mb-12 tracking-wide">Aura Gems</h1>
+            <h2 className="text-4xl font-serif text-black mb-3">Welcome Back</h2>
+            <p className="text-gray-500 text-sm">Please enter your details to sign in to your account.</p>
+          </div>
+
+          {error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 text-sm">{error}</div>}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="text-xs font-semibold tracking-wider text-gray-500 uppercase mb-2 block">Email Address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  <Mail size={18} />
+                </div>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                  className="w-full bg-blue-50/50 border-none rounded-lg pl-10 pr-3 py-3.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black transition-all" 
+                  placeholder="name@example.com"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-semibold tracking-wider text-gray-500 uppercase">Password</label>
+                <a href="#" className="text-xs text-gray-400 hover:text-black transition-colors">Forgot Password?</a>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  <Lock size={18} />
+                </div>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+                  className="w-full bg-blue-50/50 border-none rounded-lg pl-10 pr-3 py-3.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black transition-all" 
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+            
+            <button type="submit" disabled={loading}
+              className="w-full bg-black text-white font-bold tracking-widest text-sm py-4 rounded-lg hover:bg-gray-800 transition-all duration-300 mt-4 disabled:opacity-70">
+              {loading ? 'SIGNING IN...' : 'SIGN IN'}
+            </button>
+          </form>
+
+          <p className="text-center text-gray-500 text-sm mt-8">
+            New to Aura Gems? <Link to="/register" className="text-black font-bold hover:underline">Create an account</Link>
+          </p>
         </div>
-
-        {error && <div className="bg-red-50 border border-red-200 text-gemRed px-4 py-3 mb-6 text-sm text-center rounded">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="bg-gemCard p-8 border border-gemBorder rounded-lg shadow-sm space-y-5">
-          <div>
-            <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 block">Email Address</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-              className="w-full bg-gemBgAlt border border-gemBorder p-3 text-gemText rounded focus:outline-none focus:border-gemRed transition-colors" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 block">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
-              className="w-full bg-gemBgAlt border border-gemBorder p-3 text-gemText rounded focus:outline-none focus:border-gemRed transition-colors" />
-          </div>
-          <button type="submit" disabled={loading}
-            className="w-full bg-gemRed text-white font-semibold uppercase tracking-widest text-sm py-3 hover:bg-gemRedDark transition-all duration-300 rounded disabled:opacity-50">
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
-
-        <p className="text-center text-gemTextLight text-sm mt-6">
-          Don't have an account? <Link to="/register" className="text-gemRed hover:underline font-medium">Create Account</Link>
-        </p>
       </div>
+
+      {/* Image Side (Right) */}
+      <div 
+        className="hidden md:block md:w-1/2 bg-cover bg-center"
+        style={{ backgroundImage: `url("${loginBg}")` }}
+      >
+      </div>
+
     </div>
   );
 }
