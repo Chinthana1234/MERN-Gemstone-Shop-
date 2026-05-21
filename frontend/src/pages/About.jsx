@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Gem, Shield, Award, Globe, Heart, Users } from 'lucide-react';
+import aboutBg from '../assets/images/about page/Gemini_Generated_Image_lwztsnlwztsnlwzt (1).png';
 
 const VALUES = [
     { icon: Gem, title: 'Ethically Sourced', description: 'Every gemstone is traced back to responsible mining operations that prioritize sustainability.' },
@@ -20,21 +21,12 @@ const STATS = [
 
 function About() {
     return (
-        <div className="pt-24 pb-20 min-h-screen bg-gemBgAlt">
+        <div className="pb-20 min-h-screen bg-gemBgAlt">
             {/* Hero */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-24 mb-20">
-                <div className="absolute inset-0 opacity-10" style={{
-                    backgroundImage: 'radial-gradient(circle at 25% 50%, rgba(180,40,40,0.3) 0%, transparent 50%), radial-gradient(circle at 75% 50%, rgba(180,40,40,0.2) 0%, transparent 50%)'
-                }}></div>
-                <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-                    <span className="text-gemRed tracking-[0.4em] text-xs uppercase font-semibold">Our Story</span>
-                    <h1 className="text-4xl md:text-6xl font-serif mt-4 mb-6 leading-tight">Curating Nature's<br />Most Precious Treasures</h1>
-                    <div className="h-0.5 w-24 bg-gemRed mx-auto mb-6"></div>
-                    <p className="text-gray-300 font-light text-lg max-w-2xl mx-auto leading-relaxed">
-                        At Aura Gems, we believe every gemstone tells a story — a story of geological wonder,
-                        centuries of formation, and the artisan's skill in revealing its hidden beauty.
-                    </p>
-                </div>
+            <section 
+                className="w-full h-screen bg-cover bg-center bg-no-repeat mb-20"
+                style={{ backgroundImage: `url("${aboutBg}")` }}
+            >
             </section>
 
             {/* Mission */}
