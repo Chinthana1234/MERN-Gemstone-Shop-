@@ -1,8 +1,9 @@
-import React from 'react';
-import { Star, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, User, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import reviewBanner from '../assets/images/review page/Gemini_Generated_Image_agdsayagdsayagds.png';
 
-const REVIEWS_DATA = [
+const DEFAULT_REVIEWS = [
     {
         rating: 5,
         text: "Really happy with this product. The quality is great and it lasts long. Definitely worth it",
@@ -21,6 +22,64 @@ const REVIEWS_DATA = [
 ];
 
 function Reviews() {
+    const { user } = useAuth();
+    const [reviews, setReviews] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [rating, setRating] = useState(5);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [customer, setCustomer] = useState('');
+    const [text, setText] = useState('');
+
+    // Load custom reviews from localStorage on mount and sync with user state
+    useEffect(() => {
+        const stored = localStorage.getItem('site_reviews');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                setReviews([...DEFAULT_REVIEWS, ...parsed]);
+            } catch (e) {
+                setReviews(DEFAULT_REVIEWS);
+            }
+        } else {
+            setReviews(DEFAULT_REVIEWS);
+        }
+
+        if (user && user.name) {
+            setCustomer(user.name);
+        }
+    }, [user]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!customer.trim() || !text.trim()) return;
+
+        const newReview = {
+            rating,
+            text,
+            customer: customer.toUpperCase()
+        };
+
+        const stored = localStorage.getItem('site_reviews');
+        let currentStored = [];
+        if (stored) {
+            try {
+                currentStored = JSON.parse(stored);
+            } catch (err) {
+                currentStored = [];
+            }
+        }
+
+        const updatedStored = [...currentStored, newReview];
+        localStorage.setItem('site_reviews', JSON.stringify(updatedStored));
+        setReviews([...reviews, newReview]);
+
+        // Reset form and close modal
+        setCustomer(user?.name || '');
+        setText('');
+        setRating(5);
+        setIsModalOpen(false);
+    };
+
     return (
         <div className="pb-24 bg-white min-h-screen">
             {/* Hero Banner */}
@@ -32,13 +91,34 @@ function Reviews() {
                 <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
             </section>
 
+            {/* Header Section */}
+            <div className="text-center mb-6 px-4">
+                <h1 className="text-4xl md:text-5xl font-sans font-bold text-[#0f172a] tracking-tight">
+                    Reviews
+                </h1>
+                <div className="w-16 h-1 bg-[#0f172a] mx-auto mt-4 rounded-full"></div>
+                <p className="text-[#475569] mt-6 text-base font-light max-w-xl mx-auto leading-relaxed">
+                    Check out what our customers say about their experiences
+                </p>
+            </div>
+
+            {/* Write a Review Button */}
+            <div className="text-center mb-16">
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="bg-gemRed text-white hover:bg-gemRedDark transition-all duration-300 uppercase tracking-[0.2em] text-xs font-bold py-4 px-10 rounded-full shadow-lg shadow-gemRed/20 hover:scale-105"
+                >
+                    Write a Review
+                </button>
+            </div>
+
             {/* Grid of Light Review Cards */}
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {REVIEWS_DATA.map((review, idx) => {
+                    {reviews.map((review, idx) => {
                         return (
-                            <div
-                                key={idx}
+                            <div 
+                                key={idx} 
                                 className="relative bg-white rounded-3xl p-8 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between min-h-[300px] border-2 border-stone-200 hover:border-gemRed"
                             >
                                 {/* Quote Mark Watermark in Top Right */}
@@ -50,13 +130,14 @@ function Reviews() {
                                     {/* Stars Rating (orange-gold) */}
                                     <div className="flex items-center gap-1">
                                         {[...Array(5)].map((_, i) => (
-                                            <Star
-                                                key={i}
-                                                size={15}
-                                                className={`${i < review.rating
-                                                    ? 'fill-[#f59e0b] text-[#f59e0b]'
-                                                    : 'text-stone-200 fill-transparent'
-                                                    }`}
+                                            <Star 
+                                                key={i} 
+                                                size={15} 
+                                                className={`${
+                                                    i < review.rating 
+                                                        ? 'fill-[#f59e0b] text-[#f59e0b]' 
+                                                        : 'text-stone-200 fill-transparent'
+                                                }`} 
                                             />
                                         ))}
                                     </div>
@@ -93,6 +174,96 @@ function Reviews() {
                     })}
                 </div>
             </div>
+
+            {/* Form Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div 
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+                        onClick={() => setIsModalOpen(false)}
+                    ></div>
+
+                    {/* Modal Content */}
+                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-stone-100 relative z-10 animate-fadeIn space-y-6">
+                        <button 
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-6 right-6 text-stone-400 hover:text-stone-700 transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div>
+                            <h3 className="text-3xl font-serif text-slate-900 mb-1">Write a Review</h3>
+                            <p className="text-xs text-stone-400 tracking-wider uppercase font-bold">Share your experience with us</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Rating Selector */}
+                            <div>
+                                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-2 block">Rating</label>
+                                <div className="flex items-center gap-1.5">
+                                    {[1, 2, 3, 4, 5].map((starVal) => (
+                                        <button
+                                            type="button"
+                                            key={starVal}
+                                            onClick={() => setRating(starVal)}
+                                            onMouseEnter={() => setHoverRating(starVal)}
+                                            onMouseLeave={() => setHoverRating(0)}
+                                            className="focus:outline-none transition-transform active:scale-95"
+                                        >
+                                            <Star 
+                                                size={24} 
+                                                className={`transition-colors ${
+                                                    starVal <= (hoverRating || rating)
+                                                        ? 'fill-[#f59e0b] text-[#f59e0b]'
+                                                        : 'text-stone-200 fill-transparent'
+                                                }`}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Name Input */}
+                            <div>
+                                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1 block">Your Name</label>
+                                <input 
+                                    type="text" 
+                                    value={customer} 
+                                    onChange={(e) => setCustomer(e.target.value)} 
+                                    required
+                                    placeholder="E.g. Gabriel Blanc"
+                                    className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-0 focus:border-stone-800 transition-colors" 
+                                />
+                            </div>
+
+                            {/* Review Textarea */}
+                            <div>
+                                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1 block">Your Testimonial</label>
+                                <textarea 
+                                    value={text} 
+                                    onChange={(e) => setText(e.target.value)} 
+                                    required 
+                                    rows="3"
+                                    placeholder="Describe your experience with our products or customer support..."
+                                    className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-0 focus:border-stone-800 transition-colors resize-none"
+                                ></textarea>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="pt-2">
+                                <button 
+                                    type="submit"
+                                    className="w-full bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 rounded-full shadow-lg shadow-gemRed/20 duration-300"
+                                >
+                                    Submit Review
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
