@@ -65,12 +65,16 @@ function About() {
             </section>
 
             {/* Stats */}
-            <section className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-16 mb-20">
-                <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <section className="bg-gemCard border-y border-gemBorder py-16 mb-20 relative overflow-hidden">
+                {/* Decorative background blur glow */}
+                <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 bg-gemRed/5 rounded-full blur-[100px] pointer-events-none"></div>
+                <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-72 h-72 bg-gemRed/5 rounded-full blur-[100px] pointer-events-none"></div>
+                
+                <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
                     {STATS.map((stat, i) => (
-                        <div key={i} className="text-center">
-                            <p className="text-3xl md:text-4xl font-serif text-white mb-2">{stat.value}</p>
-                            <p className="text-gray-400 text-xs uppercase tracking-widest">{stat.label}</p>
+                        <div key={i} className="text-center group">
+                            <p className="text-3xl md:text-4xl font-serif text-gemRed font-semibold mb-2 group-hover:scale-105 transition-transform duration-500">{stat.value}</p>
+                            <p className="text-gemTextLight text-xs uppercase tracking-widest font-light">{stat.label}</p>
                         </div>
                     ))}
                 </div>
