@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import contactBanner from '../assets/images/contact page/Gemini_Generated_Image_klb2feklb2feklb2.png';
-
-const CONTACT_INFO = [
-    { icon: Mail, label: 'Email', value: 'hello@auragems.com', href: 'mailto:hello@auragems.com' },
-    { icon: Phone, label: 'Phone', value: '+94 11 234 5678', href: 'tel:+94112345678' },
-    { icon: MapPin, label: 'Address', value: 'No. 45, Gem Street, Colombo 03, Sri Lanka', href: null },
-    { icon: Clock, label: 'Hours', value: 'Mon - Sat: 9:00 AM - 6:00 PM', href: null }
-];
+import contactGemImage from '../assets/images/contact page/lucid-origin_Macro_product_photography_of_a_brilliant_cut_insert_gemstone_e.g._golden_citrine-0.jpg';
 
 function Contact() {
-    const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+    const [form, setForm] = useState({ name: '', email: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -25,7 +19,7 @@ function Contact() {
         setTimeout(() => {
             setLoading(false);
             setSubmitted(true);
-            setForm({ name: '', email: '', subject: '', message: '' });
+            setForm({ name: '', email: '', message: '' });
         }, 1500);
     };
 
@@ -41,38 +35,11 @@ function Contact() {
             </section>
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
-                    {/* Contact Information */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-stone-50 border border-stone-200/60 rounded-2xl p-8 shadow-md hover:shadow-lg hover:border-gemRed/40 transition-all duration-500">
-                            <h2 className="text-xl font-serif mb-6 text-stone-900">Contact Information</h2>
-                            <p className="text-stone-600 text-sm font-light mb-8 leading-relaxed">
-                                Reach out to our gemstone specialists for personalized guidance and support.
-                            </p>
-                            <div className="space-y-6">
-                                {CONTACT_INFO.map((info, i) => (
-                                    <div key={i} className="flex items-start gap-4">
-                                        <div className="w-10 h-10 bg-gemRed/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <info.icon size={18} className="text-gemRed" />
-                                        </div>
-                                        <div>
-                                            <p className="text-stone-500 text-[10px] uppercase tracking-widest mb-1 font-semibold">{info.label}</p>
-                                            {info.href ? (
-                                                <a href={info.href} className="text-stone-800 hover:text-gemRed transition-colors text-sm break-all font-light block">{info.value}</a>
-                                            ) : (
-                                                <p className="text-stone-700 text-sm font-light break-words">{info.value}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Contact Form */}
-                    <div className="lg:col-span-3">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+                    {/* Contact Form on the Left */}
+                    <div>
                         {submitted ? (
-                            <div className="bg-stone-50 border border-stone-200/60 rounded-2xl p-12 text-center shadow-sm animate-fadeIn">
+                            <div className="bg-stone-50 border border-stone-200/60 rounded-3xl p-12 text-center shadow-sm animate-fadeIn">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <CheckCircle size={32} className="text-green-600" />
                                 </div>
@@ -84,39 +51,49 @@ function Contact() {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="bg-white border border-stone-200/60 rounded-2xl p-8 shadow-sm space-y-6">
-                                <h2 className="text-xl font-serif text-stone-900 mb-2">Send Us a Message</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <form onSubmit={handleSubmit} className="bg-white border border-stone-100 rounded-3xl p-10 md:p-12 shadow-sm space-y-10">
+                                <div>
+                                    <h2 className="text-4xl font-serif text-slate-900 mb-2 font-normal leading-tight">Compose a Message</h2>
+                                    <span className="text-[10px] font-bold tracking-[0.2em] text-stone-400 block uppercase">Expected Response: 24h</span>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
                                     <div>
-                                        <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">Your Name *</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1 block">Full Name</label>
                                         <input type="text" name="name" value={form.name} onChange={handleChange} required
-                                            className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:bg-white focus:border-gemRed transition-all" />
+                                            placeholder="E.g. Gabriel Blanc"
+                                            className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-0 focus:border-stone-800 transition-colors" />
                                     </div>
                                     <div>
-                                        <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">Email Address *</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1 block">Email Address</label>
                                         <input type="email" name="email" value={form.email} onChange={handleChange} required
-                                            className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:bg-white focus:border-gemRed transition-all" />
+                                            placeholder="hello@example.com"
+                                            className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-0 focus:border-stone-800 transition-colors" />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">Subject *</label>
-                                    <input type="text" name="subject" value={form.subject} onChange={handleChange} required
-                                        placeholder="e.g., Inquiry about Ceylon Sapphires"
-                                        className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:bg-white focus:border-gemRed transition-all" />
+                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1 block">Your Inquiry</label>
+                                    <textarea name="message" value={form.message} onChange={handleChange} required rows="3"
+                                        placeholder="How can we assist you today?"
+                                        className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-0 focus:border-stone-800 transition-colors resize-none"></textarea>
                                 </div>
-                                <div>
-                                    <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">Message *</label>
-                                    <textarea name="message" value={form.message} onChange={handleChange} required rows="5"
-                                        placeholder="Tell us how we can help..."
-                                        className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:bg-white focus:border-gemRed transition-all resize-none"></textarea>
+                                <div className="pt-2">
+                                    <button type="submit" disabled={loading}
+                                        className="bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 px-10 rounded-full shadow-lg shadow-gemRed/20 duration-300 disabled:opacity-50">
+                                        {loading ? 'Sending...' : 'SEND MESSAGE'}
+                                    </button>
                                 </div>
-                                <button type="submit" disabled={loading}
-                                    className="w-full flex items-center justify-center gap-2 bg-gemRed text-white font-semibold uppercase tracking-widest text-sm py-3.5 hover:bg-gemRedDark transition-all duration-300 rounded disabled:opacity-50">
-                                    <Send size={16} />
-                                    {loading ? 'Sending...' : 'Send Message'}
-                                </button>
                             </form>
                         )}
+                    </div>
+
+                    {/* Image on the Right */}
+                    <div className="relative overflow-hidden rounded-3xl h-[450px] lg:h-full shadow-md border border-stone-100/80 group">
+                        <img 
+                            src={contactGemImage} 
+                            alt="Golden Citrine Gemstone" 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                        />
                     </div>
                 </div>
             </div>
