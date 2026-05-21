@@ -38,17 +38,17 @@ const StripePaymentForm = ({ clientSecret, onPaymentSuccess, cartTotal }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="p-4 border border-gemBorder rounded-md bg-gemBgAlt">
+            <div className="p-4 border border-stone-200 rounded-md bg-stone-50">
                 <CardElement 
                     options={{
                         style: {
                             base: {
                                 fontSize: '16px',
-                                color: '#f5f5f5',
+                                color: '#1c1917',
                                 '::placeholder': {
-                                    color: '#a3a3a3',
+                                    color: '#78716c',
                                 },
-                                iconColor: '#f5f5f5',
+                                iconColor: '#1c1917',
                             },
                             invalid: {
                                 color: '#ef4444',

@@ -28,7 +28,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
-          <div className="min-h-screen bg-gemBg text-gemText font-sans flex flex-col">
+          <div className="min-h-screen bg-white text-stone-800 font-sans flex flex-col">
             {!isAuthPage && <Navbar />}
             <div className="flex-1">
               <Routes>

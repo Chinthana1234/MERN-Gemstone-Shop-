@@ -43,50 +43,50 @@ function Profile() {
   };
 
   return (
-    <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt flex justify-center items-center">
+    <div className="pt-28 pb-20 min-h-screen bg-white flex justify-center items-center">
       <div className="max-w-md w-full px-4 sm:px-6 lg:px-8">
         
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gemCard border border-gemBorder text-gemRed mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-50 border border-stone-200 text-gemRed mb-4">
             <User size={32} />
           </div>
-          <h1 className="text-3xl font-serif text-gemText mb-2">User Profile</h1>
-          <p className="text-gemTextLight">Update your account details and password.</p>
+          <h1 className="text-3xl font-serif text-stone-800 mb-2">User Profile</h1>
+          <p className="text-stone-500">Update your account details and password.</p>
         </div>
 
-        <div className="bg-gemCard border border-gemBorder rounded-lg p-8 shadow-lg">
-          {error && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 mb-6 rounded text-center">{error}</div>}
-          {message && <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-sm p-3 mb-6 rounded text-center">{message}</div>}
+        <div className="bg-stone-50 border border-stone-200 rounded-lg p-8 shadow-md">
+          {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 mb-6 rounded text-center">{error}</div>}
+          {message && <div className="bg-green-50 border border-green-200 text-green-600 text-sm p-3 mb-6 rounded text-center">{message}</div>}
 
           <form onSubmit={submitHandler} className="space-y-5">
             <div>
-              <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 flex items-center gap-2">
+              <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 flex items-center gap-2">
                 <User size={14} /> Name
               </label>
               <input 
                 type="text" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-gemBgAlt border border-gemBorder p-3 text-gemText rounded focus:outline-none focus:border-gemRed transition-colors"
+                className="w-full bg-white border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors"
                 required
               />
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 flex items-center gap-2">
+              <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 flex items-center gap-2">
                 <Mail size={14} /> Email Address
               </label>
               <input 
                 type="email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gemBgAlt border border-gemBorder p-3 text-gemText rounded focus:outline-none focus:border-gemRed transition-colors"
+                className="w-full bg-white border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors"
                 required
               />
             </div>
 
-            <div className="pt-4 border-t border-gemBorder">
-              <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 flex items-center gap-2">
+            <div className="pt-4 border-t border-stone-200">
+              <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 flex items-center gap-2">
                 <Key size={14} /> New Password
               </label>
               <input 
@@ -94,12 +94,12 @@ function Profile() {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Leave blank to keep current password"
-                className="w-full bg-gemBgAlt border border-gemBorder p-3 text-gemText rounded focus:outline-none focus:border-gemRed transition-colors"
+                className="w-full bg-white border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 flex items-center gap-2">
+              <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 flex items-center gap-2">
                 <Shield size={14} /> Confirm New Password
               </label>
               <input 
@@ -107,7 +107,7 @@ function Profile() {
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full bg-gemBgAlt border border-gemBorder p-3 text-gemText rounded focus:outline-none focus:border-gemRed transition-colors"
+                className="w-full bg-white border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors"
               />
             </div>
 

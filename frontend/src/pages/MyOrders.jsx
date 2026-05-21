@@ -31,21 +31,21 @@ function MyOrders() {
 
     if (loading) {
         return (
-            <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt">
+            <div className="pt-28 pb-20 min-h-screen bg-white">
                 <div className="max-w-5xl mx-auto px-4">
                     <div className="text-center mb-12">
-                        <div className="h-4 bg-gemBorder w-32 mx-auto mb-4 rounded animate-pulse"></div>
-                        <div className="h-8 bg-gemBorder w-48 mx-auto rounded animate-pulse"></div>
+                        <div className="h-4 bg-stone-200 w-32 mx-auto mb-4 rounded animate-pulse"></div>
+                        <div className="h-8 bg-stone-200 w-48 mx-auto rounded animate-pulse"></div>
                     </div>
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="bg-gemCard border border-gemBorder rounded-lg p-6 mb-4 animate-pulse">
+                        <div key={i} className="bg-white border border-stone-200/60 rounded-lg p-6 mb-4 animate-pulse animate-pulse shadow-sm">
                             <div className="flex justify-between">
                                 <div className="space-y-3 flex-1">
-                                    <div className="h-3 bg-gemBorder w-1/4 rounded"></div>
-                                    <div className="h-5 bg-gemBorder w-1/3 rounded"></div>
-                                    <div className="h-3 bg-gemBorder w-1/2 rounded"></div>
+                                    <div className="h-3 bg-stone-200 w-1/4 rounded"></div>
+                                    <div className="h-5 bg-stone-200 w-1/3 rounded"></div>
+                                    <div className="h-3 bg-stone-200 w-1/2 rounded"></div>
                                 </div>
-                                <div className="h-8 bg-gemBorder w-20 rounded"></div>
+                                <div className="h-8 bg-stone-200 w-20 rounded"></div>
                             </div>
                         </div>
                     ))}
@@ -55,21 +55,21 @@ function MyOrders() {
     }
 
     return (
-        <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt">
+        <div className="pt-28 pb-20 min-h-screen bg-white">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
                 <div className="text-center mb-14">
                     <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Your Account</span>
-                    <h1 className="text-3xl md:text-4xl font-serif text-gemText mt-3 mb-4">My Orders</h1>
+                    <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mt-3 mb-4">My Orders</h1>
                     <div className="h-0.5 w-24 bg-gemRed mx-auto"></div>
                 </div>
 
                 {orders.length === 0 ? (
                     <div className="text-center py-20">
-                        <Package size={64} className="text-gemBorder mx-auto mb-6" />
-                        <h2 className="text-2xl font-serif text-gemText mb-3">No Orders Yet</h2>
-                        <p className="text-gemTextLight mb-8">Your order history will appear here once you make a purchase.</p>
+                        <Package size={64} className="text-stone-300 mx-auto mb-6" />
+                        <h2 className="text-2xl font-serif text-stone-900 mb-3">No Orders Yet</h2>
+                        <p className="text-stone-600 mb-8">Your order history will appear here once you make a purchase.</p>
                         <Link to="/shop"
                             className="bg-gemRed text-white font-semibold uppercase tracking-widest text-sm px-10 py-3 hover:bg-gemRedDark transition-all duration-300 rounded inline-block">
                             Start Shopping
@@ -86,12 +86,12 @@ function MyOrders() {
 
                             return (
                                 <div key={order._id}
-                                    className="bg-gemCard border border-gemBorder rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                    className="bg-stone-50 border border-stone-200/60 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
                                     {/* Order Header */}
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-gemBorder">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-stone-200">
                                         <div>
-                                            <p className="text-gemTextMuted text-xs uppercase tracking-widest mb-1">Order #{order._id.slice(-8).toUpperCase()}</p>
-                                            <p className="text-gemTextLight text-sm">Placed on {orderDate}</p>
+                                            <p className="text-stone-500 text-xs uppercase tracking-widest mb-1">Order #{order._id.slice(-8).toUpperCase()}</p>
+                                            <p className="text-stone-600 text-sm">Placed on {orderDate}</p>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs uppercase tracking-widest rounded-full font-semibold ${config.color}`}>
@@ -109,29 +109,29 @@ function MyOrders() {
                                                     className="w-12 h-12 object-cover rounded-full border-2 border-white shadow-sm" />
                                             ))}
                                             {order.orderItems.length > 4 && (
-                                                <div className="w-12 h-12 rounded-full border-2 border-white bg-gemBgAlt flex items-center justify-center text-xs text-gemTextMuted font-medium shadow-sm">
+                                                <div className="w-12 h-12 rounded-full border-2 border-white bg-stone-200 flex items-center justify-center text-xs text-stone-500 font-medium shadow-sm">
                                                     +{order.orderItems.length - 4}
                                                 </div>
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-gemText text-sm">
+                                            <p className="text-stone-900 text-sm">
                                                 {order.orderItems.length} {order.orderItems.length === 1 ? 'item' : 'items'}
                                             </p>
-                                            <p className="text-gemTextMuted text-xs">
+                                            <p className="text-stone-500 text-xs">
                                                 {order.orderItems.map(i => i.name).join(', ')}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Order Footer */}
-                                    <div className="flex items-center justify-between pt-4 border-t border-gemBorder">
+                                    <div className="flex items-center justify-between pt-4 border-t border-stone-200">
                                         <div>
-                                            <p className="text-gemTextMuted text-xs uppercase tracking-widest">Total</p>
-                                            <p className="text-gemText text-lg font-semibold">${order.totalPrice.toLocaleString()}</p>
+                                            <p className="text-stone-500 text-xs uppercase tracking-widest">Total</p>
+                                            <p className="text-stone-900 text-lg font-semibold">${order.totalPrice.toLocaleString()}</p>
                                         </div>
                                         <Link to={`/order/${order._id}`}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-gemBorder text-gemTextLight hover:border-gemRed hover:text-gemRed uppercase tracking-widest text-xs font-semibold transition-all duration-300 rounded">
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-300 bg-white text-stone-600 hover:border-gemRed hover:text-gemRed hover:bg-stone-50 uppercase tracking-widest text-xs font-semibold transition-all duration-300 rounded">
                                             <Eye size={14} /> View Details
                                         </Link>
                                     </div>

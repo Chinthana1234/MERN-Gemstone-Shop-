@@ -22,7 +22,7 @@ const STATS = [
 
 function About() {
     return (
-        <div className="pb-20 min-h-screen bg-gemBgAlt">
+        <div className="pb-20 min-h-screen bg-white">
             {/* Hero */}
             <section
                 className="w-full h-screen bg-cover bg-center bg-no-repeat mb-20"
@@ -35,13 +35,13 @@ function About() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
                         <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Our Mission</span>
-                        <h2 className="text-3xl md:text-4xl font-serif text-gemText mt-3 mb-6">Bridging the Gap Between Mine and Collector</h2>
-                        <p className="text-gemTextLight font-light leading-relaxed mb-4">
+                        <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mt-3 mb-6">Bridging the Gap Between Mine and Collector</h2>
+                        <p className="text-stone-600 font-light leading-relaxed mb-4">
                             Founded with a passion for rare gemstones, Aura Gems has grown from a small family
                             operation into a trusted name in the industry. We work directly with miners and cutting
                             houses across Sri Lanka, Myanmar, Colombia, and beyond.
                         </p>
-                        <p className="text-gemTextLight font-light leading-relaxed mb-6">
+                        <p className="text-stone-600 font-light leading-relaxed mb-6">
                             Our commitment to transparency means every stone is fully documented — from its
                             geological origin to its final certification. We provide provenance, education,
                             and the confidence that you're investing in something truly exceptional.
@@ -51,7 +51,7 @@ function About() {
                         </Link>
                     </div>
                     <div className="relative group">
-                        <div className="aspect-square bg-gradient-to-br from-gemRed/10 via-transparent to-gemRed/5 rounded-2xl overflow-hidden border border-gemBorder shadow-xl flex items-center justify-center">
+                        <div className="aspect-square bg-gradient-to-br from-gemRed/10 via-transparent to-gemRed/5 rounded-2xl overflow-hidden border border-stone-200/60 shadow-xl flex items-center justify-center">
                             <img
                                 src={aboutMission}
                                 alt="Ethical Gemstones"
@@ -65,7 +65,7 @@ function About() {
             </section>
 
             {/* Stats */}
-            <section className="bg-gemCard border-y border-gemBorder py-16 mb-20 relative overflow-hidden">
+            <section className="bg-stone-50 border-y border-stone-200/60 py-16 mb-20 relative overflow-hidden">
                 {/* Decorative background blur glow */}
                 <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 bg-gemRed/5 rounded-full blur-[100px] pointer-events-none"></div>
                 <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-72 h-72 bg-gemRed/5 rounded-full blur-[100px] pointer-events-none"></div>
@@ -74,7 +74,7 @@ function About() {
                     {STATS.map((stat, i) => (
                         <div key={i} className="text-center group">
                             <p className="text-3xl md:text-4xl font-serif text-gemRed font-semibold mb-2 group-hover:scale-105 transition-transform duration-500">{stat.value}</p>
-                            <p className="text-gemTextLight text-xs uppercase tracking-widest font-light">{stat.label}</p>
+                            <p className="text-stone-500 text-xs uppercase tracking-widest font-light">{stat.label}</p>
                         </div>
                     ))}
                 </div>
@@ -84,17 +84,17 @@ function About() {
             <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
                 <div className="text-center mb-14">
                     <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Why Choose Us</span>
-                    <h2 className="text-3xl md:text-4xl font-serif text-gemText mt-3 mb-4">Our Core Values</h2>
+                    <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mt-3 mb-4">Our Core Values</h2>
                     <div className="h-0.5 w-24 bg-gemRed mx-auto"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {VALUES.map((val, i) => (
-                        <div key={i} className="bg-gemCard border border-gemBorder rounded-lg p-8 text-center hover:shadow-lg hover:border-gemRed/30 transition-all duration-500 group">
+                        <div key={i} className="bg-white border border-stone-200/60 rounded-lg p-8 text-center hover:shadow-lg hover:border-gemRed/40 transition-all duration-500 group">
                             <div className="w-14 h-14 mx-auto mb-5 bg-gemRed/10 rounded-full flex items-center justify-center group-hover:bg-gemRed/20 transition-colors duration-500">
                                 <val.icon size={24} className="text-gemRed" />
                             </div>
-                            <h3 className="text-lg font-serif text-gemText mb-3">{val.title}</h3>
-                            <p className="text-gemTextLight font-light text-sm leading-relaxed">{val.description}</p>
+                            <h3 className="text-lg font-serif text-stone-800 mb-3">{val.title}</h3>
+                            <p className="text-stone-600 font-light text-sm leading-relaxed">{val.description}</p>
                         </div>
                     ))}
                 </div>
@@ -102,14 +102,14 @@ function About() {
 
             {/* CTA */}
             <section className="max-w-4xl mx-auto px-4 text-center">
-                <div className="bg-gemCard border border-gemBorder rounded-2xl p-12 shadow-sm">
-                    <h2 className="text-2xl md:text-3xl font-serif text-gemText mb-4">Ready to Find Your Perfect Gem?</h2>
-                    <p className="text-gemTextLight font-light max-w-xl mx-auto mb-8">
+                <div className="bg-stone-50 border border-stone-200/60 rounded-2xl p-12 shadow-sm">
+                    <h2 className="text-2xl md:text-3xl font-serif text-stone-900 mb-4">Ready to Find Your Perfect Gem?</h2>
+                    <p className="text-stone-600 font-light max-w-xl mx-auto mb-8">
                         Browse our curated collection of certified gemstones, each hand-selected for exceptional quality.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/shop" className="bg-gemRed text-white font-semibold uppercase tracking-widest text-sm px-8 py-3 hover:bg-gemRedDark transition-all duration-300 rounded">Shop Now</Link>
-                        <Link to="/contact" className="border-2 border-gemBorder text-gemTextLight font-semibold uppercase tracking-widest text-sm px-8 py-3 hover:border-gemRed hover:text-gemRed transition-all duration-300 rounded">Get in Touch</Link>
+                        <Link to="/contact" className="border-2 border-stone-200 text-stone-600 font-semibold uppercase tracking-widest text-sm px-8 py-3 hover:border-gemRed hover:text-gemRed transition-all duration-300 rounded">Get in Touch</Link>
                     </div>
                 </div>
             </section>

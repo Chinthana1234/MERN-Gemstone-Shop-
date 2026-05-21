@@ -62,15 +62,15 @@ function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt">
+      <div className="pt-28 pb-20 min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-4 animate-pulse">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div className="bg-gemBorder aspect-square rounded-lg"></div>
+            <div className="bg-stone-200 aspect-square rounded-lg"></div>
             <div className="space-y-6 pt-8">
-              <div className="h-3 bg-gemBorder w-1/4 rounded"></div>
-              <div className="h-8 bg-gemBorder w-3/4 rounded"></div>
-              <div className="h-4 bg-gemBorder w-full rounded"></div>
-              <div className="h-6 bg-gemBorder w-1/3 mt-8 rounded"></div>
+              <div className="h-3 bg-stone-200 w-1/4 rounded"></div>
+              <div className="h-8 bg-stone-200 w-3/4 rounded"></div>
+              <div className="h-4 bg-stone-200 w-full rounded"></div>
+              <div className="h-6 bg-stone-200 w-1/3 mt-8 rounded"></div>
             </div>
           </div>
         </div>
@@ -80,9 +80,9 @@ function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt flex items-center justify-center">
+      <div className="pt-28 pb-20 min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-serif text-gemText mb-4">Product Not Found</h2>
+          <h2 className="text-2xl font-serif text-stone-900 mb-4">Product Not Found</h2>
           <Link to="/shop" className="text-gemRed hover:underline">← Back to Shop</Link>
         </div>
       </div>
@@ -90,67 +90,67 @@ function ProductDetail() {
   }
 
   return (
-    <div className="pt-28 pb-20 min-h-screen bg-gemBgAlt">
+    <div className="pt-28 pb-20 min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/shop" className="inline-flex items-center gap-2 text-gemTextLight hover:text-gemRed transition-colors mb-10 text-sm uppercase tracking-widest">
+        <Link to="/shop" className="inline-flex items-center gap-2 text-stone-500 hover:text-gemRed transition-colors mb-10 text-sm uppercase tracking-widest">
           <ArrowLeft size={16} /> Back to Collection
         </Link>
-
+ 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Image */}
-          <div className="relative overflow-hidden bg-gradient-to-b from-[#151515] to-[#0a0a0a] aspect-square rounded-lg shadow-lg flex items-center justify-center p-12">
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain drop-shadow-2xl" />
+          <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 aspect-square rounded-lg shadow-sm flex items-center justify-center p-12">
+            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain drop-shadow-md" />
             {product.stock <= 3 && product.stock > 0 && (
               <span className="absolute top-6 left-6 bg-gemRed text-white text-xs px-4 py-1.5 uppercase tracking-wider rounded">Only {product.stock} Left</span>
             )}
           </div>
-
+ 
           {/* Info */}
           <div className="flex flex-col justify-center">
             <p className="text-gemRed text-xs uppercase tracking-[0.3em] font-semibold mb-3">{product.category}</p>
-            <h1 className="text-3xl md:text-4xl font-serif text-gemText mb-4">{product.name}</h1>
-
+            <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-4">{product.name}</h1>
+ 
             <div className="flex items-center gap-2 mb-6">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-gemBorder'} />
+                  <Star key={i} size={16} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-300'} />
                 ))}
               </div>
-              <span className="text-gemTextMuted text-sm">({product.numReviews} reviews)</span>
+              <span className="text-stone-500 text-sm">({product.numReviews} reviews)</span>
             </div>
-
-            <p className="text-3xl font-light text-gemText mb-6">${product.price.toLocaleString()}</p>
-            <p className="text-gemTextLight font-light leading-relaxed mb-8">{product.description}</p>
-
+ 
+            <p className="text-3xl font-light text-stone-900 mb-6">${product.price.toLocaleString()}</p>
+            <p className="text-stone-600 font-light leading-relaxed mb-8">{product.description}</p>
+ 
             {/* Specs */}
-            <div className="grid grid-cols-2 gap-4 mb-8 border-t border-b border-gemBorder py-6">
+            <div className="grid grid-cols-2 gap-4 mb-8 border-t border-b border-stone-200 py-6">
               <div>
-                <span className="text-xs uppercase tracking-widest text-gemTextMuted">Carat Weight</span>
-                <p className="text-gemText font-light mt-1">{product.carat} ct</p>
+                <span className="text-xs uppercase tracking-widest text-stone-500">Carat Weight</span>
+                <p className="text-stone-800 font-light mt-1">{product.carat} ct</p>
               </div>
               <div>
-                <span className="text-xs uppercase tracking-widest text-gemTextMuted">Origin</span>
-                <p className="text-gemText font-light mt-1">{product.origin}</p>
+                <span className="text-xs uppercase tracking-widest text-stone-500">Origin</span>
+                <p className="text-stone-800 font-light mt-1">{product.origin}</p>
               </div>
               <div>
-                <span className="text-xs uppercase tracking-widest text-gemTextMuted">In Stock</span>
+                <span className="text-xs uppercase tracking-widest text-stone-500">In Stock</span>
                 <p className={`font-light mt-1 ${product.stock > 0 ? 'text-green-600' : 'text-gemRed'}`}>
                   {product.stock > 0 ? `${product.stock} available` : 'Out of stock'}
                 </p>
               </div>
               <div>
-                <span className="text-xs uppercase tracking-widest text-gemTextMuted">Category</span>
-                <p className="text-gemText font-light mt-1">{product.category}</p>
+                <span className="text-xs uppercase tracking-widest text-stone-500">Category</span>
+                <p className="text-stone-800 font-light mt-1">{product.category}</p>
               </div>
             </div>
-
+ 
             {/* Add to Cart */}
             {product.stock > 0 && (
               <div className="flex items-center gap-4 mb-8">
-                <div className="flex items-center border-2 border-gemBorder rounded">
-                  <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-4 py-3 text-gemTextLight hover:text-gemText">−</button>
-                  <span className="px-4 py-3 text-gemText min-w-[50px] text-center">{qty}</span>
-                  <button onClick={() => setQty(q => Math.min(product.stock, q + 1))} className="px-4 py-3 text-gemTextLight hover:text-gemText">+</button>
+                <div className="flex items-center border border-stone-200 rounded">
+                  <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-4 py-3 text-stone-500 hover:text-stone-800">−</button>
+                  <span className="px-4 py-3 text-stone-800 min-w-[50px] text-center">{qty}</span>
+                  <button onClick={() => setQty(q => Math.min(product.stock, q + 1))} className="px-4 py-3 text-stone-500 hover:text-stone-800">+</button>
                 </div>
                 <button onClick={handleAddToCart}
                   className={`flex-1 flex items-center justify-center gap-3 py-3.5 font-semibold uppercase tracking-widest text-sm transition-all duration-300 rounded ${
@@ -161,59 +161,59 @@ function ProductDetail() {
                 </button>
               </div>
             )}
-
+ 
             {/* Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gemBorder">
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-stone-200">
               <div className="text-center">
                 <Shield size={20} className="text-gemRed mx-auto mb-2" />
-                <p className="text-xs text-gemTextMuted uppercase tracking-wider">Certified</p>
+                <p className="text-xs text-stone-500 uppercase tracking-wider">Certified</p>
               </div>
               <div className="text-center">
                 <Truck size={20} className="text-gemRed mx-auto mb-2" />
-                <p className="text-xs text-gemTextMuted uppercase tracking-wider">Free Shipping</p>
+                <p className="text-xs text-stone-500 uppercase tracking-wider">Free Shipping</p>
               </div>
               <div className="text-center">
                 <Award size={20} className="text-gemRed mx-auto mb-2" />
-                <p className="text-xs text-gemTextMuted uppercase tracking-wider">Ethical Source</p>
+                <p className="text-xs text-stone-500 uppercase tracking-wider">Ethical Source</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Reviews Section */}
-        <div className="mt-20 border-t border-gemBorder pt-16">
-          <h2 className="text-2xl font-serif text-gemText mb-10">Customer Reviews</h2>
+        <div className="mt-20 border-t border-stone-200 pt-16">
+          <h2 className="text-2xl font-serif text-stone-900 mb-10">Customer Reviews</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
-              {product.reviews && product.reviews.length === 0 && <p className="text-gemTextLight">No reviews yet.</p>}
+              {product.reviews && product.reviews.length === 0 && <p className="text-stone-500">No reviews yet.</p>}
               <div className="space-y-8">
                 {product.reviews && product.reviews.map((review) => (
-                  <div key={review._id} className="bg-gemCard border border-gemBorder p-6 rounded-lg">
+                  <div key={review._id} className="bg-stone-50 border border-stone-200/60 p-6 rounded-lg">
                     <div className="flex items-center justify-between mb-3">
-                      <strong className="text-gemText font-serif">{review.name}</strong>
-                      <span className="text-gemTextMuted text-xs">{new Date(review.createdAt).toLocaleDateString()}</span>
+                      <strong className="text-stone-900 font-serif">{review.name}</strong>
+                      <span className="text-stone-500 text-xs">{new Date(review.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex mb-3">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < review.rating ? 'fill-gemGold text-gemGold' : 'text-gemBorder'} />
+                        <Star key={i} size={14} className={i < review.rating ? 'fill-gemGold text-gemGold' : 'text-stone-300'} />
                       ))}
                     </div>
-                    <p className="text-gemTextLight text-sm leading-relaxed">{review.comment}</p>
+                    <p className="text-stone-600 text-sm leading-relaxed">{review.comment}</p>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div className="bg-gemCard border border-gemBorder p-8 rounded-lg h-fit">
-              <h3 className="text-xl font-serif text-gemText mb-6">Write a Review</h3>
+ 
+            <div className="bg-stone-50 border border-stone-200/60 p-8 rounded-lg h-fit">
+              <h3 className="text-xl font-serif text-stone-900 mb-6">Write a Review</h3>
               {user ? (
                 <form onSubmit={handleReviewSubmit}>
                   {reviewError && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 mb-4 rounded">{reviewError}</div>}
                   {reviewSuccess && <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-sm p-3 mb-4 rounded">{reviewSuccess}</div>}
                   
                   <div className="mb-5">
-                    <label className="block text-xs uppercase tracking-widest text-gemTextMuted mb-2">Rating</label>
-                    <select value={rating} onChange={(e) => setRating(Number(e.target.value))} className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-3 rounded focus:outline-none focus:border-gemRed">
+                    <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Rating</label>
+                    <select value={rating} onChange={(e) => setRating(Number(e.target.value))} className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed">
                       <option value="">Select...</option>
                       <option value="1">1 - Poor</option>
                       <option value="2">2 - Fair</option>
@@ -223,15 +223,15 @@ function ProductDetail() {
                     </select>
                   </div>
                   <div className="mb-6">
-                    <label className="block text-xs uppercase tracking-widest text-gemTextMuted mb-2">Comment</label>
-                    <textarea row="4" value={comment} onChange={(e) => setComment(e.target.value)} required className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-3 rounded focus:outline-none focus:border-gemRed"></textarea>
+                    <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Comment</label>
+                    <textarea rows="4" value={comment} onChange={(e) => setComment(e.target.value)} required className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed"></textarea>
                   </div>
                   <button type="submit" className="w-full bg-gemRed text-white py-3 uppercase tracking-widest text-sm font-semibold hover:bg-gemRedDark transition-colors rounded">
                     Submit Review
                   </button>
                 </form>
               ) : (
-                <div className="text-gemTextLight bg-gemBgAlt p-6 rounded border border-gemBorder text-center">
+                <div className="text-stone-600 bg-white p-6 rounded border border-stone-200 text-center">
                   Please <Link to="/login" className="text-gemRed hover:underline">sign in</Link> to write a review.
                 </div>
               )}
