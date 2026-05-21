@@ -5,7 +5,7 @@ import Categories from '../components/home/Categories';
 
 function Home() {
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full bg-white">
             <Hero />
             <FeaturedGems />
             <Categories />
