@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import contactBanner from '../assets/images/contact page/Gemini_Generated_Image_klb2feklb2feklb2.png';
 
 const CONTACT_INFO = [
     { icon: Mail, label: 'Email', value: 'hello@auragems.com', href: 'mailto:hello@auragems.com' },
@@ -29,38 +30,37 @@ function Contact() {
     };
 
     return (
-        <div className="pt-24 pb-20 min-h-screen bg-gemBgAlt">
-            {/* Header */}
-            <div className="text-center mb-16 pt-4">
-                <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Get in Touch</span>
-                <h1 className="text-4xl md:text-5xl font-serif text-gemText mt-3 mb-4">Contact Us</h1>
-                <div className="h-0.5 w-24 bg-gemRed mx-auto"></div>
-                <p className="mt-4 text-gemTextLight font-light max-w-xl mx-auto">
-                    Have a question about a gemstone or need expert guidance? We'd love to hear from you.
-                </p>
-            </div>
+        <div className="pb-20 min-h-screen bg-gemBgAlt">
+            {/* Hero */}
+            <section 
+                className="w-full h-screen bg-cover bg-center bg-no-repeat mb-20 relative"
+                style={{ backgroundImage: `url("${contactBanner}")` }}
+            >
+                {/* Subtle dark overlay for premium texture */}
+                <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
+            </section>
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
                     {/* Contact Information */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-8 text-white shadow-xl">
-                            <h2 className="text-xl font-serif mb-6">Contact Information</h2>
-                            <p className="text-gray-400 text-sm font-light mb-8">
+                        <div className="bg-gemCard border border-gemBorder rounded-2xl p-8 text-white shadow-xl hover:shadow-2xl hover:border-gemRed/30 transition-all duration-500">
+                            <h2 className="text-xl font-serif mb-6 text-gemText">Contact Information</h2>
+                            <p className="text-gemTextLight text-sm font-light mb-8 leading-relaxed">
                                 Reach out to our gemstone specialists for personalized guidance and support.
                             </p>
                             <div className="space-y-6">
                                 {CONTACT_INFO.map((info, i) => (
                                     <div key={i} className="flex items-start gap-4">
-                                        <div className="w-10 h-10 bg-gemRed/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <div className="w-10 h-10 bg-gemRed/10 rounded-full flex items-center justify-center flex-shrink-0">
                                             <info.icon size={18} className="text-gemRed" />
                                         </div>
                                         <div>
-                                            <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">{info.label}</p>
+                                            <p className="text-gemTextMuted text-[10px] uppercase tracking-widest mb-1 font-semibold">{info.label}</p>
                                             {info.href ? (
-                                                <a href={info.href} className="text-white hover:text-gemRed transition-colors text-sm">{info.value}</a>
+                                                <a href={info.href} className="text-gemText hover:text-gemRed transition-colors text-sm break-all font-light block">{info.value}</a>
                                             ) : (
-                                                <p className="text-white text-sm">{info.value}</p>
+                                                <p className="text-gemTextLight text-sm font-light break-words">{info.value}</p>
                                             )}
                                         </div>
                                     </div>
@@ -72,8 +72,8 @@ function Contact() {
                     {/* Contact Form */}
                     <div className="lg:col-span-3">
                         {submitted ? (
-                            <div className="bg-gemCard border border-gemBorder rounded-lg p-12 text-center shadow-sm">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div className="bg-gemCard border border-gemBorder rounded-2xl p-12 text-center shadow-sm animate-fadeIn">
+                                <div className="w-16 h-16 bg-green-100/10 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <CheckCircle size={32} className="text-green-500" />
                                 </div>
                                 <h3 className="text-2xl font-serif text-gemText mb-3">Message Sent!</h3>
@@ -84,7 +84,8 @@ function Contact() {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="bg-gemCard border border-gemBorder rounded-lg p-8 shadow-sm space-y-6">
+                            <form onSubmit={handleSubmit} className="bg-gemCard border border-gemBorder rounded-2xl p-8 shadow-sm space-y-6">
+                                <h2 className="text-xl font-serif text-gemText mb-2">Send Us a Message</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label className="text-xs uppercase tracking-widest text-gemTextMuted mb-2 block">Your Name *</label>
