@@ -367,7 +367,7 @@ function Shop() {
                       <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer flex flex-col sm:flex-row gap-6 bg-stone-50 p-4 rounded-lg shadow-sm border border-stone-100 hover:border-gemRed/40 transition-all">
                         <div className="w-full sm:w-56 h-56 shrink-0 relative overflow-hidden rounded bg-white border border-stone-200/60 flex items-center justify-center p-4">
                           <img src={product.imageUrl} alt={product.name}
-                            className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-700 drop-shadow-xl" />
+                            className="max-w-[75%] max-h-[75%] object-contain object-center group-hover:scale-105 transition-transform duration-700 drop-shadow-xl" />
                           {product.stock <= 3 && product.stock > 0 && (
                             <span className="absolute top-3 left-3 bg-gemRed text-white text-xs px-2 py-1 uppercase tracking-wider rounded">
                               Only {product.stock} Left
@@ -413,7 +413,7 @@ function Shop() {
                     <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block">
                       <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center p-6">
                         <img src={product.imageUrl} alt={product.name}
-                          className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl" />
+                          className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl" />
                         
                         {product.stock <= 3 && product.stock > 0 && (
                           <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">

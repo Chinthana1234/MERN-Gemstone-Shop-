@@ -99,7 +99,7 @@ function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Image */}
           <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 aspect-square rounded-lg shadow-sm flex items-center justify-center p-12">
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain drop-shadow-md" />
+            <img src={product.imageUrl} alt={product.name} className="max-w-[75%] max-h-[75%] object-contain drop-shadow-md" />
             {product.stock <= 3 && product.stock > 0 && (
               <span className="absolute top-6 left-6 bg-gemRed text-white text-xs px-4 py-1.5 uppercase tracking-wider rounded">Only {product.stock} Left</span>
             )}

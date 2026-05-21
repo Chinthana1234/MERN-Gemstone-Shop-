@@ -42,7 +42,7 @@ function FeaturedGems() {
                 <img 
                   src={gem.imageUrl} 
                   alt={gem.name} 
-                  className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl"
+                  className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl"
                 />
                 
                 {/* Hover Actions Overlay */}
