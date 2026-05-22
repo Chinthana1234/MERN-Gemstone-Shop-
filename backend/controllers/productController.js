@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import Order from '../models/Order.js';
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -158,11 +159,19 @@ export const createProductReview = async (req, res) => {
         return res.status(400).json({ message: 'Product already reviewed' });
       }
 
+      // Check if user has purchased the product
+      const hasPurchased = await Order.findOne({
+        user: req.user._id,
+        isDelivered: true,
+        'orderItems.product': product._id
+      });
+
       const review = {
         name: req.user.name,
         rating: Number(rating),
         comment,
         user: req.user._id,
+        isVerifiedPurchase: !!hasPurchased
       };
 
       product.reviews.push(review);

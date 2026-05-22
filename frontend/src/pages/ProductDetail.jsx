@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, ArrowLeft, Shield, Truck, Award } from 'lucide-react';
+import { ShoppingBag, Star, ArrowLeft, Shield, Truck, Award, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import API from '../utils/api';
@@ -15,9 +15,20 @@ function ProductDetail() {
   const { user } = useAuth();
 
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [reviewError, setReviewError] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
+
+  // Calculate review distribution
+  const reviewsCount = product?.reviews ? product.reviews.length : 0;
+  const ratingDistribution = [5, 4, 3, 2, 1].map((stars) => {
+    const count = product?.reviews
+      ? product.reviews.filter((r) => r.rating === stars).length
+      : 0;
+    const percentage = reviewsCount > 0 ? (count / reviewsCount) * 100 : 0;
+    return { stars, count, percentage };
+  });
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -183,28 +194,77 @@ function ProductDetail() {
         {/* Reviews Section */}
         <div className="mt-20 border-t border-stone-200 pt-16">
           <h2 className="text-2xl font-serif text-stone-900 mb-10">Customer Reviews</h2>
+
+          {/* Summary Dashboard */}
+          {reviewsCount > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 p-8 bg-stone-50 border border-stone-200/60 rounded-xl">
+              {/* Left column: Avg Rating */}
+              <div className="flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-stone-200 pb-6 md:pb-0 md:pr-8">
+                <p className="text-6xl font-light text-stone-900 mb-2">{product.rating.toFixed(1)}</p>
+                <div className="flex gap-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={20} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-300'} />
+                  ))}
+                </div>
+                <p className="text-stone-500 text-xs uppercase tracking-wider">Average Rating</p>
+                <p className="text-stone-400 text-xs mt-1">({reviewsCount} customer review{reviewsCount !== 1 ? 's' : ''})</p>
+              </div>
+
+              {/* Right columns: Stars Breakdown */}
+              <div className="md:col-span-2 flex flex-col justify-center gap-3">
+                {ratingDistribution.map(({ stars, count, percentage }) => (
+                  <div key={stars} className="flex items-center gap-4 text-xs tracking-wider uppercase text-stone-600">
+                    <span className="w-14 font-medium">{stars} star</span>
+                    <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gemGold rounded-full transition-all duration-500" 
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                    <span className="w-10 text-right text-stone-400 font-serif font-bold">{Math.round(percentage)}%</span>
+                    <span className="w-6 text-right text-stone-400">({count})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
-              {product.reviews && product.reviews.length === 0 && <p className="text-stone-500">No reviews yet.</p>}
-              <div className="space-y-8">
+              {product.reviews && product.reviews.length === 0 && (
+                <div className="text-center py-12 px-6 bg-stone-50 rounded-xl border border-dashed border-stone-300">
+                  <p className="text-stone-500 font-light mb-2">No reviews yet for this gemstone.</p>
+                  <p className="text-stone-400 text-xs uppercase tracking-wider">Be the first to share your experience!</p>
+                </div>
+              )}
+              <div className="space-y-6">
                 {product.reviews && product.reviews.map((review) => (
-                  <div key={review._id} className="bg-stone-50 border border-stone-200/60 p-6 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <strong className="text-stone-900 font-serif">{review.name}</strong>
-                      <span className="text-stone-500 text-xs">{new Date(review.createdAt).toLocaleDateString()}</span>
+                  <div key={review._id} className="bg-stone-50 border border-stone-200/60 p-6 rounded-xl hover:shadow-sm transition-all duration-300">
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <strong className="text-stone-900 font-serif text-base">{review.name}</strong>
+                          {review.isVerifiedPurchase && (
+                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded border border-green-200 uppercase tracking-wider">
+                              <Check size={10} className="stroke-[3]" /> Verified Purchase
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex gap-0.5 mt-1.5">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} size={14} className={i < review.rating ? 'fill-gemGold text-gemGold' : 'text-stone-300'} />
+                          ))}
+                        </div>
+                      </div>
+                      <span className="text-stone-400 text-xs font-light">{new Date(review.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <div className="flex mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < review.rating ? 'fill-gemGold text-gemGold' : 'text-stone-300'} />
-                      ))}
-                    </div>
-                    <p className="text-stone-600 text-sm leading-relaxed">{review.comment}</p>
+                    <p className="text-stone-600 text-sm leading-relaxed font-light mt-4 italic">"{review.comment}"</p>
                   </div>
                 ))}
               </div>
             </div>
  
-            <div className="bg-stone-50 border border-stone-200/60 p-8 rounded-lg h-fit">
+            <div className="bg-stone-50 border border-stone-200/60 p-8 rounded-xl h-fit">
               <h3 className="text-xl font-serif text-stone-900 mb-6">Write a Review</h3>
               {user ? (
                 <form onSubmit={handleReviewSubmit}>
@@ -213,20 +273,40 @@ function ProductDetail() {
                   
                   <div className="mb-5">
                     <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Rating</label>
-                    <select value={rating} onChange={(e) => setRating(Number(e.target.value))} className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed">
-                      <option value="">Select...</option>
-                      <option value="1">1 - Poor</option>
-                      <option value="2">2 - Fair</option>
-                      <option value="3">3 - Good</option>
-                      <option value="4">4 - Very Good</option>
-                      <option value="5">5 - Excellent</option>
-                    </select>
+                    <div className="flex items-center gap-1.5">
+                      {[1, 2, 3, 4, 5].map((starVal) => (
+                        <button
+                          type="button"
+                          key={starVal}
+                          onClick={() => setRating(starVal)}
+                          onMouseEnter={() => setHoverRating(starVal)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className="focus:outline-none transition-transform active:scale-95 cursor-pointer"
+                        >
+                          <Star 
+                            size={28} 
+                            className={`transition-colors duration-200 ${
+                              starVal <= (hoverRating || rating)
+                                ? 'fill-gemGold text-gemGold'
+                                : 'text-stone-300 fill-transparent'
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="mb-6">
                     <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Comment</label>
-                    <textarea rows="4" value={comment} onChange={(e) => setComment(e.target.value)} required className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed"></textarea>
+                    <textarea 
+                      rows="4" 
+                      value={comment} 
+                      onChange={(e) => setComment(e.target.value)} 
+                      required 
+                      placeholder="Share details of your experience with this gemstone..."
+                      className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed"
+                    ></textarea>
                   </div>
-                  <button type="submit" className="w-full bg-gemRed text-white py-3 uppercase tracking-widest text-sm font-semibold hover:bg-gemRedDark transition-colors rounded">
+                  <button type="submit" className="w-full bg-gemRed text-white py-3.5 uppercase tracking-widest text-xs font-semibold hover:bg-gemRedDark transition-colors rounded">
                     Submit Review
                   </button>
                 </form>
