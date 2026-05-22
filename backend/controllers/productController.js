@@ -189,3 +189,72 @@ export const createProductReview = async (req, res) => {
   }
 };
 
+// @desc    Get all product reviews
+// @route   GET /api/products/reviews/all
+// @access  Private/Admin
+export const getAllReviews = async (req, res) => {
+  try {
+    const products = await Product.find({});
+    let allReviews = [];
+    products.forEach(product => {
+      if (product.reviews) {
+        product.reviews.forEach(review => {
+          allReviews.push({
+            _id: review._id,
+            productId: product._id,
+            productName: product.name,
+            user: review.user,
+            name: review.name,
+            rating: review.rating,
+            comment: review.comment,
+            isVerifiedPurchase: review.isVerifiedPurchase,
+            createdAt: review.createdAt
+          });
+        });
+      }
+    });
+    // Sort by createdAt descending
+    allReviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json(allReviews);
+  } catch (error) {
+    console.error("Error fetching all reviews:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// @desc    Delete a review from product (Admin)
+// @route   DELETE /api/products/:id/reviews/:reviewId
+// @access  Private/Admin
+export const deleteProductReviewAdmin = async (req, res) => {
+  try {
+    const { id, reviewId } = req.params;
+    const product = await Product.findById(id);
+
+    if (product) {
+      const reviewIndex = product.reviews.findIndex(
+        (r) => r._id.toString() === reviewId
+      );
+
+      if (reviewIndex === -1) {
+        return res.status(404).json({ message: 'Review not found' });
+      }
+
+      product.reviews.splice(reviewIndex, 1);
+      product.numReviews = product.reviews.length;
+      if (product.reviews.length > 0) {
+        product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+      } else {
+        product.rating = 0;
+      }
+
+      await product.save();
+      res.json({ message: 'Review removed' });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+

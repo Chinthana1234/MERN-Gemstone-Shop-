@@ -1,8 +1,21 @@
 import express from 'express';
-import { getProducts, getProductById, createProduct, updateProduct, deleteProduct, createProductReview } from '../controllers/productController.js';
+import { 
+  getProducts, 
+  getProductById, 
+  createProduct, 
+  updateProduct, 
+  deleteProduct, 
+  createProductReview,
+  getAllReviews,
+  deleteProductReviewAdmin
+} from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// Admin review management
+router.route('/reviews/all').get(protect, admin, getAllReviews);
+router.route('/:id/reviews/:reviewId').delete(protect, admin, deleteProductReviewAdmin);
 
 // Public routes
 router.route('/').get(getProducts).post(protect, admin, createProduct);
