@@ -11,6 +11,7 @@ function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
+  const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -83,7 +84,7 @@ function Navbar() {
             {user ? (
               <div className="flex items-center gap-4 ml-4">
                 {user.isAdmin && (
-                  <a href={`http://localhost:5174/login?adminData=${encodeURIComponent(JSON.stringify(user))}`} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
+                  <a href={`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(user))}`} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest text-gemGold hover:text-white transition-colors duration-300 font-bold border border-gemGold px-3 py-1 rounded">
                     Admin
                   </a>
                 )}
@@ -136,7 +137,7 @@ function Navbar() {
             {user ? (
               <>
                 {user.isAdmin && (
-                  <a href={`http://localhost:5174/login?adminData=${encodeURIComponent(JSON.stringify(user))}`} target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</a>
+                  <a href={`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(user))}`} target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemGold hover:text-white">ADMIN PANEL</a>
                 )}
                 {!user.isAdmin && (
                   <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">MY ORDERS</Link>
