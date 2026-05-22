@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../utils/api';
-import { Package, ShoppingCart, TrendingUp, Edit, Trash2, CheckCircle, Clock } from 'lucide-react';
+import { Package, ShoppingCart, TrendingUp, Edit, Trash2, CheckCircle, Clock, Truck, XCircle, X, User, Mail, MapPin, CreditCard } from 'lucide-react';
 
 function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
@@ -11,6 +11,13 @@ function AdminDashboard() {
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
+
+    // For order search/filters/modal
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [statusUpdating, setStatusUpdating] = useState(false);
+    const [orderSearchTerm, setOrderSearchTerm] = useState('');
+    const [orderStatusFilter, setOrderStatusFilter] = useState('All');
+    const [orderPaymentFilter, setOrderPaymentFilter] = useState('All');
 
     useEffect(() => {
         fetchData();
@@ -40,6 +47,51 @@ function AdminDashboard() {
             console.error("Error updating order:", error);
         }
     };
+
+    const handleUpdateStatus = async (id, newStatus) => {
+        setStatusUpdating(true);
+        try {
+            const { data } = await API.put(`/orders/${id}/status`, { status: newStatus });
+            if (selectedOrder && selectedOrder._id === id) {
+                setSelectedOrder(data);
+            }
+            fetchData();
+        } catch (error) {
+            console.error("Error updating order status:", error);
+            alert(error.response?.data?.message || "Failed to update order status");
+        } finally {
+            setStatusUpdating(false);
+        }
+    };
+
+    const getOrderStatusBadge = (status) => {
+        switch (status) {
+            case 'Confirmed':
+                return <span className="inline-flex items-center gap-1 text-green-500 bg-green-500/10 px-2.5 py-1 rounded w-max"><CheckCircle size={14}/> Confirmed</span>;
+            case 'Processing':
+                return <span className="inline-flex items-center gap-1 text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded w-max"><Clock size={14}/> Processing</span>;
+            case 'Shipped':
+                return <span className="inline-flex items-center gap-1 text-blue-500 bg-blue-500/10 px-2.5 py-1 rounded w-max"><Truck size={14}/> Shipped</span>;
+            case 'Delivered':
+                return <span className="inline-flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded w-max"><CheckCircle size={14}/> Delivered</span>;
+            case 'Cancelled':
+                return <span className="inline-flex items-center gap-1 text-red-500 bg-red-500/10 px-2.5 py-1 rounded w-max"><XCircle size={14}/> Cancelled</span>;
+            default:
+                return <span className="inline-flex items-center gap-1 text-stone-500 bg-stone-500/10 px-2.5 py-1 rounded w-max">{status}</span>;
+        }
+    };
+
+    const filteredOrders = orders.filter(order => {
+        const customerName = order.user ? order.user.name : 'Deleted User';
+        const matchesSearch = orderSearchTerm === '' ||
+            order._id.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+            customerName.toLowerCase().includes(orderSearchTerm.toLowerCase());
+        const matchesStatus = orderStatusFilter === 'All' || order.status === orderStatusFilter;
+        const matchesPayment = orderPaymentFilter === 'All' ||
+            (orderPaymentFilter === 'Paid' && order.isPaid) ||
+            (orderPaymentFilter === 'Unpaid' && !order.isPaid);
+        return matchesSearch && matchesStatus && matchesPayment;
+    });
 
     const handleDeleteProduct = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
@@ -186,6 +238,61 @@ function AdminDashboard() {
                         {activeTab === 'orders' && (
                             <div>
                                 <h2 className="text-xl font-serif text-gemText mb-6">Customer Orders</h2>
+
+                                {/* Search & Filters */}
+                                <div className="bg-gemCard border border-gemBorder p-5 rounded mb-6 flex flex-col md:flex-row md:items-center gap-4 justify-between">
+                                    <div className="flex-1 max-w-md w-full relative">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Search by Order ID or Customer Name..." 
+                                            value={orderSearchTerm}
+                                            onChange={(e) => setOrderSearchTerm(e.target.value)}
+                                            className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-2.5 text-sm focus:border-gemRed outline-none rounded"
+                                        />
+                                        {orderSearchTerm && (
+                                            <button 
+                                                onClick={() => setOrderSearchTerm('')} 
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gemTextLight hover:text-gemText text-xs font-semibold cursor-pointer"
+                                            >
+                                                Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="flex flex-wrap gap-4">
+                                        {/* Status Filter */}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gemTextLight uppercase tracking-wider">Status:</span>
+                                            <select 
+                                                value={orderStatusFilter} 
+                                                onChange={(e) => setOrderStatusFilter(e.target.value)}
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-2 text-xs outline-none focus:border-gemRed rounded cursor-pointer"
+                                            >
+                                                <option value="All">All Statuses</option>
+                                                <option value="Processing">Processing</option>
+                                                <option value="Confirmed">Confirmed</option>
+                                                <option value="Shipped">Shipped</option>
+                                                <option value="Delivered">Delivered</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                            </select>
+                                        </div>
+                                        
+                                        {/* Payment Filter */}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gemTextLight uppercase tracking-wider">Payment:</span>
+                                            <select 
+                                                value={orderPaymentFilter} 
+                                                onChange={(e) => setOrderPaymentFilter(e.target.value)}
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-2 text-xs outline-none focus:border-gemRed rounded cursor-pointer"
+                                            >
+                                                <option value="All">All Payments</option>
+                                                <option value="Paid">Paid</option>
+                                                <option value="Unpaid">Unpaid</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left border-collapse">
                                         <thead>
@@ -194,36 +301,50 @@ function AdminDashboard() {
                                                 <th className="p-3">Customer</th>
                                                 <th className="p-3">Date</th>
                                                 <th className="p-3">Total</th>
-                                                <th className="p-3">Status</th>
+                                                <th className="p-3">Method</th>
+                                                <th className="p-3">Payment</th>
+                                                <th className="p-3">Delivery Status</th>
                                                 <th className="p-3 text-right">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {orders.map(order => (
-                                                <tr key={order._id} className="border-b border-gemBorder/50 text-gemText text-sm hover:bg-gemCard transition-colors">
-                                                    <td className="p-3 font-mono text-xs text-gemTextLight">{order._id.substring(0, 8)}...</td>
+                                            {filteredOrders.map(order => (
+                                                <tr key={order._id} className="border-b border-gemBorder/50 text-gemText text-sm hover:bg-gemCard transition-colors animate-fadeIn">
+                                                    <td className="p-3 font-mono text-xs text-gemTextLight">
+                                                        <button 
+                                                            onClick={() => setSelectedOrder(order)} 
+                                                            className="text-gemRed hover:underline cursor-pointer font-bold text-left outline-none"
+                                                        >
+                                                            {order._id.substring(0, 8).toUpperCase()}...
+                                                        </button>
+                                                    </td>
                                                     <td className="p-3 font-medium">{order.user ? order.user.name : 'Deleted User'}</td>
                                                     <td className="p-3">{new Date(order.createdAt).toLocaleDateString()}</td>
                                                     <td className="p-3 font-serif font-bold">${order.totalPrice.toLocaleString()}</td>
+                                                    <td className="p-3 text-xs text-gemTextLight">{order.paymentMethod || 'Cash on Delivery'}</td>
                                                     <td className="p-3">
-                                                        {order.isDelivered ? (
-                                                            <span className="flex items-center gap-1 text-green-500 bg-green-500/10 px-2 py-1 rounded w-max"><CheckCircle size={14}/> Shipped</span>
+                                                        {order.isPaid ? (
+                                                            <span className="flex items-center gap-1 text-green-500 bg-green-500/10 px-2 py-1 rounded w-max"><CheckCircle size={14}/> Paid</span>
                                                         ) : (
-                                                            <span className="flex items-center gap-1 text-gemGold bg-gemGold/10 px-2 py-1 rounded w-max"><Clock size={14}/> Processing</span>
+                                                            <span className="flex items-center gap-1 text-red-500 bg-red-500/10 px-2 py-1 rounded w-max"><Clock size={14}/> Unpaid</span>
                                                         )}
                                                     </td>
+                                                    <td className="p-3 font-medium">
+                                                        {getOrderStatusBadge(order.status)}
+                                                    </td>
                                                     <td className="p-3 text-right">
-                                                        {!order.isDelivered && (
-                                                            <button onClick={() => handleDeliverOrder(order._id)} className="bg-gemBg border border-gemBorder text-gemText text-xs uppercase tracking-widest px-3 py-1.5 hover:border-gemRed hover:text-gemRed transition-colors rounded">
-                                                                Mark Shipped
-                                                            </button>
-                                                        )}
+                                                        <button 
+                                                            onClick={() => setSelectedOrder(order)} 
+                                                            className="bg-gemBg border border-gemBorder text-gemText text-xs uppercase tracking-widest px-3 py-1.5 hover:border-gemRed hover:text-gemRed transition-colors rounded cursor-pointer"
+                                                        >
+                                                            Manage
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))}
-                                            {orders.length === 0 && (
+                                            {filteredOrders.length === 0 && (
                                                 <tr>
-                                                    <td colSpan="6" className="text-center p-6 text-gemTextLight">No orders found.</td>
+                                                    <td colSpan="8" className="text-center p-6 text-gemTextLight">No matching orders found.</td>
                                                 </tr>
                                             )}
                                         </tbody>
@@ -232,6 +353,140 @@ function AdminDashboard() {
                             </div>
                         )}
                     </>
+                )}
+
+                {/* Modal Overlay */}
+                {selectedOrder && (
+                    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-gemCard border border-gemBorder text-gemText max-w-2xl w-full rounded shadow-2xl p-6 relative overflow-y-auto max-h-[90vh] animate-fadeIn">
+                            {/* Close Button */}
+                            <button 
+                                onClick={() => setSelectedOrder(null)} 
+                                className="absolute top-4 right-4 text-gemTextLight hover:text-gemText transition-colors cursor-pointer"
+                            >
+                                <X size={20} />
+                            </button>
+                            
+                            <h3 className="text-2xl font-serif mb-6 pb-3 border-b border-gemBorder text-gemRed">
+                                Order Details
+                            </h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                {/* Customer Details */}
+                                <div className="space-y-4">
+                                    <div className="border border-gemBorder/40 bg-gemBgAlt/50 p-4 rounded">
+                                        <h4 className="text-xs uppercase tracking-widest text-gemTextLight mb-3 flex items-center gap-1.5 font-semibold">
+                                            <User size={14} className="text-gemRed" /> Customer Info
+                                        </h4>
+                                        <p className="text-sm font-semibold">{selectedOrder.user ? selectedOrder.user.name : 'Deleted User'}</p>
+                                        <p className="text-xs text-gemTextLight mt-1 flex items-center gap-1">
+                                            <Mail size={12} /> {selectedOrder.user ? selectedOrder.user.email : 'N/A'}
+                                        </p>
+                                    </div>
+
+                                    <div className="border border-gemBorder/40 bg-gemBgAlt/50 p-4 rounded">
+                                        <h4 className="text-xs uppercase tracking-widest text-gemTextLight mb-3 flex items-center gap-1.5 font-semibold">
+                                            <MapPin size={14} className="text-gemRed" /> Shipping Address
+                                        </h4>
+                                        <p className="text-sm font-semibold">{selectedOrder.shippingAddress.fullName}</p>
+                                        <p className="text-xs text-gemTextLight mt-1">{selectedOrder.shippingAddress.address}</p>
+                                        <p className="text-xs text-gemTextLight">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}</p>
+                                        <p className="text-xs text-gemTextLight">{selectedOrder.shippingAddress.country}</p>
+                                    </div>
+                                </div>
+
+                                {/* Status & Update */}
+                                <div className="space-y-4">
+                                    <div className="border border-gemBorder/40 bg-gemBgAlt/50 p-4 rounded">
+                                        <h4 className="text-xs uppercase tracking-widest text-gemTextLight mb-3 flex items-center gap-1.5 font-semibold">
+                                            Status Controls
+                                        </h4>
+                                        
+                                        <div className="space-y-3">
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-widest text-gemTextLight mb-1">Current Status</p>
+                                                {getOrderStatusBadge(selectedOrder.status)}
+                                            </div>
+                                            
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-widest text-gemTextLight mb-1">Update Status</p>
+                                                <select 
+                                                    value={selectedOrder.status}
+                                                    onChange={(e) => handleUpdateStatus(selectedOrder._id, e.target.value)}
+                                                    disabled={statusUpdating}
+                                                    className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-2 text-sm outline-none focus:border-gemRed rounded cursor-pointer"
+                                                >
+                                                    <option value="Processing">Processing</option>
+                                                    <option value="Confirmed">Confirmed</option>
+                                                    <option value="Shipped">Shipped</option>
+                                                    <option value="Delivered">Delivered</option>
+                                                    <option value="Cancelled">Cancelled</option>
+                                                </select>
+                                                {statusUpdating && (
+                                                    <p className="text-xs text-gemTextLight animate-pulse mt-1">Updating...</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="border border-gemBorder/40 bg-gemBgAlt/50 p-4 rounded">
+                                        <h4 className="text-xs uppercase tracking-widest text-gemTextLight mb-3 flex items-center gap-1.5 font-semibold">
+                                            <CreditCard size={14} className="text-gemRed" /> Payment Summary
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-widest text-gemTextLight">Method</p>
+                                                <p className="font-semibold text-gemText mt-0.5">{selectedOrder.paymentMethod}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-widest text-gemTextLight">Status</p>
+                                                <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider mt-0.5 ${
+                                                    selectedOrder.isPaid ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                                                }`}>
+                                                    {selectedOrder.isPaid ? 'Paid' : 'Unpaid'}
+                                                </span>
+                                            </div>
+                                            <div className="col-span-2 border-t border-gemBorder/20 pt-2 mt-2 flex justify-between items-center text-sm font-semibold">
+                                                <span>Total Price:</span>
+                                                <span className="text-gemRed font-serif font-bold text-base">${selectedOrder.totalPrice.toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Purchased Items */}
+                            <div className="border border-gemBorder/40 bg-gemBgAlt/50 p-4 rounded mb-6">
+                                <h4 className="text-xs uppercase tracking-widest text-gemTextLight mb-3 flex items-center gap-1.5 font-semibold">
+                                    Purchased Items
+                                </h4>
+                                <div className="divide-y divide-gemBorder/20 max-h-48 overflow-y-auto pr-2">
+                                    {selectedOrder.orderItems.map((item, idx) => (
+                                        <div key={idx} className="flex items-center justify-between py-2 text-sm">
+                                            <div className="flex items-center gap-3">
+                                                <img src={item.imageUrl} alt={item.name} className="w-10 h-10 object-cover rounded border border-gemBorder/40" />
+                                                <div>
+                                                    <p className="font-semibold">{item.name}</p>
+                                                    <p className="text-xs text-gemTextLight">Qty: {item.qty} &bull; ${item.price.toLocaleString()}</p>
+                                                </div>
+                                            </div>
+                                            <p className="font-semibold text-gemText">${(item.price * item.qty).toLocaleString()}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex justify-end">
+                                <button 
+                                    onClick={() => setSelectedOrder(null)} 
+                                    className="bg-gemBorder hover:bg-gemTextLight hover:text-black text-gemText px-6 py-2.5 uppercase tracking-widest text-xs font-semibold transition-colors rounded cursor-pointer"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
             </div>

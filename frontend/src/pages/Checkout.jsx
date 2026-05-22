@@ -26,6 +26,7 @@ function Checkout() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [clientSecret, setClientSecret] = useState('');
+    const [paypalReady, setPaypalReady] = useState(false);
 
     const [shipping, setShipping] = useState({
         fullName: user?.name || '',
@@ -38,23 +39,87 @@ function Checkout() {
 
     const [paymentMethod, setPaymentMethod] = useState('Credit Card (Stripe)');
 
-    // Fetch client secret when entering step 3 with Credit Card selected
+    // Fetch client secret or load PayPal script when entering step 3
     useEffect(() => {
-        if (currentStep === 3 && paymentMethod === 'Credit Card (Stripe)') {
-            const fetchClientSecret = async () => {
-                try {
-                    const { data } = await API.post('/payment/create-intent', {
-                        amount: Math.round(cartTotal * 100) // Convert to cents
-                    });
-                    setClientSecret(data.clientSecret);
-                } catch (err) {
-                    console.error("Failed to initialize Stripe payment", err);
-                    setError("Could not connect to payment gateway.");
-                }
-            };
-            fetchClientSecret();
+        if (currentStep === 3) {
+            if (paymentMethod === 'Credit Card (Stripe)') {
+                const fetchClientSecret = async () => {
+                    try {
+                        const { data } = await API.post('/payment/create-intent', {
+                            amount: Math.round(cartTotal * 100) // Convert to cents
+                        });
+                        setClientSecret(data.clientSecret);
+                    } catch (err) {
+                        console.error("Failed to initialize Stripe payment", err);
+                        setError("Could not connect to payment gateway.");
+                    }
+                };
+                fetchClientSecret();
+            } else if (paymentMethod === 'PayPal') {
+                const loadPayPalScript = async () => {
+                    if (window.paypal) {
+                        setPaypalReady(true);
+                        return;
+                    }
+                    try {
+                        const { data } = await API.get('/config/paypal');
+                        const script = document.createElement('script');
+                        script.type = 'text/javascript';
+                        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=USD`;
+                        script.async = true;
+                        script.onload = () => {
+                            setPaypalReady(true);
+                        };
+                        script.onerror = () => {
+                            setError('Failed to load PayPal SDK');
+                        };
+                        document.body.appendChild(script);
+                    } catch (err) {
+                        console.error("Failed to fetch PayPal config", err);
+                        setError("Could not initialize PayPal payment gateway.");
+                    }
+                };
+                loadPayPalScript();
+            }
         }
     }, [currentStep, paymentMethod, cartTotal]);
+
+    // Initialize PayPal Buttons
+    useEffect(() => {
+        if (paypalReady && paymentMethod === 'PayPal' && window.paypal) {
+            const container = document.getElementById('paypal-button-container');
+            if (container) {
+                container.innerHTML = '';
+            }
+            window.paypal.Buttons({
+                createOrder: (data, actions) => {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: cartTotal.toFixed(2),
+                                currency_code: 'USD'
+                            }
+                        }]
+                    });
+                },
+                onApprove: async (data, actions) => {
+                    try {
+                        setLoading(true);
+                        const details = await actions.order.capture();
+                        handlePlaceOrder(details.id);
+                    } catch (err) {
+                        console.error("PayPal capture error:", err);
+                        setError("Failed to capture PayPal payment.");
+                        setLoading(false);
+                    }
+                },
+                onError: (err) => {
+                    console.error("PayPal error:", err);
+                    setError("PayPal payment failed or cancelled.");
+                }
+            }).render('#paypal-button-container');
+        }
+    }, [paypalReady, paymentMethod, cartTotal]);
 
     // Redirect if cart is empty
     if (cartItems.length === 0) {
@@ -263,7 +328,7 @@ function Checkout() {
                                 </h2>
 
                                 <div className="space-y-4 mb-8">
-                                    {['Credit Card (Stripe)', 'Cash on Delivery', 'Bank Transfer'].map(method => (
+                                    {['Credit Card (Stripe)', 'PayPal', 'Cash on Delivery', 'Bank Transfer'].map(method => (
                                         <label key={method}
                                             className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
                                                 paymentMethod === method
@@ -278,9 +343,10 @@ function Checkout() {
                                             <div>
                                                 <p className="text-stone-900 font-medium">{method}</p>
                                                 <p className="text-stone-500 text-xs mt-0.5">
-                                                    {method === 'Credit Card (Stripe)' ? 'Secure credit card payment via Stripe' : method === 'Cash on Delivery' 
-                                                        ? 'Pay when your order arrives at your doorstep' 
-                                                        : 'Transfer directly to our bank account'}
+                                                    {method === 'Credit Card (Stripe)' ? 'Secure credit card payment via Stripe' :
+                                                     method === 'PayPal' ? 'Pay securely via PayPal account or credit card' :
+                                                     method === 'Cash on Delivery' ? 'Pay when your order arrives at your doorstep' :
+                                                     'Transfer directly to our bank account'}
                                                 </p>
                                             </div>
                                         </label>
@@ -306,6 +372,19 @@ function Checkout() {
                                     </div>
                                 )}
 
+                                {paymentMethod === 'PayPal' && (
+                                    <div className="mt-8 border-t border-stone-200 pt-8 animate-fadeIn">
+                                        <h3 className="text-lg font-serif text-stone-900 mb-6 font-semibold">Pay with PayPal</h3>
+                                        {!paypalReady ? (
+                                            <div className="text-center text-stone-500 py-4">
+                                                Loading PayPal secure payment gateway...
+                                            </div>
+                                        ) : (
+                                            <div id="paypal-button-container" className="relative z-10"></div>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="mt-8 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
                                     <p className="text-green-500 text-sm font-medium">🔒 Your order information is secure and encrypted</p>
                                 </div>
@@ -327,7 +406,7 @@ function Checkout() {
                                     Continue <ChevronRight size={16} />
                                 </button>
                             ) : (
-                                paymentMethod !== 'Credit Card (Stripe)' ? (
+                                (paymentMethod !== 'Credit Card (Stripe)' && paymentMethod !== 'PayPal') ? (
                                     <button onClick={() => handlePlaceOrder()} disabled={loading}
                                         className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white uppercase tracking-widest text-sm font-semibold hover:bg-green-700 transition-all duration-300 rounded shadow-md disabled:opacity-50">
                                         {loading ? 'Placing Order...' : 'Place Order'}

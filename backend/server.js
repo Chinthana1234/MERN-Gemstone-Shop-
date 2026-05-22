@@ -43,6 +43,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 
+app.get('/api/config/paypal', (req, res) => {
+    res.json({ clientId: process.env.PAYPAL_CLIENT_ID || 'sb' });
+});
+
 app.get('/', (req, res) => {
     res.send('Gemstone Shop API is running...');
 });

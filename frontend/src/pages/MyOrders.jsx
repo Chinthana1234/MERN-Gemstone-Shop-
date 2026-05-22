@@ -14,6 +14,8 @@ const STATUS_CONFIG = {
 function MyOrders() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -28,6 +30,14 @@ function MyOrders() {
         };
         fetchOrders();
     }, []);
+
+    const filteredOrders = orders.filter(order => {
+        const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
+        const matchesSearch = searchTerm === '' ||
+            order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.orderItems.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        return matchesStatus && matchesSearch;
+    });
 
     if (loading) {
         return (
@@ -76,69 +86,129 @@ function MyOrders() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-5">
-                        {orders.map(order => {
-                            const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.Processing;
-                            const StatusIcon = config.icon;
-                            const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
-                                year: 'numeric', month: 'short', day: 'numeric'
-                            });
+                    <>
+                        {/* Search & Filters */}
+                        <div className="bg-stone-50 border border-stone-200/60 rounded-lg p-5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            {/* Search Box */}
+                            <div className="relative flex-1 max-w-md w-full">
+                                <input
+                                    type="text"
+                                    placeholder="Search by order ID or gem name..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-white border border-stone-200 focus:border-amber-600 focus:ring-1 focus:ring-amber-600 rounded px-4 py-2.5 text-sm text-stone-850 outline-none transition-colors"
+                                />
+                                {searchTerm && (
+                                    <button
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs font-semibold cursor-pointer"
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </div>
 
-                            return (
-                                <div key={order._id}
-                                    className="bg-stone-50 border border-stone-200/60 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-                                    {/* Order Header */}
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-stone-200">
-                                        <div>
-                                            <p className="text-stone-500 text-xs uppercase tracking-widest mb-1">Order #{order._id.slice(-8).toUpperCase()}</p>
-                                            <p className="text-stone-600 text-sm">Placed on {orderDate}</p>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs uppercase tracking-widest rounded-full font-semibold ${config.color}`}>
-                                                <StatusIcon size={14} />
-                                                {order.status}
-                                            </span>
-                                        </div>
-                                    </div>
+                            {/* Status Filter Buttons */}
+                            <div className="flex flex-wrap gap-2">
+                                {['All', 'Processing', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'].map((status) => (
+                                    <button
+                                        key={status}
+                                        onClick={() => setStatusFilter(status)}
+                                        className={`px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider rounded transition-all duration-200 border cursor-pointer ${
+                                            statusFilter === status
+                                                ? 'bg-stone-900 border-stone-900 text-white shadow-sm'
+                                                : 'bg-white border-stone-200 text-stone-600 hover:border-stone-900 hover:text-stone-900'
+                                        }`}
+                                    >
+                                        {status}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-                                    {/* Order Items Preview */}
-                                    <div className="flex items-center gap-4 mb-5">
-                                        <div className="flex -space-x-3">
-                                            {order.orderItems.slice(0, 4).map((item, idx) => (
-                                                <img key={idx} src={item.imageUrl} alt={item.name}
-                                                    className="w-12 h-12 object-cover rounded-full border-2 border-white shadow-sm" />
-                                            ))}
-                                            {order.orderItems.length > 4 && (
-                                                <div className="w-12 h-12 rounded-full border-2 border-white bg-stone-200 flex items-center justify-center text-xs text-stone-500 font-medium shadow-sm">
-                                                    +{order.orderItems.length - 4}
+                        {filteredOrders.length === 0 ? (
+                            <div className="text-center py-16 bg-stone-50 border border-stone-200/60 rounded-lg shadow-sm">
+                                <Package size={48} className="text-stone-400 mx-auto mb-4" />
+                                <h3 className="text-lg font-serif text-stone-900 mb-2">No Matching Orders</h3>
+                                <p className="text-stone-500 text-sm mb-6">No orders match your current search or status filter.</p>
+                                <button
+                                    onClick={() => { setSearchTerm(''); setStatusFilter('All'); }}
+                                    className="border border-stone-300 bg-white hover:border-stone-900 hover:text-stone-900 text-stone-600 px-6 py-2 text-xs font-semibold uppercase tracking-widest transition-all rounded cursor-pointer"
+                                >
+                                    Reset Filters
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-5 animate-fadeIn">
+                                {filteredOrders.map(order => {
+                                    const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.Processing;
+                                    const StatusIcon = config.icon;
+                                    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+                                        year: 'numeric', month: 'short', day: 'numeric'
+                                    });
+
+                                    return (
+                                        <div key={order._id}
+                                            className="bg-stone-50 border border-stone-200/60 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                            {/* Order Header */}
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-stone-200">
+                                                <div>
+                                                    <p className="text-stone-500 text-xs uppercase tracking-widest mb-1 font-semibold">Order #{order._id.slice(-8).toUpperCase()}</p>
+                                                    <p className="text-stone-650 text-sm">Placed on {orderDate}</p>
                                                 </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-stone-900 text-sm">
-                                                {order.orderItems.length} {order.orderItems.length === 1 ? 'item' : 'items'}
-                                            </p>
-                                            <p className="text-stone-500 text-xs">
-                                                {order.orderItems.map(i => i.name).join(', ')}
-                                            </p>
-                                        </div>
-                                    </div>
+                                                <div className="flex items-center gap-3 flex-wrap">
+                                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs uppercase tracking-widest rounded-full font-semibold ${
+                                                        order.isPaid ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                                                    }`}>
+                                                        {order.isPaid ? 'Paid' : 'Unpaid'}
+                                                    </span>
+                                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs uppercase tracking-widest rounded-full font-semibold ${config.color}`}>
+                                                        <StatusIcon size={14} />
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                    {/* Order Footer */}
-                                    <div className="flex items-center justify-between pt-4 border-t border-stone-200">
-                                        <div>
-                                            <p className="text-stone-500 text-xs uppercase tracking-widest">Total</p>
-                                            <p className="text-stone-900 text-lg font-semibold">${order.totalPrice.toLocaleString()}</p>
+                                            {/* Order Items Preview */}
+                                            <div className="flex items-center gap-4 mb-5">
+                                                <div className="flex -space-x-3">
+                                                    {order.orderItems.slice(0, 4).map((item, idx) => (
+                                                        <img key={idx} src={item.imageUrl} alt={item.name}
+                                                            className="w-12 h-12 object-cover rounded-full border-2 border-white shadow-sm" />
+                                                    ))}
+                                                    {order.orderItems.length > 4 && (
+                                                        <div className="w-12 h-12 rounded-full border-2 border-white bg-stone-200 flex items-center justify-center text-xs text-stone-500 font-medium shadow-sm">
+                                                            +{order.orderItems.length - 4}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-stone-900 text-sm font-semibold">
+                                                        {order.orderItems.length} {order.orderItems.length === 1 ? 'item' : 'items'}
+                                                    </p>
+                                                    <p className="text-stone-500 text-xs mt-0.5">
+                                                        {order.orderItems.map(i => i.name).join(', ')}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Order Footer */}
+                                            <div className="flex items-center justify-between pt-4 border-t border-stone-200">
+                                                <div>
+                                                    <p className="text-stone-500 text-xs uppercase tracking-widest font-semibold">Total</p>
+                                                    <p className="text-stone-900 text-lg font-semibold">${order.totalPrice.toLocaleString()}</p>
+                                                </div>
+                                                <Link to={`/order/${order._id}`}
+                                                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-300 bg-white text-stone-600 hover:border-gemRed hover:text-gemRed hover:bg-stone-50 uppercase tracking-widest text-xs font-semibold transition-all duration-300 rounded">
+                                                    <Eye size={14} /> View Details
+                                                </Link>
+                                            </div>
                                         </div>
-                                        <Link to={`/order/${order._id}`}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-300 bg-white text-stone-600 hover:border-gemRed hover:text-gemRed hover:bg-stone-50 uppercase tracking-widest text-xs font-semibold transition-all duration-300 rounded">
-                                            <Eye size={14} /> View Details
-                                        </Link>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>

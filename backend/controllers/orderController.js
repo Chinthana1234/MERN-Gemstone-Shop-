@@ -6,7 +6,7 @@ import Product from '../models/Product.js';
 // @access  Private
 export const createOrder = async (req, res) => {
     try {
-        const { orderItems, shippingAddress, paymentMethod } = req.body;
+        const { orderItems, shippingAddress, paymentMethod, paymentResult } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
             return res.status(400).json({ message: 'No order items provided' });
@@ -38,6 +38,8 @@ export const createOrder = async (req, res) => {
         const shippingPrice = 0; // Free shipping
         const totalPrice = itemsPrice + shippingPrice;
 
+        const isPaid = (paymentMethod === 'Credit Card (Stripe)' || paymentMethod === 'PayPal') && paymentResult?.status === 'succeeded';
+
         // Create order
         const order = new Order({
             user: req.user._id,
@@ -47,6 +49,8 @@ export const createOrder = async (req, res) => {
             itemsPrice,
             shippingPrice,
             totalPrice,
+            isPaid,
+            paidAt: isPaid ? new Date() : undefined,
             status: 'Confirmed'
         });
 
@@ -132,6 +136,99 @@ export const updateOrderToDelivered = async (req, res) => {
         }
     } catch (error) {
         console.error('Update order to delivered error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Update order status generically
+// @route   PUT /api/orders/:id/status
+// @access  Private/Admin
+export const updateOrderStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // If transitioning to Cancelled, return stock
+        if (status === 'Cancelled' && order.status !== 'Cancelled') {
+            for (const item of order.orderItems) {
+                await Product.findByIdAndUpdate(item.product, {
+                    $inc: { stock: item.qty }
+                });
+            }
+        }
+        // If transitioning out of Cancelled, reduce stock
+        else if (order.status === 'Cancelled' && status !== 'Cancelled') {
+            for (const item of order.orderItems) {
+                await Product.findByIdAndUpdate(item.product, {
+                    $inc: { stock: -item.qty }
+                });
+            }
+        }
+
+        order.status = status;
+        if (status === 'Delivered') {
+            order.isDelivered = true;
+            order.deliveredAt = new Date();
+        } else if (status === 'Shipped') {
+            order.isDelivered = true; // Wait, original code treats "Shipped" as isDelivered: true or isDelivered: false?
+            // In the admin dashboard it displayed "Shipped" when order.isDelivered was true. Let's look at AdminDashboard:
+            // order.isDelivered ? "Shipped" : "Processing".
+            // So yes, in this app, isDelivered is used to indicate it has been dispatched/shipped!
+            order.isDelivered = true;
+            order.deliveredAt = new Date();
+        } else if (status === 'Processing' || status === 'Confirmed' || status === 'Cancelled') {
+            order.isDelivered = false;
+            order.deliveredAt = undefined;
+        }
+
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } catch (error) {
+        console.error('Update order status error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Cancel order by user
+// @route   PUT /api/orders/:id/cancel
+// @access  Private
+export const cancelOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Check ownership
+        if (order.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to cancel this order' });
+        }
+
+        // Only allow if Processing or Confirmed
+        if (order.status !== 'Processing' && order.status !== 'Confirmed') {
+            return res.status(400).json({ message: 'Order cannot be cancelled as it has already been shipped or delivered' });
+        }
+
+        order.status = 'Cancelled';
+        order.isDelivered = false;
+        order.deliveredAt = undefined;
+
+        // Return stock
+        for (const item of order.orderItems) {
+            await Product.findByIdAndUpdate(item.product, {
+                $inc: { stock: item.qty }
+            });
+        }
+
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } catch (error) {
+        console.error('Cancel order error:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
