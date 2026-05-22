@@ -43,7 +43,8 @@ function AdminLogin() {
             const { data } = await API.post('/auth/login', { email, password });
             if (data.isAdmin) {
                 localStorage.setItem('adminInfo', JSON.stringify(data));
-                window.open(`http://localhost:5173/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
+                const clientUrl = import.meta.env.VITE_CLIENT_URL || 'http://localhost:5173';
+                window.open(`${clientUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
                 navigate('/dashboard');
             } else {
                 setError('You do not have admin privileges.');
