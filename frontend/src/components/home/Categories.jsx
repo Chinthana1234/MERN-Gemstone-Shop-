@@ -23,7 +23,7 @@ function Categories() {
         
         // Find one image for each gem type
         const cats = GEM_TYPES.map(type => {
-            const product = products.find(p => p.category === type);
+            const product = products.find(p => p.category && p.category.trim().toLowerCase() === type.trim().toLowerCase());
             return {
                 name: type,
                 image: product ? product.imageUrl : '',

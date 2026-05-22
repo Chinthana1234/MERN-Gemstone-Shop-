@@ -61,16 +61,30 @@ function Shop() {
 
   // Filter States
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [maxPriceLimit, setMaxPriceLimit] = useState(50000);
+  const [maxCaratLimit, setMaxCaratLimit] = useState(15);
   const [caratRange, setCaratRange] = useState([0, 15]);
   const [priceRange, setPriceRange] = useState([0, 50000]);
   const [sort, setSort] = useState('');
 
-  // Initial fetch for all products to get accurate category counts
+  // Initial fetch for all products to get accurate category counts and max limits
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
         const { data } = await API.get('/products?fetchAll=true');
-        setAllProducts(data.products || []);
+        const productsList = data.products || [];
+        setAllProducts(productsList);
+        
+        if (productsList.length > 0) {
+          const prices = productsList.map(p => p.price);
+          const carats = productsList.map(p => p.carat);
+          const maxP = Math.max(...prices, 50000);
+          const maxC = Math.max(...carats, 15);
+          setMaxPriceLimit(maxP);
+          setMaxCaratLimit(maxC);
+          setPriceRange([0, maxP]);
+          setCaratRange([0, maxC]);
+        }
       } catch (err) {
         console.error("Error fetching all products for counts:", err);
       }
@@ -127,8 +141,8 @@ function Shop() {
 
   const handleClearFilters = () => {
     setSelectedCategories([]);
-    setCaratRange([0, 15]);
-    setPriceRange([0, 50000]);
+    setCaratRange([0, maxCaratLimit]);
+    setPriceRange([0, maxPriceLimit]);
     setSort('');
     setPage(1);
     setTimeout(() => fetchProducts(1), 0); 
@@ -173,7 +187,7 @@ function Shop() {
             <Slider 
               range 
               min={0} 
-              max={15} 
+              max={maxCaratLimit} 
               step={0.5} 
               value={caratRange} 
               onChange={setCaratRange}
@@ -181,10 +195,10 @@ function Shop() {
             />
             <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
               <span>0</span>
-              <span>3</span>
-              <span>6</span>
-              <span>8</span>
-              <span>15</span>
+              <span>{Math.round(maxCaratLimit * 0.25)}</span>
+              <span>{Math.round(maxCaratLimit * 0.5)}</span>
+              <span>{Math.round(maxCaratLimit * 0.75)}</span>
+              <span>{maxCaratLimit}</span>
             </div>
         </div>
       </div>
@@ -229,7 +243,7 @@ function Shop() {
             <Slider 
               range 
               min={0} 
-              max={50000} 
+              max={maxPriceLimit} 
               step={500} 
               value={priceRange} 
               onChange={setPriceRange}
@@ -237,9 +251,10 @@ function Shop() {
             />
             <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
               <span>0</span>
-              <span>10k</span>
-              <span>25k</span>
-              <span>50k</span>
+              <span>{Math.round(maxPriceLimit * 0.25 / 1000)}k</span>
+              <span>{Math.round(maxPriceLimit * 0.5 / 1000)}k</span>
+              <span>{Math.round(maxPriceLimit * 0.75 / 1000)}k</span>
+              <span>{Math.round(maxPriceLimit / 1000)}k</span>
             </div>
         </div>
       </div>

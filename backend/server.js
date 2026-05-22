@@ -22,7 +22,7 @@ app.use(express.json());
 // Connect to MongoDB Middleware
 const connectDB = async (req, res, next) => {
     try {
-        if (mongoose.connection.readyState >= 1) {
+        if (mongoose.connection.readyState === 1) {
             return next();
         }
         console.log('Connecting to MongoDB...');
