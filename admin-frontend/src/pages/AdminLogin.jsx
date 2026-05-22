@@ -9,30 +9,39 @@ function AdminLogin() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+        const adminDataStr = query.get('adminData');
+
+        if (adminDataStr) {
+            try {
+                let parsedData = null;
+                try {
+                    parsedData = JSON.parse(adminDataStr);
+                } catch (e) {
+                    parsedData = JSON.parse(decodeURIComponent(adminDataStr));
+                }
+
+                if (parsedData && parsedData.isAdmin) {
+                    localStorage.setItem('adminInfo', JSON.stringify(parsedData));
+                    // Clean up URL parameter
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    navigate('/dashboard');
+                    return;
+                }
+            } catch (err) {
+                console.error('Error parsing adminData from query string', err);
+            }
+        }
+
         const existingAdmin = localStorage.getItem('adminInfo');
         if (existingAdmin) {
             try {
                 const data = JSON.parse(existingAdmin);
                 if (data && data.isAdmin) {
                     navigate('/dashboard');
-                    return;
                 }
             } catch (e) {
                 console.error('Error parsing local adminInfo', e);
-            }
-        }
-
-        const query = new URLSearchParams(window.location.search);
-        const adminDataStr = query.get('adminData');
-        if (adminDataStr) {
-            try {
-                const data = JSON.parse(decodeURIComponent(adminDataStr));
-                if (data && data.isAdmin) {
-                    localStorage.setItem('adminInfo', JSON.stringify(data));
-                    navigate('/dashboard');
-                }
-            } catch (err) {
-                console.error('Error parsing adminData from query string', err);
             }
         }
     }, [navigate]);

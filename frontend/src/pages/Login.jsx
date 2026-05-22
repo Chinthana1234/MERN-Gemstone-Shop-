@@ -38,7 +38,8 @@ function Login() {
       setLoading(true);
       const userData = await login(email, password);
       if (userData && userData.isAdmin) {
-        window.open(`http://localhost:5174/login?adminData=${encodeURIComponent(JSON.stringify(userData))}`, '_blank');
+        const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
+        window.open(`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(userData))}`, '_blank');
         navigate('/');
       } else {
         navigate('/');
