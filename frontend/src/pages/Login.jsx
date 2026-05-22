@@ -38,7 +38,8 @@ function Login() {
       setLoading(true);
       const userData = await login(email, password);
       if (userData && userData.isAdmin) {
-        const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
+        const adminUrl = import.meta.env.VITE_ADMIN_URL || 
+          (window.location.hostname.includes('vercel.app') ? 'https://auragems-admin.vercel.app' : 'http://localhost:5174');
         window.open(`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(userData))}`, '_blank');
         navigate('/');
       } else {

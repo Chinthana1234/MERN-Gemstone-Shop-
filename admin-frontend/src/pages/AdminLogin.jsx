@@ -52,7 +52,8 @@ function AdminLogin() {
             const { data } = await API.post('/auth/login', { email, password });
             if (data.isAdmin) {
                 localStorage.setItem('adminInfo', JSON.stringify(data));
-                const clientUrl = import.meta.env.VITE_CLIENT_URL || 'http://localhost:5173';
+                const clientUrl = import.meta.env.VITE_CLIENT_URL || 
+                  (window.location.hostname.includes('vercel.app') ? 'https://auragems-client.vercel.app' : 'http://localhost:5173');
                 window.open(`${clientUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
                 navigate('/dashboard');
             } else {
