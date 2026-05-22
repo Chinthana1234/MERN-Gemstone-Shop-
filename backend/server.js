@@ -19,6 +19,24 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Connect to MongoDB Middleware
+const connectDB = async (req, res, next) => {
+    try {
+        if (mongoose.connection.readyState >= 1) {
+            return next();
+        }
+        console.log('Connecting to MongoDB...');
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('MongoDB Connected Successfully');
+        next();
+    } catch (err) {
+        console.error('MongoDB Connection Error: ', err);
+        res.status(500).json({ message: 'Database connection failed' });
+    }
+};
+
+app.use(connectDB);
+
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
@@ -37,11 +55,6 @@ app.use((err, req, res, next) => {
         stack: process.env.NODE_ENV === 'production' ? null : err.stack
     });
 });
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected Successfully'))
-    .catch((err) => console.log('MongoDB Connection Error: ', err));
 
 if (!process.env.VERCEL) {
     app.listen(PORT, () => {
