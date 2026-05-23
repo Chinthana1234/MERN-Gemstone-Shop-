@@ -198,7 +198,13 @@ export const googleLogin = async (req, res) => {
         const clientID = process.env.GOOGLE_CLIENT_ID?.trim();
         if (aud?.trim() !== clientID) {
             console.error(`Audience mismatch! Token aud: "${aud?.trim()}", Config GOOGLE_CLIENT_ID: "${clientID}"`);
-            return res.status(400).json({ message: 'Token audience mismatch' });
+            return res.status(400).json({ 
+                message: 'Token audience mismatch',
+                debug: {
+                    receivedAudience: aud?.trim(),
+                    serverConfiguredClientID: clientID
+                }
+            });
         }
 
         // Check if user already exists
