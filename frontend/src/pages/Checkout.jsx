@@ -28,6 +28,15 @@ function Checkout() {
     const [clientSecret, setClientSecret] = useState('');
     const [paypalReady, setPaypalReady] = useState(false);
 
+    const [couponCode, setCouponCode] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [couponError, setCouponError] = useState('');
+    const [couponSuccess, setCouponSuccess] = useState('');
+    const [applyingCoupon, setApplyingCoupon] = useState(false);
+
+    const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+    const finalTotal = Math.max(0, cartTotal - discountAmount);
+
     const [shipping, setShipping] = useState({
         fullName: user?.name || '',
         address: '',
@@ -46,7 +55,7 @@ function Checkout() {
                 const fetchClientSecret = async () => {
                     try {
                         const { data } = await API.post('/payment/create-intent', {
-                            amount: Math.round(cartTotal * 100) // Convert to cents
+                            amount: Math.round(finalTotal * 100) // Convert to cents
                         });
                         setClientSecret(data.clientSecret);
                     } catch (err) {
@@ -82,7 +91,7 @@ function Checkout() {
                 loadPayPalScript();
             }
         }
-    }, [currentStep, paymentMethod, cartTotal]);
+    }, [currentStep, paymentMethod, finalTotal]);
 
     // Initialize PayPal Buttons
     useEffect(() => {
@@ -96,7 +105,7 @@ function Checkout() {
                     return actions.order.create({
                         purchase_units: [{
                             amount: {
-                                value: cartTotal.toFixed(2),
+                                value: finalTotal.toFixed(2),
                                 currency_code: 'USD'
                             }
                         }]
@@ -119,7 +128,7 @@ function Checkout() {
                 }
             }).render('#paypal-button-container');
         }
-    }, [paypalReady, paymentMethod, cartTotal]);
+    }, [paypalReady, paymentMethod, finalTotal]);
 
     // Redirect if cart is empty
     if (cartItems.length === 0) {
@@ -160,6 +169,33 @@ function Checkout() {
         setError('');
     };
 
+    const handleApplyCoupon = async (e) => {
+        e.preventDefault();
+        if (!couponCode.trim()) return;
+        setApplyingCoupon(true);
+        setCouponError('');
+        setCouponSuccess('');
+        try {
+            const { data } = await API.post('/coupons/apply', {
+                code: couponCode,
+                itemsPrice: cartTotal
+            });
+            setAppliedCoupon(data);
+            setCouponSuccess(`Coupon "${data.code}" applied!`);
+            setCouponCode('');
+        } catch (err) {
+            setCouponError(err.response?.data?.message || 'Failed to apply coupon');
+        } finally {
+            setApplyingCoupon(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponSuccess('');
+        setCouponError('');
+    };
+
     const handlePlaceOrder = async (paymentId = null) => {
         try {
             setLoading(true);
@@ -175,7 +211,8 @@ function Checkout() {
                 })),
                 shippingAddress: shipping,
                 paymentMethod,
-                paymentResult: paymentId ? { id: paymentId, status: 'succeeded', update_time: new Date().toISOString() } : undefined
+                paymentResult: paymentId ? { id: paymentId, status: 'succeeded', update_time: new Date().toISOString() } : undefined,
+                couponCode: appliedCoupon ? appliedCoupon.code : undefined
             };
 
             const { data } = await API.post('/orders', orderData);
@@ -431,13 +468,59 @@ function Checkout() {
                             <div className="flex justify-between text-sm text-stone-600">
                                 <span>Subtotal</span><span>${cartTotal.toLocaleString()}</span>
                             </div>
+                            {appliedCoupon && (
+                                <div className="flex justify-between text-sm text-green-600 font-medium">
+                                    <span>Discount ({appliedCoupon.code})</span>
+                                    <span>-${appliedCoupon.discountAmount.toLocaleString()}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between text-sm text-stone-600">
                                 <span>Shipping</span><span className="text-green-500">Free</span>
                             </div>
                         </div>
+
+                        {/* Promo Code Input */}
+                        <div className="border-t border-stone-200 pt-4 mt-4">
+                            {!appliedCoupon ? (
+                                <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        placeholder="PROMO CODE" 
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        disabled={applyingCoupon}
+                                        className="flex-1 bg-white border border-stone-200 text-stone-900 p-2 text-xs rounded uppercase tracking-wider focus:outline-none focus:border-gemRed"
+                                    />
+                                    <button 
+                                        type="submit" 
+                                        disabled={applyingCoupon || !couponCode.trim()}
+                                        className="bg-stone-900 hover:bg-stone-850 text-white text-xs uppercase tracking-widest px-4 py-2 rounded transition-colors disabled:opacity-50 font-semibold cursor-pointer"
+                                    >
+                                        {applyingCoupon ? 'Applying...' : 'Apply'}
+                                    </button>
+                                </form>
+                            ) : (
+                                <div className="flex items-center justify-between bg-stone-100 border border-stone-200 p-2.5 rounded text-xs">
+                                    <span className="text-stone-800 font-medium tracking-wider">
+                                        🎟️ <span className="font-bold text-stone-900">{appliedCoupon.code}</span> (
+                                        {appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}%` : `$${appliedCoupon.discountValue}`} Off)
+                                    </span>
+                                    <button 
+                                        type="button"
+                                        onClick={handleRemoveCoupon}
+                                        className="text-gemRed hover:text-gemRedDark font-semibold uppercase tracking-wider text-[10px] cursor-pointer"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            )}
+                            {couponError && <p className="text-red-500 text-xs mt-2">{couponError}</p>}
+                            {couponSuccess && <p className="text-green-600 text-xs mt-2 font-medium">{couponSuccess}</p>}
+                        </div>
+
                         <div className="flex justify-between text-stone-900 text-lg font-semibold mt-4 pt-4 border-t border-stone-200">
                             <span className="font-serif">Total</span>
-                            <span>${cartTotal.toLocaleString()}</span>
+                            <span>${finalTotal.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>

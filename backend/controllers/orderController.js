@@ -1,12 +1,13 @@
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
+import Coupon from '../models/Coupon.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
 export const createOrder = async (req, res) => {
     try {
-        const { orderItems, shippingAddress, paymentMethod, paymentResult } = req.body;
+        const { orderItems, shippingAddress, paymentMethod, paymentResult, couponCode } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
             return res.status(400).json({ message: 'No order items provided' });
@@ -36,7 +37,41 @@ export const createOrder = async (req, res) => {
         // Calculate prices
         const itemsPrice = verifiedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
         const shippingPrice = 0; // Free shipping
-        const totalPrice = itemsPrice + shippingPrice;
+        
+        let discountAmount = 0;
+        let appliedCoupon = '';
+
+        if (couponCode) {
+            const coupon = await Coupon.findOne({ code: couponCode.toUpperCase().trim() });
+            if (!coupon) {
+                return res.status(400).json({ message: 'Invalid coupon code' });
+            }
+            if (!coupon.isActive) {
+                return res.status(400).json({ message: 'Coupon is no longer active' });
+            }
+            const currentDate = new Date();
+            if (new Date(coupon.expiryDate) < currentDate) {
+                return res.status(400).json({ message: 'Coupon has expired' });
+            }
+            if (itemsPrice < coupon.minPurchaseAmount) {
+                return res.status(400).json({ 
+                    message: `Minimum purchase of $${coupon.minPurchaseAmount.toLocaleString()} is required for this coupon` 
+                });
+            }
+
+            appliedCoupon = coupon.code;
+            if (coupon.discountType === 'percentage') {
+                discountAmount = itemsPrice * (coupon.discountValue / 100);
+            } else if (coupon.discountType === 'flat') {
+                discountAmount = coupon.discountValue;
+            }
+            if (discountAmount > itemsPrice) {
+                discountAmount = itemsPrice;
+            }
+            discountAmount = Math.round(discountAmount * 100) / 100;
+        }
+
+        const totalPrice = Math.max(0, itemsPrice + shippingPrice - discountAmount);
 
         const isPaid = (paymentMethod === 'Credit Card (Stripe)' || paymentMethod === 'PayPal') && paymentResult?.status === 'succeeded';
 
@@ -51,7 +86,9 @@ export const createOrder = async (req, res) => {
             totalPrice,
             isPaid,
             paidAt: isPaid ? new Date() : undefined,
-            status: 'Confirmed'
+            status: 'Confirmed',
+            couponApplied: appliedCoupon,
+            discountAmount
         });
 
         const createdOrder = await order.save();
