@@ -30,7 +30,10 @@ function AdminDashboard() {
             const [ordersRes, productsRes, reviewsRes] = await Promise.all([
                 API.get('/orders'),
                 API.get('/products?fetchAll=true'),
-                API.get('/products/reviews/all').catch(() => ({ data: [] }))
+                API.get('/products/reviews/all').catch((err) => {
+                    console.error("Error fetching reviews:", err);
+                    return { data: [] };
+                })
             ]);
             setOrders(ordersRes.data);
             setProducts(productsRes.data.products || []);
