@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock } from 'lucide-react';
+import API from '../utils/api';
 import loginBg from '../assets/images/login register pages/gpt-image-2_Prompt_Macro_product_photography_of_a_loose_sparkling_insert_gemstone_e.g._ruby_-0.jpg';
 
 function Login() {
@@ -30,6 +31,39 @@ function Login() {
       }
     }
   }, [syncLogin, navigate]);
+
+  const handleGoogleCallback = async (response) => {
+    try {
+      setLoading(true);
+      setError('');
+      const { data } = await API.post('/auth/google', { token: response.credential });
+      syncLogin(data);
+      if (data.isAdmin) {
+        const adminUrl = import.meta.env.VITE_ADMIN_URL || 
+          (window.location.hostname.includes('vercel.app') ? 'https://auragems-admin.vercel.app' : 'http://localhost:5174');
+        window.open(`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
+      }
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Google Sign-In failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '1054238515034-7snndj03p9p989j8e4kbh6bkv8b71h6l.apps.googleusercontent.com',
+        callback: handleGoogleCallback
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("googleSignInDiv"),
+        { theme: "outline", size: "large", width: 384 }
+      );
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,6 +136,19 @@ function Login() {
               {loading ? 'SIGNING IN...' : 'SIGN IN'}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-3 text-gray-500 font-semibold tracking-wider">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <div id="googleSignInDiv" className="w-full max-w-sm"></div>
+          </div>
 
           <p className="text-center text-gray-500 text-sm mt-8">
             New to Aura Gems? <Link to="/register" className="text-black font-bold hover:underline">Create an account</Link>

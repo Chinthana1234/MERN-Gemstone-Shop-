@@ -168,3 +168,61 @@ export const toggleWishlist = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Auth with Google
+// @route   POST /api/auth/google
+// @access  Public
+export const googleLogin = async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        if (!token) {
+            return res.status(400).json({ message: 'Google token is required' });
+        }
+
+        // Verify Google token with Google's API
+        const googleRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+        const googleData = await googleRes.json();
+
+        if (!googleRes.ok || googleData.error) {
+            return res.status(400).json({ message: 'Google authentication failed' });
+        }
+
+        // Validate that email is verified and audience matches
+        const { email, email_verified, name, aud } = googleData;
+
+        if (email_verified !== 'true' && email_verified !== true) {
+            return res.status(400).json({ message: 'Google email is not verified' });
+        }
+
+        const clientID = process.env.GOOGLE_CLIENT_ID?.trim();
+        if (aud?.trim() !== clientID) {
+            console.error(`Audience mismatch! Token aud: "${aud?.trim()}", Config GOOGLE_CLIENT_ID: "${clientID}"`);
+            return res.status(400).json({ message: 'Token audience mismatch' });
+        }
+
+        // Check if user already exists
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create user with a secure random password since it is a required field
+            const randomPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            user = await User.create({
+                name: name || 'Google User',
+                email,
+                password: randomPassword
+            });
+        }
+
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token: generateToken(user._id)
+        });
+    } catch (error) {
+        console.error('Google login error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
