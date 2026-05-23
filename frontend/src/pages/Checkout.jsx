@@ -7,6 +7,7 @@ import API from '../utils/api';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import StripePaymentForm from '../components/checkout/StripePaymentForm';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 // Initialize Stripe (using optional chaining for safety if env is missing)
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_PLACEHOLDER_KEY');
@@ -26,7 +27,6 @@ function Checkout() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [clientSecret, setClientSecret] = useState('');
-    const [paypalReady, setPaypalReady] = useState(false);
 
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -48,7 +48,7 @@ function Checkout() {
 
     const [paymentMethod, setPaymentMethod] = useState('Credit Card (Stripe)');
 
-    // Fetch client secret or load PayPal script when entering step 3
+    // Fetch client secret when entering step 3
     useEffect(() => {
         if (currentStep === 3) {
             if (paymentMethod === 'Credit Card (Stripe)') {
@@ -64,71 +64,9 @@ function Checkout() {
                     }
                 };
                 fetchClientSecret();
-            } else if (paymentMethod === 'PayPal') {
-                const loadPayPalScript = async () => {
-                    if (window.paypal) {
-                        setPaypalReady(true);
-                        return;
-                    }
-                    try {
-                        const { data } = await API.get('/config/paypal');
-                        const script = document.createElement('script');
-                        script.type = 'text/javascript';
-                        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=USD`;
-                        script.async = true;
-                        script.onload = () => {
-                            setPaypalReady(true);
-                        };
-                        script.onerror = () => {
-                            setError('Failed to load PayPal SDK');
-                        };
-                        document.body.appendChild(script);
-                    } catch (err) {
-                        console.error("Failed to fetch PayPal config", err);
-                        setError("Could not initialize PayPal payment gateway.");
-                    }
-                };
-                loadPayPalScript();
             }
         }
     }, [currentStep, paymentMethod, finalTotal]);
-
-    // Initialize PayPal Buttons
-    useEffect(() => {
-        if (paypalReady && paymentMethod === 'PayPal' && window.paypal) {
-            const container = document.getElementById('paypal-button-container');
-            if (container) {
-                container.innerHTML = '';
-            }
-            window.paypal.Buttons({
-                createOrder: (data, actions) => {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: finalTotal.toFixed(2),
-                                currency_code: 'USD'
-                            }
-                        }]
-                    });
-                },
-                onApprove: async (data, actions) => {
-                    try {
-                        setLoading(true);
-                        const details = await actions.order.capture();
-                        handlePlaceOrder(details.id);
-                    } catch (err) {
-                        console.error("PayPal capture error:", err);
-                        setError("Failed to capture PayPal payment.");
-                        setLoading(false);
-                    }
-                },
-                onError: (err) => {
-                    console.error("PayPal error:", err);
-                    setError("PayPal payment failed or cancelled.");
-                }
-            }).render('#paypal-button-container');
-        }
-    }, [paypalReady, paymentMethod, finalTotal]);
 
     // Redirect if cart is empty
     if (cartItems.length === 0) {
@@ -367,6 +305,7 @@ function Checkout() {
                                 <div className="space-y-4 mb-8">
                                     {['Credit Card (Stripe)', 'PayPal', 'Cash on Delivery', 'Bank Transfer'].map(method => (
                                         <label key={method}
+                                            onClick={() => setPaymentMethod(method)}
                                             className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
                                                 paymentMethod === method
                                                     ? 'border-gemRed bg-gemRed/5 shadow-sm'
@@ -412,13 +351,39 @@ function Checkout() {
                                 {paymentMethod === 'PayPal' && (
                                     <div className="mt-8 border-t border-stone-200 pt-8 animate-fadeIn">
                                         <h3 className="text-lg font-serif text-stone-900 mb-6 font-semibold">Pay with PayPal</h3>
-                                        {!paypalReady ? (
-                                            <div className="text-center text-stone-500 py-4">
-                                                Loading PayPal secure payment gateway...
-                                            </div>
-                                        ) : (
-                                            <div id="paypal-button-container" className="relative z-10"></div>
-                                        )}
+                                        <PayPalScriptProvider options={{ 
+                                            "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test', 
+                                            currency: "USD",
+                                            intent: "capture"
+                                        }}>
+                                            <PayPalButtons
+                                                createOrder={(data, actions) => {
+                                                    return actions.order.create({
+                                                        purchase_units: [{
+                                                            amount: {
+                                                                value: finalTotal.toFixed(2),
+                                                                currency_code: 'USD'
+                                                            }
+                                                        }]
+                                                    });
+                                                }}
+                                                onApprove={async (data, actions) => {
+                                                    try {
+                                                        setLoading(true);
+                                                        const details = await actions.order.capture();
+                                                        handlePlaceOrder(details.id);
+                                                    } catch (err) {
+                                                        console.error("PayPal capture error:", err);
+                                                        setError("Failed to capture PayPal payment.");
+                                                        setLoading(false);
+                                                    }
+                                                }}
+                                                onError={(err) => {
+                                                    console.error("PayPal error:", err);
+                                                    setError("PayPal payment failed or cancelled.");
+                                                }}
+                                            />
+                                        </PayPalScriptProvider>
                                     </div>
                                 )}
 
