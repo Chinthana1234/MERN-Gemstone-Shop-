@@ -39,38 +39,43 @@ function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex space-x-8">
-            <Link to="/" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Home</Link>
-            <Link to="/shop" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Shop</Link>
-            <Link to="/about" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">About Us</Link>
-            <Link to="/contact" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Contact</Link>
-            <Link to="/reviews" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Reviews</Link>
-          </div>
-
-          {/* Icons (Desktop) */}
-          <div className="hidden md:flex items-center space-x-6">
-            <div className="relative">
-              {isSearchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center">
+          {/* Desktop Navigation Links or Search Bar */}
+          <div className={`hidden md:flex items-center justify-center ${isSearchOpen ? 'flex-1 px-8' : 'space-x-8'}`}>
+            {isSearchOpen ? (
+              <form onSubmit={handleSearch} className="w-full max-w-2xl animate-fadeIn">
+                <div className="relative flex items-center">
+                  <Search className="absolute left-4 text-gemTextLight" size={20} strokeWidth={1.5} />
                   <input
                     type="text"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     placeholder="Search gems..."
-                    className="bg-gemBgAlt border-b border-gemRed text-gemText px-2 py-1 focus:outline-none text-sm w-48"
+                    className="w-full bg-gemBgMarble text-gemText border border-gemBorder rounded-full py-2.5 pl-12 pr-12 focus:outline-none focus:border-gemRed focus:ring-1 focus:ring-gemRed transition-all"
                     autoFocus
                   />
-                  <button type="button" onClick={() => setIsSearchOpen(false)} className="text-gemTextLight hover:text-gemRed ml-2">
-                    <X size={16} />
+                  <button type="button" onClick={() => setIsSearchOpen(false)} className="absolute right-4 text-gemTextLight hover:text-gemRed transition-colors">
+                    <X size={20} strokeWidth={1.5} />
                   </button>
-                </form>
-              ) : (
-                <button onClick={() => setIsSearchOpen(true)} className="text-gemText hover:text-gemRed transition-colors duration-300">
-                  <Search size={20} strokeWidth={1.5} />
-                </button>
-              )}
-            </div>
+                </div>
+              </form>
+            ) : (
+              <>
+                <Link to="/" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Home</Link>
+                <Link to="/shop" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Shop</Link>
+                <Link to="/about" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">About Us</Link>
+                <Link to="/contact" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Contact</Link>
+                <Link to="/reviews" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Reviews</Link>
+              </>
+            )}
+          </div>
+
+          {/* Icons (Desktop) */}
+          <div className="hidden md:flex items-center space-x-6">
+            {!isSearchOpen && (
+              <button onClick={() => setIsSearchOpen(true)} className="text-gemText hover:text-gemRed transition-colors duration-300">
+                <Search size={20} strokeWidth={1.5} />
+              </button>
+            )}
             <Link to="/wishlist" className="text-gemText hover:text-gemRed transition-colors duration-300">
               <Heart size={20} strokeWidth={1.5} />
             </Link>
