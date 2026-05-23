@@ -128,7 +128,8 @@ export const getWishlist = async (req, res) => {
     try {
         const user = await User.findById(req.user._id).populate('wishlist');
         if (user) {
-            res.json(user.wishlist);
+            // Filter out any null products (e.g. if a product was deleted)
+            res.json(user.wishlist.filter(item => item != null));
         } else {
             res.status(404).json({ message: 'User not found' });
         }
@@ -147,7 +148,7 @@ export const toggleWishlist = async (req, res) => {
         const productId = req.params.id;
 
         if (user) {
-            const index = user.wishlist.indexOf(productId);
+            const index = user.wishlist.findIndex(id => id && id.toString() === productId);
             if (index !== -1) {
                 // Product exists in wishlist, remove it
                 user.wishlist.splice(index, 1);
@@ -159,7 +160,7 @@ export const toggleWishlist = async (req, res) => {
             await user.save();
             // populate to return the updated full wishlist products
             const updatedUser = await User.findById(req.user._id).populate('wishlist');
-            res.json(updatedUser.wishlist);
+            res.json(updatedUser.wishlist.filter(item => item != null));
         } else {
             res.status(404).json({ message: 'User not found' });
         }
