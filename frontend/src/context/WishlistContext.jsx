@@ -1,41 +1,32 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import API from '../utils/api';
-import { useAuth } from './AuthContext';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchWishlist,
+  toggleWishlist,
+  clearWishlist,
+  selectWishlistItems
+} from '../store/slices/wishlistSlice';
 
 const WishlistContext = createContext();
 
 export const useWishlist = () => useContext(WishlistContext);
 
 export function WishlistProvider({ children }) {
-  const [wishlistItems, setWishlistItems] = useState([]);
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const wishlistItems = useSelector(selectWishlistItems);
 
   useEffect(() => {
     if (user) {
-      fetchWishlist();
+      dispatch(fetchWishlist());
     } else {
-      setWishlistItems([]);
+      dispatch(clearWishlist());
     }
-  }, [user]);
+  }, [user, dispatch]);
 
-  const fetchWishlist = async () => {
-    try {
-      const { data } = await API.get('/auth/wishlist');
-      // data is an array of products
-      setWishlistItems(data);
-    } catch (error) {
-      console.error('Error fetching wishlist:', error);
-    }
-  };
-
-  const toggleWishlist = async (productId) => {
-    if (!user) return; // or handle redirect to login
-    try {
-      const { data } = await API.post(`/auth/wishlist/${productId}`);
-      setWishlistItems(data);
-    } catch (error) {
-      console.error('Error toggling wishlist:', error);
-    }
+  const handleToggleWishlist = async (productId) => {
+    if (!user) return;
+    await dispatch(toggleWishlist(productId));
   };
 
   const isInWishlist = (productId) => {
@@ -43,7 +34,7 @@ export function WishlistProvider({ children }) {
   };
 
   return (
-    <WishlistContext.Provider value={{ wishlistItems, toggleWishlist, isInWishlist }}>
+    <WishlistContext.Provider value={{ wishlistItems, toggleWishlist: handleToggleWishlist, isInWishlist }}>
       {children}
     </WishlistContext.Provider>
   );

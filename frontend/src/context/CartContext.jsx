@@ -1,56 +1,40 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addToCart as addToCartAction,
+  removeFromCart as removeFromCartAction,
+  updateQuantity as updateQuantityAction,
+  clearCart as clearCartAction,
+  selectCartItems,
+  selectCartCount,
+  selectCartTotal
+} from '../store/slices/cartSlice';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem('cartItems');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Persist cart to localStorage
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
+  const cartCount = useSelector(selectCartCount);
+  const cartTotal = useSelector(selectCartTotal);
 
   const addToCart = (product, qty = 1) => {
-    setCartItems(prev => {
-      const exists = prev.find(item => item._id === product._id);
-      if (exists) {
-        return prev.map(item =>
-          item._id === product._id
-            ? { ...item, qty: item.qty + qty }
-            : item
-        );
-      }
-      return [...prev, { ...product, qty }];
-    });
+    dispatch(addToCartAction({ product, qty }));
   };
 
   const removeFromCart = (productId) => {
-    setCartItems(prev => prev.filter(item => item._id !== productId));
+    dispatch(removeFromCartAction(productId));
   };
 
   const updateQuantity = (productId, qty) => {
-    if (qty <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-    setCartItems(prev =>
-      prev.map(item =>
-        item._id === productId ? { ...item, qty } : item
-      )
-    );
+    dispatch(updateQuantityAction({ productId, qty }));
   };
 
   const clearCart = () => {
-    setCartItems([]);
+    dispatch(clearCartAction());
   };
-
-  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
 
   return (
     <CartContext.Provider value={{
