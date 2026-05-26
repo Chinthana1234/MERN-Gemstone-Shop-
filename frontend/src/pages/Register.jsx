@@ -31,7 +31,7 @@ function Register() {
       const serverError = err.response?.data;
       if (serverError?.debug) {
         console.error("Google Auth Mismatch Debug Info:", serverError.debug);
-        setError(`${serverError.message} (Sent: ${serverError.debug.receivedAudience?.substring(0, 15)}... | Expected: ${serverError.debug.serverConfiguredClientID?.substring(0, 15)}...)`);
+        setError(`${serverError.message} (Sent: ${serverError.debug.receivedAudience} | Expected: ${serverError.debug.serverConfiguredClientID})`);
       } else {
         setError(serverError?.message || 'Google Sign-In failed');
       }
