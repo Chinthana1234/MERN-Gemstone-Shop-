@@ -20,6 +20,7 @@ import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
 import Reviews from './pages/Reviews';
+import ScrollToTop from './components/common/ScrollToTop';
 
 function App() {
   const location = useLocation();
@@ -29,9 +30,10 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
+          <ScrollToTop />
           <div className="min-h-screen bg-white text-stone-800 font-sans flex flex-col">
             {!isAuthPage && <Navbar />}
-            <div className="flex-1">
+            <div className="flex-1 page-transition" key={location.pathname}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
