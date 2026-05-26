@@ -43,7 +43,7 @@ function Register() {
   useEffect(() => {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '260721950691-l4ngko1fh1jrrjcln5k94bbb5beqjke.apps.googleusercontent.com',
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '260721950691-l4ngko1fh1jrrjcln5k94bbb5beqike.apps.googleusercontent.com',
         callback: handleGoogleCallback
       });
 
