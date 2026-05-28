@@ -33,7 +33,7 @@ function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center gap-2 group">
-              <span className="text-3xl font-serif text-gemRed tracking-widest uppercase transition-transform duration-300 group-hover:scale-105">
+              <span className="text-2xl font-serif text-gemRed tracking-widest uppercase transition-transform duration-300 group-hover:scale-105">
                 Aura Gems
               </span>
             </Link>
