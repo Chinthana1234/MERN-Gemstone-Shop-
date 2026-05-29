@@ -11,7 +11,7 @@ function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
-  const adminUrl = import.meta.env.VITE_ADMIN_URL || 
+  const adminUrl = import.meta.env.VITE_ADMIN_URL ||
     (window.location.hostname.includes('vercel.app') ? 'https://auragems-admin.vercel.app' : 'http://localhost:5174');
 
   const handleSearch = (e) => {

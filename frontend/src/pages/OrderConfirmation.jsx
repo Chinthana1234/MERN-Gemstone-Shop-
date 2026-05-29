@@ -73,7 +73,8 @@ function OrderConfirmation() {
     return (
         <div className="pt-28 pb-20 min-h-screen bg-white print:pt-4 print:pb-4">
             {/* Print styling overrides */}
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 @media print {
                     header, footer, nav, .print-hidden {
                         display: none !important;
@@ -133,35 +134,33 @@ function OrderConfirmation() {
                                 {/* Connecting line */}
                                 <div className="absolute top-5 left-0 right-0 h-0.5 bg-stone-200 -translate-y-1/2 hidden md:block" />
                                 {currentStepIndex > 0 && (
-                                    <div 
+                                    <div
                                         className="absolute top-5 left-0 h-0.5 bg-amber-600 -translate-y-1/2 transition-all duration-500 hidden md:block"
                                         style={{ width: `${(currentStepIndex / (statusSteps.length - 1)) * 100}%` }}
                                     />
                                 )}
-                                
+
                                 <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0">
                                     {statusSteps.map((step, idx) => {
                                         const isCompleted = idx < currentStepIndex;
                                         const isActive = idx === currentStepIndex;
                                         const isPending = idx > currentStepIndex;
-                                        
+
                                         return (
                                             <div key={step} className="flex md:flex-col items-center flex-1 w-full md:text-center z-10">
                                                 {/* Circle */}
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-500 border-2 ${
-                                                    isCompleted 
-                                                        ? 'bg-amber-600 border-amber-600 text-white shadow-md' 
-                                                        : isActive 
-                                                            ? 'bg-white border-amber-600 text-amber-600 shadow-md animate-pulse' 
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-500 border-2 ${isCompleted
+                                                        ? 'bg-amber-600 border-amber-600 text-white shadow-md'
+                                                        : isActive
+                                                            ? 'bg-white border-amber-600 text-amber-600 shadow-md animate-pulse'
                                                             : 'bg-white border-stone-200 text-stone-400'
-                                                }`}>
+                                                    }`}>
                                                     {isCompleted ? '✓' : idx + 1}
                                                 </div>
                                                 {/* Label */}
                                                 <div className="ml-4 md:ml-0 md:mt-3 text-left md:text-center">
-                                                    <p className={`font-serif text-sm font-medium ${
-                                                        isActive ? 'text-amber-600 font-semibold scale-105 transition-transform' : isCompleted ? 'text-stone-850' : 'text-stone-400'
-                                                    }`}>
+                                                    <p className={`font-serif text-sm font-medium ${isActive ? 'text-amber-600 font-semibold scale-105 transition-transform' : isCompleted ? 'text-stone-850' : 'text-stone-400'
+                                                        }`}>
                                                         {step}
                                                     </p>
                                                 </div>
@@ -182,17 +181,16 @@ function OrderConfirmation() {
                             <h3 className="text-lg font-serif text-stone-900 mb-4 flex items-center gap-2 print:border-b print:pb-2">
                                 <Clock size={18} className="text-gemRed print:hidden" /> Order Information
                             </h3>
-                            
+
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <p className="text-stone-500 text-xs uppercase tracking-widest mb-1">Status</p>
-                                    <span className={`px-2.5 py-0.5 text-xs uppercase tracking-widest rounded-full font-semibold inline-block ${
-                                        order.status === 'Confirmed' ? 'bg-green-100 text-green-700' :
-                                        order.status === 'Processing' ? 'bg-yellow-100 text-yellow-700' :
-                                        order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
-                                        order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
-                                        'bg-red-100 text-red-700'
-                                    }`}>
+                                    <span className={`px-2.5 py-0.5 text-xs uppercase tracking-widest rounded-full font-semibold inline-block ${order.status === 'Confirmed' ? 'bg-green-100 text-green-700' :
+                                            order.status === 'Processing' ? 'bg-yellow-100 text-yellow-700' :
+                                                order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
+                                                    order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
+                                                        'bg-red-100 text-red-700'
+                                        }`}>
                                         {order.status}
                                     </span>
                                 </div>
@@ -213,9 +211,8 @@ function OrderConfirmation() {
                                 <div>
                                     <p className="text-stone-500 text-xs uppercase tracking-widest mb-1">Payment Status</p>
                                     <div className="mt-1">
-                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider ${
-                                            order.isPaid ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
-                                        }`}>
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider ${order.isPaid ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                                            }`}>
                                             {order.isPaid ? 'Paid' : 'Unpaid'}
                                         </span>
                                     </div>
@@ -288,7 +285,7 @@ function OrderConfirmation() {
                             >
                                 <Printer size={16} /> Print Invoice
                             </button>
-                            
+
                             {(order.status === 'Processing' || order.status === 'Confirmed') && (
                                 <button
                                     onClick={handleCancelOrder}
@@ -308,7 +305,7 @@ function OrderConfirmation() {
                                 Continue Shopping
                             </Link>
                         </div>
-                        
+
                         <div className="hidden print:block text-center text-xs text-stone-400 mt-8 pt-4 border-t">
                             Thank you for shopping with Aura Gems. If you have any questions, please contact support@auragems.com.
                         </div>

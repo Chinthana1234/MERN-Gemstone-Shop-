@@ -179,23 +179,20 @@ function Checkout() {
                     {STEPS.map((step, idx) => (
                         <React.Fragment key={step.id}>
                             <div className="flex flex-col items-center">
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
-                                    currentStep > step.id
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep > step.id
                                         ? 'bg-green-500 border-green-500 text-white'
                                         : currentStep === step.id
                                             ? 'bg-gemRed border-gemRed text-white scale-110 shadow-lg shadow-gemRed/25'
                                             : 'bg-stone-50 border-stone-200 text-stone-400'
-                                }`}>
+                                    }`}>
                                     {currentStep > step.id ? <Check size={20} /> : <step.icon size={20} />}
                                 </div>
-                                <span className={`mt-2 text-xs uppercase tracking-widest font-medium transition-colors duration-300 ${
-                                    currentStep >= step.id ? 'text-stone-800' : 'text-stone-400'
-                                }`}>{step.label}</span>
+                                <span className={`mt-2 text-xs uppercase tracking-widest font-medium transition-colors duration-300 ${currentStep >= step.id ? 'text-stone-800' : 'text-stone-400'
+                                    }`}>{step.label}</span>
                             </div>
                             {idx < STEPS.length - 1 && (
-                                <div className={`w-20 sm:w-32 h-0.5 mx-2 transition-colors duration-500 ${
-                                    currentStep > step.id ? 'bg-green-500' : 'bg-stone-200'
-                                }`}></div>
+                                <div className={`w-20 sm:w-32 h-0.5 mx-2 transition-colors duration-500 ${currentStep > step.id ? 'bg-green-500' : 'bg-stone-200'
+                                    }`}></div>
                             )}
                         </React.Fragment>
                     ))}
@@ -306,23 +303,21 @@ function Checkout() {
                                     {['Credit Card (Stripe)', 'PayPal', 'Cash on Delivery', 'Bank Transfer'].map(method => (
                                         <label key={method}
                                             onClick={() => setPaymentMethod(method)}
-                                            className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                                                paymentMethod === method
+                                            className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${paymentMethod === method
                                                     ? 'border-gemRed bg-gemRed/5 shadow-sm'
                                                     : 'border-stone-200 bg-white hover:border-stone-400'
-                                            }`}>
-                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                                paymentMethod === method ? 'border-gemRed' : 'border-stone-200'
-                                            }`}>
+                                                }`}>
+                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${paymentMethod === method ? 'border-gemRed' : 'border-stone-200'
+                                                }`}>
                                                 {paymentMethod === method && <div className="w-2.5 h-2.5 rounded-full bg-gemRed"></div>}
                                             </div>
                                             <div>
                                                 <p className="text-stone-900 font-medium">{method}</p>
                                                 <p className="text-stone-500 text-xs mt-0.5">
                                                     {method === 'Credit Card (Stripe)' ? 'Secure credit card payment via Stripe' :
-                                                     method === 'PayPal' ? 'Pay securely via PayPal account or credit card' :
-                                                     method === 'Cash on Delivery' ? 'Pay when your order arrives at your doorstep' :
-                                                     'Transfer directly to our bank account'}
+                                                        method === 'PayPal' ? 'Pay securely via PayPal account or credit card' :
+                                                            method === 'Cash on Delivery' ? 'Pay when your order arrives at your doorstep' :
+                                                                'Transfer directly to our bank account'}
                                                 </p>
                                             </div>
                                         </label>
@@ -333,7 +328,7 @@ function Checkout() {
                                     <div className="mt-8 border-t border-stone-200 pt-8 animate-fadeIn">
                                         <h3 className="text-lg font-serif text-stone-900 mb-6">Enter Card Details</h3>
                                         <Elements stripe={stripePromise} options={{ clientSecret }}>
-                                            <StripePaymentForm 
+                                            <StripePaymentForm
                                                 clientSecret={clientSecret}
                                                 cartTotal={cartTotal}
                                                 onPaymentSuccess={(paymentId) => handlePlaceOrder(paymentId)}
@@ -351,8 +346,8 @@ function Checkout() {
                                 {paymentMethod === 'PayPal' && (
                                     <div className="mt-8 border-t border-stone-200 pt-8 animate-fadeIn">
                                         <h3 className="text-lg font-serif text-stone-900 mb-6 font-semibold">Pay with PayPal</h3>
-                                        <PayPalScriptProvider options={{ 
-                                            "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test', 
+                                        <PayPalScriptProvider options={{
+                                            "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test',
                                             currency: "USD",
                                             intent: "capture"
                                         }}>
@@ -448,16 +443,16 @@ function Checkout() {
                         <div className="border-t border-stone-200 pt-4 mt-4">
                             {!appliedCoupon ? (
                                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                                    <input 
-                                        type="text" 
-                                        placeholder="PROMO CODE" 
+                                    <input
+                                        type="text"
+                                        placeholder="PROMO CODE"
                                         value={couponCode}
                                         onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                         disabled={applyingCoupon}
                                         className="flex-1 bg-white border border-stone-200 text-stone-900 p-2 text-xs rounded uppercase tracking-wider focus:outline-none focus:border-gemRed"
                                     />
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={applyingCoupon || !couponCode.trim()}
                                         className="bg-stone-900 hover:bg-stone-850 text-white text-xs uppercase tracking-widest px-4 py-2 rounded transition-colors disabled:opacity-50 font-semibold cursor-pointer"
                                     >
@@ -470,7 +465,7 @@ function Checkout() {
                                         🎟️ <span className="font-bold text-stone-900">{appliedCoupon.code}</span> (
                                         {appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}%` : `$${appliedCoupon.discountValue}`} Off)
                                     </span>
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={handleRemoveCoupon}
                                         className="text-gemRed hover:text-gemRedDark font-semibold uppercase tracking-wider text-[10px] cursor-pointer"

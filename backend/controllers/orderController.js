@@ -21,8 +21,8 @@ export const createOrder = async (req, res) => {
                 return res.status(404).json({ message: `Product not found: ${item.name}` });
             }
             if (product.stock < item.qty) {
-                return res.status(400).json({ 
-                    message: `Insufficient stock for ${product.name}. Only ${product.stock} available.` 
+                return res.status(400).json({
+                    message: `Insufficient stock for ${product.name}. Only ${product.stock} available.`
                 });
             }
             verifiedItems.push({
@@ -37,7 +37,7 @@ export const createOrder = async (req, res) => {
         // Calculate prices
         const itemsPrice = verifiedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
         const shippingPrice = 0; // Free shipping
-        
+
         let discountAmount = 0;
         let appliedCoupon = '';
 
@@ -54,8 +54,8 @@ export const createOrder = async (req, res) => {
                 return res.status(400).json({ message: 'Coupon has expired' });
             }
             if (itemsPrice < coupon.minPurchaseAmount) {
-                return res.status(400).json({ 
-                    message: `Minimum purchase of $${coupon.minPurchaseAmount.toLocaleString()} is required for this coupon` 
+                return res.status(400).json({
+                    message: `Minimum purchase of $${coupon.minPurchaseAmount.toLocaleString()} is required for this coupon`
                 });
             }
 
