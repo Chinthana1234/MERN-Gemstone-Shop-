@@ -71,7 +71,7 @@ const initialState = {
   caratRange: [0, 15],
   priceRange: [0, 50000],
   selectedCategories: [],
-  sort: '',
+  sort: 'priceAsc',
   keyword: '',
 };
 
@@ -109,7 +109,7 @@ const productSlice = createSlice({
       state.selectedCategories = [];
       state.caratRange = [0, state.maxCaratLimit];
       state.priceRange = [0, state.maxPriceLimit];
-      state.sort = '';
+      state.sort = 'priceAsc';
       state.page = 1;
     },
   },

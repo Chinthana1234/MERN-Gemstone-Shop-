@@ -47,14 +47,8 @@ const GEM_TYPES = [
 ];
 
 const SORT_OPTIONS = [
-  { label: 'Relevance', value: '' },
-  { label: 'Best selling', value: '' }, 
-  { label: 'Title ascending', value: 'nameAsc' },
-  { label: 'Title descending', value: 'nameDesc' },
-  { label: 'Price ascending', value: 'priceAsc' },
-  { label: 'Price descending', value: 'priceDesc' },
-  { label: 'Created ascending', value: 'oldest' },
-  { label: 'Created descending', value: 'newest' },
+  { label: 'Price: Low to High', value: 'priceAsc' },
+  { label: 'Price: High to Low', value: 'priceDesc' },
 ];
 
 function Shop() {
