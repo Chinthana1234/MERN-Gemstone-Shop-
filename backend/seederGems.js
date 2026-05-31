@@ -13,12 +13,12 @@ const __dirname = path.dirname(__filename);
 // Map local folder names to exact Category strings expected by the frontend
 const categoryMap = {
     'blue-sapphire': 'Blue Sapphire',
-    'yellow sapphire': 'Yellow Sapphire',
-    'white sapphire': 'White Sapphire',
-    'spessartine garnet': 'Spessartine Garnet',
-    'Ruby': 'Ruby',
+    'yellow-sapphire': 'Yellow Sapphire',
+    'white-sapphire': 'White Sapphire',
+    'spessartine-garnet': 'Spessartine Garnet',
+    'ruby': 'Ruby',
     'emerald': 'Emerald',
-    "cat's eye": "Cat's Eye"
+    'cats-eye': "Cat's Eye"
 };
 
 // Base price per carat for different gems to generate realistic prices
