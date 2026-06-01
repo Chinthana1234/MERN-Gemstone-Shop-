@@ -3,23 +3,7 @@ import { Star, User, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import reviewBanner from '../assets/images/review page/Gemini_Generated_Image_agdsayagdsayagds.png';
 
-const DEFAULT_REVIEWS = [
-    {
-        rating: 5,
-        text: "Really happy with this product. The quality is great and it lasts long. Definitely worth it",
-        customer: "KASUN LAKMAL"
-    },
-    {
-        rating: 5,
-        text: "Exquisite sapphire and excellent customer support. Highly recommended for genuine Ceylon gems.",
-        customer: "NISANSALA DE SILVA"
-    },
-    {
-        rating: 1,
-        text: "this website is not recommended cause i got bad experience.",
-        customer: "SHASHIKALA SAMARANAYAKA"
-    }
-];
+const DEFAULT_REVIEWS = [];
 
 function Reviews() {
     const { user } = useAuth();
