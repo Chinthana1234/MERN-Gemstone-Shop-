@@ -12,6 +12,7 @@ function AdminDashboard() {
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
+    const [uploading, setUploading] = useState(false);
 
     // For order search/filters/modal
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -124,6 +125,40 @@ function AdminDashboard() {
         }
     };
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        // Using the preset name you created. Make sure it matches exactly!
+        formData.append('upload_preset', 'gemstone_shop_preset'); 
+
+        setUploading(true);
+
+        try {
+            // Uploading directly to Cloudinary using your cloud name
+            const response = await fetch("https://api.cloudinary.com/v1_1/dzdhkmytt/image/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if (data.secure_url) {
+                setProductForm(prev => ({ ...prev, imageUrl: data.secure_url }));
+            } else {
+                throw new Error(data.error?.message || "Failed to upload to Cloudinary");
+            }
+            
+            setUploading(false);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Image upload failed: " + error.message);
+            setUploading(false);
+        }
+    };
+
     const handleSaveProduct = async (e) => {
         e.preventDefault();
         try {
@@ -207,7 +242,16 @@ function AdminDashboard() {
                                         <input type="number" placeholder="Price ($)" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <input type="number" placeholder="Stock Quantity" required value={productForm.stock} onChange={e => setProductForm({...productForm, stock: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <input type="number" step="0.01" placeholder="Carat Weight" required value={productForm.carat} onChange={e => setProductForm({...productForm, carat: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
-                                        <input type="text" placeholder="Image URL (/images/gem.jpg)" required value={productForm.imageUrl} onChange={e => setProductForm({...productForm, imageUrl: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                        <div className="flex flex-col gap-2">
+                                            <input type="text" placeholder="Image URL (will auto-populate on upload)" required value={productForm.imageUrl} onChange={e => setProductForm({...productForm, imageUrl: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
+                                            <div className="flex items-center gap-3">
+                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="admin-image-upload-file" />
+                                                <label htmlFor="admin-image-upload-file" className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2.5 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors text-center">
+                                                    Upload File
+                                                </label>
+                                                {uploading && <span className="text-xs text-gemGold animate-pulse">Uploading to Cloudinary...</span>}
+                                            </div>
+                                        </div>
                                         <textarea placeholder="Product Description" required value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none md:col-span-2" rows="3"></textarea>
                                         <div className="md:col-span-2 flex gap-4">
                                             <button type="submit" className="bg-gemRed text-white p-3 uppercase tracking-widest font-semibold hover:bg-gemRedDark w-full transition-colors">
