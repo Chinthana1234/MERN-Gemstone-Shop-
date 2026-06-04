@@ -25,7 +25,7 @@ function FeaturedGems() {
   return (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mb-4">Featured Collections</h2>
@@ -39,20 +39,20 @@ function FeaturedGems() {
             <Link to={`/product/${gem._id}`} key={gem._id} className="group cursor-pointer block">
               {/* Image Container */}
               <div className="relative overflow-hidden bg-stone-50 aspect-[4/5] mb-4 rounded-lg shadow-sm border border-stone-200/50 hover:border-gemRed/40 flex items-center justify-center p-6">
-                <img 
-                  src={gem.imageUrl} 
-                  alt={gem.name} 
+                <img
+                  src={gem.imageUrl}
+                  alt={gem.name}
                   className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl"
                 />
-                
+
                 {/* Hover Actions Overlay */}
                 <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button 
+                  <button
                     onClick={(e) => { e.preventDefault(); addToCart(gem, 1); }}
                     className="bg-white text-stone-900 p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-md">
                     <ShoppingCart size={20} />
                   </button>
-                  <button 
+                  <button
                     onClick={(e) => { e.preventDefault(); toggleWishlist(gem._id); }}
                     className={`p-3 rounded-full transition-colors shadow-md ${isInWishlist(gem._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-900 hover:bg-gemRed hover:text-white'}`}>
                     <Heart size={20} className={isInWishlist(gem._id) ? 'fill-white' : ''} />
@@ -72,7 +72,7 @@ function FeaturedGems() {
 
         {/* View All Button */}
         <div className="text-center mt-16">
-          <Link 
+          <Link
             to="/shop"
             className="inline-block border-2 border-gemRed text-gemRed hover:bg-gemRed hover:text-white font-semibold tracking-widest uppercase text-sm px-10 py-3 transition-colors duration-300"
           >

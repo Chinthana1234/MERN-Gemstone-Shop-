@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/api';
 import { Package, ShoppingCart, TrendingUp, Edit, Trash2, CheckCircle, Clock, Truck, XCircle, X, User, Mail, MapPin, CreditCard } from 'lucide-react';
 
@@ -13,6 +13,7 @@ function AdminDashboard() {
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
     const [uploading, setUploading] = useState(false);
+    const formRef = useRef(null);
 
     // For order search/filters/modal
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -234,7 +235,7 @@ function AdminDashboard() {
                                 </div>
 
                                 {/* Add/Edit Form */}
-                                <div className="bg-gemCard border border-gemBorder p-6 rounded mb-8">
+                                <div ref={formRef} className="bg-gemCard border border-gemBorder p-6 rounded mb-8">
                                     <h3 className="text-lg text-gemText mb-4">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
                                     <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <input type="text" placeholder="Product Name" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
@@ -288,7 +289,21 @@ function AdminDashboard() {
                                                     <td className="p-3">${product.price.toLocaleString()}</td>
                                                     <td className="p-3">{product.stock}</td>
                                                     <td className="p-3 text-right">
-                                                        <button onClick={() => { setEditingProduct(product); setProductForm(product); }} className="text-gemTextLight hover:text-gemText p-2 transition-colors"><Edit size={16}/></button>
+                                                        <button onClick={() => { 
+                                                            setEditingProduct(product); 
+                                                            setProductForm({
+                                                                name: product.name || '',
+                                                                price: product.price || '',
+                                                                category: product.category || '',
+                                                                stock: product.stock || '',
+                                                                carat: product.carat || '',
+                                                                imageUrl: product.imageUrl || '',
+                                                                description: product.description || ''
+                                                            });
+                                                            setTimeout(() => {
+                                                                formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                            }, 100);
+                                                        }} className="text-gemTextLight hover:text-gemText p-2 transition-colors"><Edit size={16}/></button>
                                                         <button onClick={() => handleDeleteProduct(product._id)} className="text-gemRed p-2 hover:bg-gemRed/10 rounded transition-colors ml-2"><Trash2 size={16}/></button>
                                                     </td>
                                                 </tr>

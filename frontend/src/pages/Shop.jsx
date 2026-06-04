@@ -78,7 +78,7 @@ function Shop() {
   const [addedId, setAddedId] = useState(null);
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  
+
   const keywordFromUrl = new URLSearchParams(location.search).get('keyword') || '';
 
   // Synchronize URL search keyword with Redux store
@@ -144,30 +144,30 @@ function Shop() {
         <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-900 mb-6">
           Carat Weight
         </h3>
-        
+
         <div className="flex justify-between items-center mb-6">
-            <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[0]}</div>
-            <span className="text-stone-400">-</span>
-            <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[1]}</div>
+          <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[0]}</div>
+          <span className="text-stone-400">-</span>
+          <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[1]}</div>
         </div>
 
         <div className="px-2 mb-2">
-            <Slider 
-              range 
-              min={0} 
-              max={maxCaratLimit} 
-              step={0.5} 
-              value={caratRange} 
-              onChange={handleCaratRangeChange}
-              styles={sliderStyles}
-            />
-            <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
-              <span>0</span>
-              <span>{Math.round(maxCaratLimit * 0.25)}</span>
-              <span>{Math.round(maxCaratLimit * 0.5)}</span>
-              <span>{Math.round(maxCaratLimit * 0.75)}</span>
-              <span>{maxCaratLimit}</span>
-            </div>
+          <Slider
+            range
+            min={0}
+            max={maxCaratLimit}
+            step={0.5}
+            value={caratRange}
+            onChange={handleCaratRangeChange}
+            styles={sliderStyles}
+          />
+          <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
+            <span>0</span>
+            <span>{Math.round(maxCaratLimit * 0.25)}</span>
+            <span>{Math.round(maxCaratLimit * 0.5)}</span>
+            <span>{Math.round(maxCaratLimit * 0.75)}</span>
+            <span>{maxCaratLimit}</span>
+          </div>
         </div>
       </div>
 
@@ -180,9 +180,8 @@ function Shop() {
           {GEM_TYPES.map(cat => (
             <div key={cat} className="flex justify-between items-center cursor-pointer group" onClick={() => handleToggleCategory(cat)}>
               <div className="flex items-center gap-3">
-                <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${
-                  selectedCategories.includes(cat) ? 'bg-gemRed border-gemRed' : 'border-stone-200 group-hover:border-gemRed'
-                }`}>
+                <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${selectedCategories.includes(cat) ? 'bg-gemRed border-gemRed' : 'border-stone-200 group-hover:border-gemRed'
+                  }`}>
                   {selectedCategories.includes(cat) && <Check size={12} className="text-white" />}
                 </div>
                 <span className={`text-sm font-serif font-bold transition-colors ${selectedCategories.includes(cat) ? 'text-stone-800' : 'text-stone-600 group-hover:text-stone-800'}`}>
@@ -200,30 +199,30 @@ function Shop() {
         <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-900 mb-6">
           Price ($)
         </h3>
-        
+
         <div className="flex justify-between items-center mb-6">
-            <div className="border border-stone-200 px-4 py-2 w-24 text-center text-sm text-stone-800 font-serif bg-stone-50">${priceRange[0].toLocaleString()}</div>
-            <span className="text-stone-400">-</span>
-            <div className="border border-stone-200 px-4 py-2 w-24 text-center text-sm text-stone-800 font-serif bg-stone-50">${priceRange[1].toLocaleString()}</div>
+          <div className="border border-stone-200 px-4 py-2 w-24 text-center text-sm text-stone-800 font-serif bg-stone-50">${priceRange[0].toLocaleString()}</div>
+          <span className="text-stone-400">-</span>
+          <div className="border border-stone-200 px-4 py-2 w-24 text-center text-sm text-stone-800 font-serif bg-stone-50">${priceRange[1].toLocaleString()}</div>
         </div>
 
         <div className="px-2 mb-2">
-            <Slider 
-              range 
-              min={0} 
-              max={maxPriceLimit} 
-              step={500} 
-              value={priceRange} 
-              onChange={handlePriceRangeChange}
-              styles={sliderStyles}
-            />
-            <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
-              <span>0</span>
-              <span>{Math.round(maxPriceLimit * 0.25 / 1000)}k</span>
-              <span>{Math.round(maxPriceLimit * 0.5 / 1000)}k</span>
-              <span>{Math.round(maxPriceLimit * 0.75 / 1000)}k</span>
-              <span>{Math.round(maxPriceLimit / 1000)}k</span>
-            </div>
+          <Slider
+            range
+            min={0}
+            max={maxPriceLimit}
+            step={500}
+            value={priceRange}
+            onChange={handlePriceRangeChange}
+            styles={sliderStyles}
+          />
+          <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
+            <span>0</span>
+            <span>{Math.round(maxPriceLimit * 0.25 / 1000)}k</span>
+            <span>{Math.round(maxPriceLimit * 0.5 / 1000)}k</span>
+            <span>{Math.round(maxPriceLimit * 0.75 / 1000)}k</span>
+            <span>{Math.round(maxPriceLimit / 1000)}k</span>
+          </div>
         </div>
       </div>
 
@@ -247,10 +246,10 @@ function Shop() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-10">
-          
+
           {/* Mobile Filter Button */}
           <div className="lg:hidden flex justify-between items-center border-b border-stone-200 pb-4">
-            <button 
+            <button
               onClick={() => dispatch(setMobileFilterOpen(true))}
               className="flex items-center gap-2 text-stone-800 uppercase tracking-widest text-sm font-semibold border-none bg-transparent cursor-pointer"
             >
@@ -258,8 +257,8 @@ function Shop() {
             </button>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 border-r border-stone-200 pr-4">
-                  <button onClick={() => dispatch(setViewMode('grid'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'grid' ? 'text-stone-800' : 'text-stone-400'}`}><LayoutGrid size={18}/></button>
-                  <button onClick={() => dispatch(setViewMode('list'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'list' ? 'text-stone-800' : 'text-stone-400'}`}><List size={18}/></button>
+                <button onClick={() => dispatch(setViewMode('grid'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'grid' ? 'text-stone-800' : 'text-stone-400'}`}><LayoutGrid size={18} /></button>
+                <button onClick={() => dispatch(setViewMode('list'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'list' ? 'text-stone-800' : 'text-stone-400'}`}><List size={18} /></button>
               </div>
               <div className="text-sm font-serif font-bold text-stone-700">{totalCount} products</div>
             </div>
@@ -279,22 +278,22 @@ function Shop() {
 
           {/* Main Content */}
           <div className="w-full lg:w-3/4 pl-0 lg:pl-4">
-            
+
             {/* Topbar: Sort & Count (Desktop) */}
             <div className="hidden lg:flex justify-between items-center mb-8 border-b border-stone-200/80 pb-6">
-              
+
               <div className="flex items-center gap-3">
                 <span className="text-sm font-serif font-bold text-stone-800">View As</span>
-                <button onClick={() => dispatch(setViewMode('grid'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'grid' ? 'text-stone-800' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20}/></button>
-                <button onClick={() => dispatch(setViewMode('list'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'list' ? 'text-stone-800' : 'text-stone-400 hover:text-stone-600'}`}><List size={20}/></button>
+                <button onClick={() => dispatch(setViewMode('grid'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'grid' ? 'text-stone-800' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
+                <button onClick={() => dispatch(setViewMode('list'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'list' ? 'text-stone-800' : 'text-stone-400 hover:text-stone-600'}`}><List size={20} /></button>
               </div>
 
               <div className="text-sm font-serif font-bold text-stone-700">{totalCount} products</div>
-              
+
               <div className="flex items-center gap-4">
                 <span className="text-sm text-stone-800 uppercase tracking-widest font-semibold">Sort By:</span>
                 <div className="relative">
-                  <select 
+                  <select
                     value={sort}
                     onChange={(e) => dispatch(setSort(e.target.value))}
                     className="appearance-none bg-transparent border-none text-stone-600 hover:text-stone-800 text-sm font-serif font-bold pr-6 focus:outline-none cursor-pointer"
@@ -310,19 +309,19 @@ function Shop() {
 
             {/* Mobile Sort */}
             <div className="lg:hidden flex justify-between items-center mb-6">
-               <span className="text-sm text-stone-800 uppercase tracking-widest font-semibold">Sort By:</span>
-               <div className="relative">
-                  <select 
-                    value={sort}
-                    onChange={(e) => dispatch(setSort(e.target.value))}
-                    className="appearance-none bg-transparent border-none text-stone-600 text-sm font-serif font-bold pr-6 focus:outline-none cursor-pointer"
-                  >
-                    {SORT_OPTIONS.map(opt => (
-                      <option key={opt.label} value={opt.value} className="bg-white text-stone-800 font-sans">{opt.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none" />
-                </div>
+              <span className="text-sm text-stone-800 uppercase tracking-widest font-semibold">Sort By:</span>
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => dispatch(setSort(e.target.value))}
+                  className="appearance-none bg-transparent border-none text-stone-600 text-sm font-serif font-bold pr-6 focus:outline-none cursor-pointer"
+                >
+                  {SORT_OPTIONS.map(opt => (
+                    <option key={opt.label} value={opt.value} className="bg-white text-stone-800 font-sans">{opt.label}</option>
+                  ))}
+                </select>
+                <ChevronDown size={14} className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-500 pointer-events-none" />
+              </div>
             </div>
 
             {/* Loading Skeletons */}
@@ -332,9 +331,9 @@ function Shop() {
                   <div key={i} className={`animate-pulse ${viewMode === 'list' ? 'flex gap-6' : ''}`}>
                     <div className={`bg-stone-200/60 rounded-lg ${viewMode === 'list' ? 'w-48 h-48 shrink-0' : 'aspect-[4/5] mb-4'}`}></div>
                     <div className={viewMode === 'list' ? 'flex-1 py-4' : ''}>
-                        <div className={`h-3 bg-stone-200/60 mx-auto mb-2 rounded ${viewMode === 'list' ? 'w-1/4 mx-0' : 'w-1/3'}`}></div>
-                        <div className={`h-4 bg-stone-200/60 mx-auto mb-2 rounded ${viewMode === 'list' ? 'w-2/3 mx-0' : 'w-2/3'}`}></div>
-                        <div className={`h-3 bg-stone-200/60 mx-auto rounded ${viewMode === 'list' ? 'w-1/4 mx-0' : 'w-1/4'}`}></div>
+                      <div className={`h-3 bg-stone-200/60 mx-auto mb-2 rounded ${viewMode === 'list' ? 'w-1/4 mx-0' : 'w-1/3'}`}></div>
+                      <div className={`h-4 bg-stone-200/60 mx-auto mb-2 rounded ${viewMode === 'list' ? 'w-2/3 mx-0' : 'w-2/3'}`}></div>
+                      <div className={`h-3 bg-stone-200/60 mx-auto rounded ${viewMode === 'list' ? 'w-1/4 mx-0' : 'w-1/4'}`}></div>
                     </div>
                   </div>
                 ))}
@@ -360,7 +359,7 @@ function Shop() {
                         <div className="flex-1 flex flex-col justify-center py-2">
                           <p className="text-gemRed text-xs uppercase tracking-widest mb-2 font-semibold">{product.category}</p>
                           <h3 className="text-2xl font-serif text-stone-800 mb-3 group-hover:text-gemRed transition-colors">{product.name}</h3>
-                          
+
                           <div className="flex items-center gap-1 mb-4">
                             {[...Array(5)].map((_, i) => (
                               <Star key={i} size={14} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-200'} />
@@ -369,21 +368,20 @@ function Shop() {
                           </div>
 
                           <p className="text-stone-600 text-sm font-light line-clamp-2 mb-6">{product.description}</p>
-                          
+
                           <div className="mt-auto flex items-center justify-between">
                             <p className="text-stone-900 font-medium text-xl font-serif">${product.price.toLocaleString()}</p>
                             <div className="flex items-center gap-3">
-                                <button 
-                                  onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
-                                  className={`border p-3 rounded transition-colors cursor-pointer ${isInWishlist(product._id) ? 'border-gemRed text-gemRed' : 'border-stone-200 text-stone-700 bg-white hover:border-gemRed hover:text-gemRed'}`}>
-                                  <Heart size={18} className={isInWishlist(product._id) ? 'fill-gemRed' : ''} />
-                                </button>
-                                <button onClick={(e) => handleAddToCart(e, product)}
-                                  className={`flex items-center gap-2 px-6 py-3 rounded text-sm uppercase tracking-widest font-semibold transition-all shadow-md border-none cursor-pointer ${
-                                    addedId === product._id ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark'
+                              <button
+                                onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+                                className={`border p-3 rounded transition-colors cursor-pointer ${isInWishlist(product._id) ? 'border-gemRed text-gemRed' : 'border-stone-200 text-stone-700 bg-white hover:border-gemRed hover:text-gemRed'}`}>
+                                <Heart size={18} className={isInWishlist(product._id) ? 'fill-gemRed' : ''} />
+                              </button>
+                              <button onClick={(e) => handleAddToCart(e, product)}
+                                className={`flex items-center gap-2 px-6 py-3 rounded text-sm uppercase tracking-widest font-semibold transition-all shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark'
                                   }`}>
-                                  {addedId === product._id ? 'Added' : 'Add to Cart'} <ShoppingCart size={16} />
-                                </button>
+                                {addedId === product._id ? 'Added' : 'Add to Cart'} <ShoppingCart size={16} />
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -397,7 +395,7 @@ function Shop() {
                       <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center p-6">
                         <img src={product.imageUrl} alt={product.name}
                           className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl" />
-                        
+
                         {product.stock <= 3 && product.stock > 0 && (
                           <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">
                             Only {product.stock} Left
@@ -406,12 +404,11 @@ function Shop() {
 
                         <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <button onClick={(e) => handleAddToCart(e, product)}
-                            className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${
-                              addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
-                            }`}>
+                            className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
+                              }`}>
                             <ShoppingCart size={20} />
                           </button>
-                          <button 
+                          <button
                             onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
                             className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${isInWishlist(product._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'}`}>
                             <Heart size={20} className={isInWishlist(product._id) ? 'fill-white' : ''} />
@@ -443,11 +440,10 @@ function Shop() {
                   <button
                     key={x + 1}
                     onClick={() => handlePageChange(x + 1)}
-                    className={`w-10 h-10 flex items-center justify-center font-serif text-lg transition-colors border cursor-pointer ${
-                      x + 1 === page
-                        ? 'border-gemRed bg-gemRed text-white'
-                        : 'border-stone-200 text-stone-600 hover:border-gemRed hover:text-gemRed bg-white'
-                    }`}
+                    className={`w-10 h-10 flex items-center justify-center font-serif text-lg transition-colors border cursor-pointer ${x + 1 === page
+                      ? 'border-gemRed bg-gemRed text-white'
+                      : 'border-stone-200 text-stone-600 hover:border-gemRed hover:text-gemRed bg-white'
+                      }`}
                   >
                     {x + 1}
                   </button>
@@ -463,7 +459,7 @@ function Shop() {
                 </button>
               </div>
             )}
-            
+
           </div>
         </div>
 
