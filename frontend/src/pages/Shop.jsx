@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Heart, Star, ChevronDown, Filter, X, Check, LayoutGrid, List } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ChevronDown, Filter, X, Check, LayoutGrid, List } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -382,7 +382,7 @@ function Shop() {
                                   className={`flex items-center gap-2 px-6 py-3 rounded text-sm uppercase tracking-widest font-semibold transition-all shadow-md border-none cursor-pointer ${
                                     addedId === product._id ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark'
                                   }`}>
-                                  {addedId === product._id ? 'Added' : 'Add to Cart'} <ShoppingBag size={16} />
+                                  {addedId === product._id ? 'Added' : 'Add to Cart'} <ShoppingCart size={16} />
                                 </button>
                             </div>
                           </div>
@@ -409,7 +409,7 @@ function Shop() {
                             className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${
                               addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
                             }`}>
-                            <ShoppingBag size={20} />
+                            <ShoppingCart size={20} />
                           </button>
                           <button 
                             onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}

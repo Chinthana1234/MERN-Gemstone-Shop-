@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, CreditCard, Package, ChevronRight, ChevronLeft, Check, ShoppingBag } from 'lucide-react';
+import { MapPin, CreditCard, Package, ChevronRight, ChevronLeft, Check, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import API from '../utils/api';
@@ -65,7 +65,7 @@ function Checkout() {
     if (cartItems.length === 0) {
         return (
             <div className="pt-28 pb-20 min-h-screen bg-white flex flex-col items-center justify-center">
-                <ShoppingBag size={64} className="text-stone-300 mb-6" />
+                <ShoppingCart size={64} className="text-stone-300 mb-6" />
                 <h2 className="text-2xl font-serif text-stone-900 mb-3">Your Cart is Empty</h2>
                 <p className="text-stone-600 mb-8">Add some items before checking out.</p>
                 <button onClick={() => navigate('/shop')}

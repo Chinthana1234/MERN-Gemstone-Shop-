@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, ArrowLeft, Shield, Truck, Award, Check } from 'lucide-react';
+import { ShoppingCart, Star, ArrowLeft, Shield, Truck, Award, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import API from '../utils/api';
@@ -167,7 +167,7 @@ function ProductDetail() {
                   className={`flex-1 flex items-center justify-center gap-3 py-3.5 font-semibold uppercase tracking-widest text-sm transition-all duration-300 rounded ${
                     added ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark hover:shadow-lg'
                   }`}>
-                  <ShoppingBag size={18} />
+                  <ShoppingCart size={18} />
                   {added ? 'Added to Cart ✓' : 'Add to Cart'}
                 </button>
               </div>

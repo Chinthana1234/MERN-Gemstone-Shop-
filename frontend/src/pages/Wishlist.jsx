@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
+import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 
@@ -44,7 +44,7 @@ function Wishlist() {
                   <p className="text-xs uppercase tracking-widest text-stone-500 mb-6">{product.category}</p>
                   
                   <button onClick={() => addToCart(product, 1)} className="w-full flex items-center justify-center gap-2 bg-white border border-stone-200 text-stone-800 py-3 uppercase tracking-widest text-sm font-semibold hover:border-gemRed hover:text-gemRed hover:bg-stone-50 transition-colors rounded">
-                    <ShoppingBag size={16} /> Add to Cart
+                    <ShoppingCart size={16} /> Add to Cart
                   </button>
                 </div>
               </div>

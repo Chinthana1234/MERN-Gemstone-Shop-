@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 function Cart() {
@@ -9,7 +9,7 @@ function Cart() {
   if (cartItems.length === 0) {
     return (
       <div className="pt-28 pb-20 min-h-screen bg-white flex flex-col items-center justify-center">
-        <ShoppingBag size={64} className="text-stone-300 mb-6" />
+        <ShoppingCart size={64} className="text-stone-300 mb-6" />
         <h2 className="text-2xl font-serif text-stone-900 mb-3">Your Cart is Empty</h2>
         <p className="text-stone-600 mb-8">Discover our exceptional gemstone collection.</p>
         <Link to="/shop" className="bg-gemRed text-white font-semibold uppercase tracking-widest text-sm px-10 py-3 hover:bg-gemRedDark transition-all duration-300 rounded">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { ShoppingCart, Heart } from 'lucide-react';
 import API from '../../utils/api';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -50,7 +50,7 @@ function FeaturedGems() {
                   <button 
                     onClick={(e) => { e.preventDefault(); addToCart(gem, 1); }}
                     className="bg-white text-stone-900 p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-md">
-                    <ShoppingBag size={20} />
+                    <ShoppingCart size={20} />
                   </button>
                   <button 
                     onClick={(e) => { e.preventDefault(); toggleWishlist(gem._id); }}

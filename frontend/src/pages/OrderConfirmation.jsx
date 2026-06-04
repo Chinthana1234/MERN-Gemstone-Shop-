@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, MapPin, Clock, ArrowLeft, ShoppingBag, XCircle, Printer } from 'lucide-react';
+import { CheckCircle, Package, MapPin, Clock, ArrowLeft, ShoppingCart, XCircle, Printer } from 'lucide-react';
 import API from '../utils/api';
 
 function OrderConfirmation() {

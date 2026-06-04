@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, Heart, User, Menu, X, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -10,7 +10,20 @@ function Navbar() {
   const { user, logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const adminUrl = import.meta.env.VITE_ADMIN_URL ||
     (window.location.hostname.includes('vercel.app') ? 'https://auragems-admin.vercel.app' : 'http://localhost:5174');
 
@@ -26,18 +39,44 @@ function Navbar() {
   };
 
   return (
-    <nav className="fixed w-full top-0 z-50 bg-gemBg/90 backdrop-blur-md border-b border-gemBorder shadow-sm">
+    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-gemBg/80 backdrop-blur-lg border-b border-gemBorder shadow-md py-1' 
+        : 'bg-gemBg/35 backdrop-blur-xs border-b border-gemBorder/35 shadow-none'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
+          <div className={`flex-shrink-0 flex items-center ${isSearchOpen ? 'hidden md:flex' : 'flex'}`}>
             <Link to="/" className="flex items-center gap-2 group">
               <span className="text-2xl font-serif text-gemRed tracking-widest uppercase transition-transform duration-300 group-hover:scale-105">
                 Aura Gems
               </span>
             </Link>
           </div>
+
+          {/* Mobile Search Bar - visible when search is active on mobile */}
+          {isSearchOpen && (
+            <div className="flex-1 md:hidden px-2 animate-fadeIn">
+              <form onSubmit={handleSearch} className="w-full">
+                <div className="relative flex items-center">
+                  <Search className="absolute left-3 text-gemTextLight" size={18} strokeWidth={1.5} />
+                  <input
+                    type="text"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    placeholder="Search gems..."
+                    className="w-full bg-gemBgMarble text-gemText border border-gemBorder rounded-full py-1.5 pl-10 pr-10 focus:outline-none focus:border-gemRed transition-all text-sm"
+                    autoFocus
+                  />
+                  <button type="button" onClick={() => setIsSearchOpen(false)} className="absolute right-3 text-gemTextLight hover:text-gemRed transition-colors cursor-pointer">
+                    <X size={18} strokeWidth={1.5} />
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
 
           {/* Desktop Navigation Links or Search Bar */}
           <div className={`hidden md:flex items-center justify-center ${isSearchOpen ? 'flex-1 px-8' : 'space-x-8'}`}>
@@ -71,18 +110,18 @@ function Navbar() {
 
           {/* Icons (Desktop) */}
           <div className="hidden md:flex items-center space-x-6">
-            {!isSearchOpen && (
-              <button onClick={() => setIsSearchOpen(true)} className="text-gemText hover:text-gemRed transition-colors duration-300">
-                <Search size={20} strokeWidth={1.5} />
-              </button>
-            )}
             <Link to="/wishlist" className="text-gemText hover:text-gemRed transition-colors duration-300">
               <Heart size={20} strokeWidth={1.5} />
             </Link>
+            {!isSearchOpen && (
+              <button onClick={() => setIsSearchOpen(true)} className="text-gemText hover:text-gemRed transition-colors duration-300 cursor-pointer">
+                <Search size={20} strokeWidth={1.5} />
+              </button>
+            )}
             <Link to="/cart" className="text-gemText hover:text-gemRed transition-colors duration-300 relative">
-              <ShoppingBag size={20} strokeWidth={1.5} />
+              <ShoppingCart size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gemRed text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-gemRed text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -111,19 +150,22 @@ function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex items-center md:hidden space-x-4">
-            <Link to="/cart" className="text-gemText relative">
-              <ShoppingBag size={20} strokeWidth={1.5} />
+          {/* Mobile buttons - hidden when mobile search is open */}
+          <div className={`items-center md:hidden space-x-4 ${isSearchOpen ? 'hidden' : 'flex'}`}>
+            <button onClick={() => setIsSearchOpen(true)} className="text-gemText hover:text-gemRed transition-colors cursor-pointer">
+              <Search size={20} strokeWidth={1.5} />
+            </button>
+            <Link to="/cart" className="text-gemText relative hover:text-gemRed transition-colors">
+              <ShoppingCart size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gemRed text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-gemRed text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </Link>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gemText hover:text-gemRed transition-colors"
+              className="text-gemText hover:text-gemRed transition-colors cursor-pointer"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
