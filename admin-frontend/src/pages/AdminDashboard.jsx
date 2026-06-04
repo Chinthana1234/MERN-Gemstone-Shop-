@@ -7,23 +7,11 @@ function AdminDashboard() {
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
     const [reviews, setReviews] = useState([]);
-    const [coupons, setCoupons] = useState([]);
     const [loading, setLoading] = useState(true);
     
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
-
-    // For coupons
-    const [couponForm, setCouponForm] = useState({
-        code: '',
-        discountType: 'percentage',
-        discountValue: '',
-        minPurchaseAmount: '',
-        expiryDate: '',
-        isActive: true
-    });
-    const [savingCoupon, setSavingCoupon] = useState(false);
 
     // For order search/filters/modal
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -39,22 +27,17 @@ function AdminDashboard() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [ordersRes, productsRes, reviewsRes, couponsRes] = await Promise.all([
+            const [ordersRes, productsRes, reviewsRes] = await Promise.all([
                 API.get('/orders'),
                 API.get('/products?fetchAll=true'),
                 API.get('/products/reviews/all').catch((err) => {
                     console.error("Error fetching reviews:", err);
-                    return { data: [] };
-                }),
-                API.get('/coupons').catch((err) => {
-                    console.error("Error fetching coupons:", err);
                     return { data: [] };
                 })
             ]);
             setOrders(ordersRes.data);
             setProducts(productsRes.data.products || []);
             setReviews(reviewsRes.data || []);
-            setCoupons(couponsRes.data || []);
         } catch (error) {
             console.error("Error fetching admin data:", error);
         } finally {
@@ -74,49 +57,7 @@ function AdminDashboard() {
         }
     };
 
-    const handleSaveCoupon = async (e) => {
-        e.preventDefault();
-        setSavingCoupon(true);
-        try {
-            await API.post('/coupons', couponForm);
-            setCouponForm({
-                code: '',
-                discountType: 'percentage',
-                discountValue: '',
-                minPurchaseAmount: '',
-                expiryDate: '',
-                isActive: true
-            });
-            fetchData();
-        } catch (error) {
-            console.error("Error saving coupon:", error);
-            alert(error.response?.data?.message || "Error saving coupon. Make sure all fields are valid.");
-        } finally {
-            setSavingCoupon(false);
-        }
-    };
 
-    const handleDeleteCoupon = async (id) => {
-        if (window.confirm("Are you sure you want to delete this coupon?")) {
-            try {
-                await API.delete(`/coupons/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error("Error deleting coupon:", error);
-                alert(error.response?.data?.message || "Failed to delete coupon");
-            }
-        }
-    };
-
-    const handleToggleCoupon = async (id) => {
-        try {
-            await API.put(`/coupons/${id}/toggle`);
-            fetchData();
-        } catch (error) {
-            console.error("Error toggling coupon status:", error);
-            alert(error.response?.data?.message || "Failed to toggle coupon status");
-        }
-    };
 
     const handleDeliverOrder = async (id) => {
         try {
@@ -214,7 +155,6 @@ function AdminDashboard() {
                     <button onClick={() => setActiveTab('products')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'products' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Products</button>
                     <button onClick={() => setActiveTab('orders')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'orders' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Orders</button>
                     <button onClick={() => setActiveTab('reviews')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'reviews' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Reviews</button>
-                    <button onClick={() => setActiveTab('coupons')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'coupons' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Coupons</button>
                 </div>
 
                 {loading ? (
@@ -489,138 +429,7 @@ function AdminDashboard() {
                             </div>
                         )}
 
-                        {/* COUPONS TAB */}
-                        {activeTab === 'coupons' && (
-                            <div>
-                                <h2 className="text-xl font-serif text-gemText mb-6">Coupon & Discount Management</h2>
 
-                                {/* Create Coupon Form */}
-                                <div className="bg-gemCard border border-gemBorder p-6 rounded mb-8 animate-fadeIn">
-                                    <h3 className="text-lg text-gemText mb-4">Create New Coupon</h3>
-                                    <form onSubmit={handleSaveCoupon} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Coupon Code (e.g., WELCOME20)" 
-                                            required 
-                                            value={couponForm.code} 
-                                            onChange={e => setCouponForm({...couponForm, code: e.target.value.toUpperCase()})} 
-                                            className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" 
-                                        />
-                                        <select 
-                                            value={couponForm.discountType} 
-                                            onChange={e => setCouponForm({...couponForm, discountType: e.target.value})} 
-                                            className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none"
-                                        >
-                                            <option value="percentage">Percentage Discount (%)</option>
-                                            <option value="flat">Flat Cash Discount ($)</option>
-                                        </select>
-                                        <input 
-                                            type="number" 
-                                            placeholder={couponForm.discountType === 'percentage' ? "Discount Percentage (e.g., 20)" : "Discount Cash Amount (e.g., 50)"} 
-                                            required 
-                                            value={couponForm.discountValue} 
-                                            onChange={e => setCouponForm({...couponForm, discountValue: e.target.value})} 
-                                            className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" 
-                                        />
-                                        <input 
-                                            type="number" 
-                                            placeholder="Minimum Order Spend ($)" 
-                                            value={couponForm.minPurchaseAmount} 
-                                            onChange={e => setCouponForm({...couponForm, minPurchaseAmount: e.target.value})} 
-                                            className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" 
-                                        />
-                                        <div className="flex flex-col">
-                                            <label className="text-xs text-gemTextLight uppercase tracking-wider mb-1 block">Expiry Date</label>
-                                            <input 
-                                                type="date" 
-                                                required 
-                                                value={couponForm.expiryDate} 
-                                                onChange={e => setCouponForm({...couponForm, expiryDate: e.target.value})} 
-                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" 
-                                            />
-                                        </div>
-                                        <div className="flex items-center gap-2 p-3">
-                                            <input 
-                                                type="checkbox" 
-                                                id="isActive" 
-                                                checked={couponForm.isActive} 
-                                                onChange={e => setCouponForm({...couponForm, isActive: e.target.checked})} 
-                                                className="w-4 h-4 accent-gemRed border border-gemBorder" 
-                                            />
-                                            <label htmlFor="isActive" className="text-sm text-gemText select-none">Active immediately</label>
-                                        </div>
-                                        <div className="md:col-span-2 mt-2">
-                                            <button 
-                                                type="submit" 
-                                                disabled={savingCoupon}
-                                                className="bg-gemRed text-white p-3 uppercase tracking-widest font-semibold hover:bg-gemRedDark w-full transition-colors disabled:opacity-50"
-                                            >
-                                                {savingCoupon ? 'Creating Coupon...' : 'Create Coupon'}
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                {/* Coupon List Table */}
-                                <div className="bg-gemCard border border-gemBorder rounded overflow-hidden">
-                                    <table className="w-full text-left text-gemText border-collapse">
-                                        <thead>
-                                            <tr className="bg-gemBgAlt border-b border-gemBorder text-gemTextLight uppercase tracking-wider text-xs">
-                                                <th className="p-4 font-semibold">Code</th>
-                                                <th className="p-4 font-semibold">Type</th>
-                                                <th className="p-4 font-semibold">Value</th>
-                                                <th className="p-4 font-semibold">Min Spend</th>
-                                                <th className="p-4 font-semibold">Expiry Date</th>
-                                                <th className="p-4 font-semibold">Status</th>
-                                                <th className="p-4 font-semibold">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gemBorder text-sm font-light">
-                                            {coupons.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan="7" className="p-8 text-center text-gemTextLight">No coupons configured.</td>
-                                                </tr>
-                                            ) : (
-                                                coupons.map((coupon) => (
-                                                    <tr key={coupon._id} className="hover:bg-gemBgAlt/50 transition-colors animate-fadeIn">
-                                                        <td className="p-4 font-bold tracking-wider">{coupon.code}</td>
-                                                        <td className="p-4 capitalize">{coupon.discountType}</td>
-                                                        <td className="p-4">
-                                                            {coupon.discountType === 'percentage' ? `${coupon.discountValue}%` : `$${coupon.discountValue.toLocaleString()}`}
-                                                        </td>
-                                                        <td className="p-4">
-                                                            ${coupon.minPurchaseAmount ? coupon.minPurchaseAmount.toLocaleString() : '0'}
-                                                        </td>
-                                                        <td className="p-4 text-gemTextLight">{new Date(coupon.expiryDate).toLocaleDateString()}</td>
-                                                        <td className="p-4">
-                                                            <button 
-                                                                onClick={() => handleToggleCoupon(coupon._id)}
-                                                                className={`px-3 py-1 rounded text-xs font-semibold select-none cursor-pointer transition-colors ${
-                                                                    coupon.isActive 
-                                                                        ? 'text-green-500 bg-green-500/10 hover:bg-green-500/25' 
-                                                                        : 'text-red-500 bg-red-500/10 hover:bg-red-500/25'
-                                                                }`}
-                                                            >
-                                                                {coupon.isActive ? 'Active' : 'Inactive'}
-                                                            </button>
-                                                        </td>
-                                                        <td className="p-4">
-                                                            <button 
-                                                                onClick={() => handleDeleteCoupon(coupon._id)}
-                                                                className="text-red-500 hover:text-red-700 hover:bg-red-500/10 p-1.5 rounded transition-all duration-200 cursor-pointer"
-                                                                title="Delete Coupon"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
                     </>
                 )}
 
