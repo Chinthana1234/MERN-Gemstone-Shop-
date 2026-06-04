@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Product from './models/Product.js';
+import { clearProductCache, redisClient } from './utils/redis.js';
 
 dotenv.config();
 
@@ -97,10 +98,28 @@ const seedGems = async () => {
         if (productsToInsert.length > 0) {
             await Product.insertMany(productsToInsert);
             console.log(`Successfully seeded ${productsToInsert.length} gemstone products!`);
+            
+            // Clear Redis cache to avoid stale empty cache listings
+            try {
+                await clearProductCache();
+            } catch (cacheErr) {
+                console.warn('Redis cache clear failed: ', cacheErr.message);
+            }
         } else {
             console.log('No images found to seed.');
         }
 
+        if (redisClient) {
+            try {
+                await redisClient.quit();
+            } catch (err) {
+                try {
+                    await redisClient.disconnect();
+                } catch (discErr) {
+                    // ignore
+                }
+            }
+        }
         process.exit();
     } catch (error) {
         console.error('Error during seeding:', error);

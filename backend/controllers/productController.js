@@ -36,17 +36,17 @@ export const getProducts = async (req, res) => {
     }
 
     // Price range
-    if (minPrice || maxPrice) {
+    if ((minPrice !== undefined && minPrice !== '') || (maxPrice !== undefined && maxPrice !== '')) {
       filter.price = {};
-      if (minPrice) filter.price.$gte = Number(minPrice);
-      if (maxPrice) filter.price.$lte = Number(maxPrice);
+      if (minPrice !== undefined && minPrice !== '') filter.price.$gte = Number(minPrice);
+      if (maxPrice !== undefined && maxPrice !== '') filter.price.$lte = Number(maxPrice);
     }
 
     // Carat range
-    if (minCarat || maxCarat) {
+    if ((minCarat !== undefined && minCarat !== '') || (maxCarat !== undefined && maxCarat !== '')) {
       filter.carat = {};
-      if (minCarat) filter.carat.$gte = Number(minCarat);
-      if (maxCarat) filter.carat.$lte = Number(maxCarat);
+      if (minCarat !== undefined && minCarat !== '') filter.carat.$gte = Number(minCarat);
+      if (maxCarat !== undefined && maxCarat !== '') filter.carat.$lte = Number(maxCarat);
     }
 
     // Determine sort option
