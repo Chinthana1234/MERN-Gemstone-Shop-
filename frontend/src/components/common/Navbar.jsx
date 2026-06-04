@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShoppingCart, Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -12,6 +12,7 @@ function Navbar() {
   const [keyword, setKeyword] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,10 +39,12 @@ function Navbar() {
     }
   };
 
+  const isHomePage = location.pathname === '/';
+
   return (
     <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-gemBg/80 backdrop-blur-lg border-b border-gemBorder shadow-md py-1' 
+      (isScrolled || !isHomePage)
+        ? 'bg-gemBg/95 backdrop-blur-lg border-b border-gemBorder shadow-md py-1' 
         : 'bg-gemBg/35 backdrop-blur-xs border-b border-gemBorder/35 shadow-none'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
