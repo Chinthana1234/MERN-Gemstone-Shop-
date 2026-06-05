@@ -19,11 +19,11 @@ function get(url) {
 async function run() {
   try {
     console.log('Testing / ...');
-    const resRoot = await get('http://localhost:5002/');
+    const resRoot = await get('http://localhost:5003/');
     console.log('Root response:', JSON.stringify(resRoot).substring(0, 500));
     
     console.log('Testing /api/products...');
-    const res1 = await get('http://localhost:5002/api/products');
+    const res1 = await get('http://localhost:5003/api/products');
     console.log('No filters response:', JSON.stringify(res1).substring(0, 500));
   } catch (err) {
     console.error('Error:', err.message);
