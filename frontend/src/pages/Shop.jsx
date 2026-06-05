@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Heart, Star, ChevronDown, Filter, X, Check, LayoutGrid, List, Gem, Sparkles } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ChevronDown, Filter, X, Check, Gem, Sparkles } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -22,7 +22,7 @@ import {
   GEM_TYPES,
   JEWELRY_TYPES
 } from '../store/slices/productSlice';
-import { setMobileFilterOpen, setViewMode } from '../store/slices/uiSlice';
+import { setMobileFilterOpen } from '../store/slices/uiSlice';
 
 // Custom styles for rc-slider to match dark luxury theme
 const sliderStyles = {
@@ -69,7 +69,7 @@ function Shop() {
   } = useSelector((state) => state.products);
 
   // Selectors for uiSlice
-  const { isMobileFilterOpen, viewMode } = useSelector((state) => state.ui);
+  const { isMobileFilterOpen } = useSelector((state) => state.ui);
 
   const [addedId, setAddedId] = useState(null);
   const { addToCart } = useCart();
@@ -282,10 +282,6 @@ function Shop() {
               <Filter size={18} /> Filters
             </button>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 border-r border-stone-200 pr-4">
-                <button onClick={() => dispatch(setViewMode('grid'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'grid' ? 'text-stone-800' : 'text-stone-400'}`}><LayoutGrid size={18} /></button>
-                <button onClick={() => dispatch(setViewMode('list'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'list' ? 'text-stone-800' : 'text-stone-400'}`}><List size={18} /></button>
-              </div>
               <div className="text-sm font-serif font-bold text-stone-700">{totalCount} products</div>
             </div>
           </div>
@@ -307,12 +303,6 @@ function Shop() {
 
             {/* Topbar: Sort & Count (Desktop) */}
             <div className="hidden lg:flex justify-between items-center mb-8 border-b border-stone-200/80 pb-6">
-
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-serif font-bold text-stone-800">View As</span>
-                <button onClick={() => dispatch(setViewMode('grid'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'grid' ? 'text-stone-800' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
-                <button onClick={() => dispatch(setViewMode('list'))} className={`transition-colors border-none bg-transparent cursor-pointer ${viewMode === 'list' ? 'text-stone-800' : 'text-stone-400 hover:text-stone-600'}`}><List size={20} /></button>
-              </div>
 
               <div className="text-sm font-serif font-bold text-stone-700">{totalCount} products</div>
 
@@ -352,110 +342,62 @@ function Shop() {
 
             {/* Loading Skeletons */}
             {loading && (
-              <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" : "flex flex-col gap-6"}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className={`animate-pulse ${viewMode === 'list' ? 'flex gap-6' : ''}`}>
-                    <div className={`bg-stone-200/60 rounded-lg ${viewMode === 'list' ? 'w-48 h-48 shrink-0' : 'aspect-[4/5] mb-4'}`}></div>
-                    <div className={viewMode === 'list' ? 'flex-1 py-4' : ''}>
-                      <div className={`h-3 bg-stone-200/60 mx-auto mb-2 rounded ${viewMode === 'list' ? 'w-1/4 mx-0' : 'w-1/3'}`}></div>
-                      <div className={`h-4 bg-stone-200/60 mx-auto mb-2 rounded ${viewMode === 'list' ? 'w-2/3 mx-0' : 'w-2/3'}`}></div>
-                      <div className={`h-3 bg-stone-200/60 mx-auto rounded ${viewMode === 'list' ? 'w-1/4 mx-0' : 'w-1/4'}`}></div>
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-stone-200/60 rounded-lg aspect-[4/5] mb-4"></div>
+                    <div>
+                      <div className="h-3 bg-stone-200/60 mx-auto mb-2 rounded w-1/3"></div>
+                      <div className="h-4 bg-stone-200/60 mx-auto mb-2 rounded w-2/3"></div>
+                      <div className="h-3 bg-stone-200/60 mx-auto rounded w-1/4"></div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Product Grid / List */}
+            {/* Product Grid */}
             {!loading && (
-              <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" : "flex flex-col gap-6"}>
-                {products.map(product => {
-                  if (viewMode === 'list') {
-                    return (
-                      <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer flex flex-col sm:flex-row gap-6 bg-stone-50 p-4 rounded-lg shadow-sm border border-stone-100 hover:border-gemRed/40 transition-all text-stone-800 no-underline">
-                        <div className="w-full sm:w-56 h-56 shrink-0 relative overflow-hidden rounded bg-white border border-stone-200/60 flex items-center justify-center p-4">
-                          <img src={product.imageUrl} alt={product.name}
-                            className="max-w-[75%] max-h-[75%] object-contain object-center group-hover:scale-105 transition-transform duration-700 drop-shadow-xl" />
-                          {product.stock <= 3 && product.stock > 0 && (
-                            <span className="absolute top-3 left-3 bg-gemRed text-white text-xs px-2 py-1 uppercase tracking-wider rounded">
-                              Only {product.stock} Left
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex-1 flex flex-col justify-center py-2">
-                          <p className="text-gemRed text-xs uppercase tracking-widest mb-2 font-semibold">{product.category}</p>
-                          <h3 className="text-2xl font-serif text-stone-800 mb-3 group-hover:text-gemRed transition-colors">{product.name}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {products.map(product => (
+                  <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block text-stone-800 no-underline">
+                    <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center p-6">
+                      <img src={product.imageUrl} alt={product.name}
+                        className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl" />
 
-                          <div className="flex items-center gap-1 mb-4">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} size={14} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-200'} />
-                            ))}
-                            <span className="text-sm text-stone-400 ml-2">({product.numReviews} reviews)</span>
-                          </div>
+                      {product.stock <= 3 && product.stock > 0 && (
+                        <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">
+                          Only {product.stock} Left
+                        </span>
+                      )}
 
-                          <p className="text-stone-600 text-sm font-light line-clamp-2 mb-6">{product.description}</p>
-
-                          <div className="mt-auto flex items-center justify-between">
-                            <p className="text-stone-900 font-medium text-xl font-serif">${product.price.toLocaleString()}</p>
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
-                                className={`border p-3 rounded transition-colors cursor-pointer ${isInWishlist(product._id) ? 'border-gemRed text-gemRed' : 'border-stone-200 text-stone-700 bg-white hover:border-gemRed hover:text-gemRed'}`}>
-                                <Heart size={18} className={isInWishlist(product._id) ? 'fill-gemRed' : ''} />
-                              </button>
-                              <button onClick={(e) => handleAddToCart(e, product)}
-                                className={`flex items-center gap-2 px-6 py-3 rounded text-sm uppercase tracking-widest font-semibold transition-all shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark'
-                                  }`}>
-                                {addedId === product._id ? 'Added' : 'Add to Cart'} <ShoppingCart size={16} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  }
-
-                  // Grid View Card
-                  return (
-                    <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block text-stone-800 no-underline">
-                      <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center p-6">
-                        <img src={product.imageUrl} alt={product.name}
-                          className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl" />
-
-                        {product.stock <= 3 && product.stock > 0 && (
-                          <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">
-                            Only {product.stock} Left
-                          </span>
-                        )}
-
-                        <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <button onClick={(e) => handleAddToCart(e, product)}
-                            className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
-                              }`}>
-                            <ShoppingCart size={20} />
-                          </button>
-                          <button
-                            onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
-                            className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${isInWishlist(product._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'}`}>
-                            <Heart size={20} className={isInWishlist(product._id) ? 'fill-white' : ''} />
-                          </button>
-                        </div>
+                      <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button onClick={(e) => handleAddToCart(e, product)}
+                          className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
+                            }`}>
+                          <ShoppingCart size={20} />
+                        </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+                          className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${isInWishlist(product._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'}`}>
+                          <Heart size={20} className={isInWishlist(product._id) ? 'fill-white' : ''} />
+                        </button>
                       </div>
+                    </div>
 
-                      <div className="text-center px-2">
-                        <p className="text-gemRed text-xs uppercase tracking-widest mb-1 font-semibold">{product.category}</p>
-                        <h3 className="text-lg font-serif text-stone-800 mb-1 group-hover:text-gemRed transition-colors truncate">{product.name}</h3>
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={12} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-200'} />
-                          ))}
-                          <span className="text-xs text-stone-400 ml-1">({product.numReviews})</span>
-                        </div>
-                        <p className="text-stone-900 font-medium font-serif">${product.price.toLocaleString()}</p>
+                    <div className="text-center px-2">
+                      <p className="text-gemRed text-xs uppercase tracking-widest mb-1 font-semibold">{product.category}</p>
+                      <h3 className="text-lg font-serif text-stone-800 mb-1 group-hover:text-gemRed transition-colors truncate">{product.name}</h3>
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-200'} />
+                        ))}
+                        <span className="text-xs text-stone-400 ml-1">({product.numReviews})</span>
                       </div>
-                    </Link>
-                  );
-                })}
+                      <p className="text-stone-900 font-medium font-serif">${product.price.toLocaleString()}</p>
+                    </div>
+                  </Link>
+                ))}
               </div>
             )}
 
