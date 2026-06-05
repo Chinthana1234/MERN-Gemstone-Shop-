@@ -131,31 +131,29 @@ function AdminDashboard() {
         if (!file) return;
 
         const formData = new FormData();
-        formData.append('file', file);
-        // Using the preset name you created. Make sure it matches exactly!
-        formData.append('upload_preset', 'gemstone_shop_preset'); 
+        formData.append('image', file);
 
         setUploading(true);
 
         try {
-            // Uploading directly to Cloudinary using your cloud name
-            const response = await fetch("https://api.cloudinary.com/v1_1/dzdhkmytt/image/upload", {
-                method: "POST",
-                body: formData
+            // Securely upload through our backend /api/upload endpoint
+            const { data } = await API.post('/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
-            const data = await response.json();
-            
-            if (data.secure_url) {
-                setProductForm(prev => ({ ...prev, imageUrl: data.secure_url }));
+            if (data.url) {
+                setProductForm(prev => ({ ...prev, imageUrl: data.url }));
             } else {
-                throw new Error(data.error?.message || "Failed to upload to Cloudinary");
+                throw new Error("Failed to upload image");
             }
-            
+
             setUploading(false);
         } catch (error) {
             console.error("Error uploading image:", error);
-            alert("Image upload failed: " + error.message);
+            const errMsg = error.response?.data?.message || error.message;
+            alert("Image upload failed: " + errMsg);
             setUploading(false);
         }
     };

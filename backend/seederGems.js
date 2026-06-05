@@ -69,11 +69,11 @@ const seedGems = async () => {
                 }
 
                 const images = fs.readdirSync(folderPath).filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file));
-                
+
                 images.forEach((image, index) => {
                     const imageUrl = `/images/gems/${folder}/${image}`;
                     const carat = getRandomFloat(1.0, 15.0);
-                    
+
                     // Price calculation: base price * carat * random multiplier (0.8 to 1.5)
                     const basePrice = basePriceMap[category] || 1000;
                     const priceMultiplier = getRandomFloat(0.8, 1.5);
@@ -212,7 +212,7 @@ const seedGems = async () => {
         if (totalProductsToInsert.length > 0) {
             await Product.insertMany(totalProductsToInsert);
             console.log(`Successfully seeded ${totalProductsToInsert.length} products (including ${jewelryProducts.length} jewelry items)!`);
-            
+
             // Clear Redis cache to avoid stale empty cache listings
             try {
                 await clearProductCache();

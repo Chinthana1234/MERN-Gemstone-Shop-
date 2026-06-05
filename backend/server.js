@@ -73,4 +73,5 @@ if (!process.env.VERCEL) {
     });
 }
 
+// Force nodemon reload after env update
 export default app;
