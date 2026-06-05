@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Heart, Star, ChevronDown, Filter, X, Check, LayoutGrid, List } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ChevronDown, Filter, X, Check, LayoutGrid, List, Gem, Sparkles } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -17,7 +17,10 @@ import {
   setSort,
   setPage,
   setKeyword,
-  clearFilters
+  clearFilters,
+  setShopType,
+  GEM_TYPES,
+  JEWELRY_TYPES
 } from '../store/slices/productSlice';
 import { setMobileFilterOpen, setViewMode } from '../store/slices/uiSlice';
 
@@ -36,15 +39,7 @@ const sliderStyles = {
   rail: { backgroundColor: '#e5e5e5', height: 4 },
 };
 
-const GEM_TYPES = [
-  'Blue Sapphire',
-  'Yellow Sapphire',
-  'White Sapphire',
-  'Spessartine Garnet',
-  'Ruby',
-  'Emerald',
-  "Cat's Eye"
-];
+
 
 const SORT_OPTIONS = [
   { label: 'Price: Low to High', value: 'priceAsc' },
@@ -69,7 +64,8 @@ function Shop() {
     priceRange,
     selectedCategories,
     sort,
-    keyword
+    keyword,
+    shopType
   } = useSelector((state) => state.products);
 
   // Selectors for uiSlice
@@ -95,7 +91,7 @@ function Shop() {
   useEffect(() => {
     dispatch(setPage(1));
     dispatch(fetchFilteredProducts(1));
-  }, [selectedCategories, sort, caratRange, priceRange, keyword, dispatch]);
+  }, [selectedCategories, sort, caratRange, priceRange, keyword, shopType, dispatch]);
 
   const getCategoryCount = (cat) => {
     return allProducts.filter(p => p.category.toLowerCase() === cat.toLowerCase()).length;
@@ -140,44 +136,46 @@ function Shop() {
       </div>
 
       {/* Carat Weight Slider */}
-      <div className="border-b border-stone-200/80 pb-10">
-        <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-900 mb-6">
-          Carat Weight
-        </h3>
+      {shopType === 'gems' && (
+        <div className="border-b border-stone-200/80 pb-10">
+          <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-900 mb-6">
+            Carat Weight
+          </h3>
 
-        <div className="flex justify-between items-center mb-6">
-          <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[0]}</div>
-          <span className="text-stone-400">-</span>
-          <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[1]}</div>
-        </div>
+          <div className="flex justify-between items-center mb-6">
+            <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[0]}</div>
+            <span className="text-stone-400">-</span>
+            <div className="border border-stone-200 px-4 py-2 w-20 text-center text-sm text-stone-800 font-serif bg-stone-50">{caratRange[1]}</div>
+          </div>
 
-        <div className="px-2 mb-2">
-          <Slider
-            range
-            min={0}
-            max={maxCaratLimit}
-            step={0.5}
-            value={caratRange}
-            onChange={handleCaratRangeChange}
-            styles={sliderStyles}
-          />
-          <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
-            <span>0</span>
-            <span>{Math.round(maxCaratLimit * 0.25)}</span>
-            <span>{Math.round(maxCaratLimit * 0.5)}</span>
-            <span>{Math.round(maxCaratLimit * 0.75)}</span>
-            <span>{maxCaratLimit}</span>
+          <div className="px-2 mb-2">
+            <Slider
+              range
+              min={0}
+              max={maxCaratLimit}
+              step={0.5}
+              value={caratRange}
+              onChange={handleCaratRangeChange}
+              styles={sliderStyles}
+            />
+            <div className="flex justify-between mt-4 text-xs text-stone-700 font-serif font-bold">
+              <span>0</span>
+              <span>{Math.round(maxCaratLimit * 0.25)}</span>
+              <span>{Math.round(maxCaratLimit * 0.5)}</span>
+              <span>{Math.round(maxCaratLimit * 0.75)}</span>
+              <span>{maxCaratLimit}</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Gem Type */}
+      {/* Gem/Jewelry Type */}
       <div className="border-b border-stone-200/80 pb-10">
         <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-900 mb-6">
-          Gem Type
+          {shopType === 'gems' ? 'Gem Type' : 'Jewelry Type'}
         </h3>
         <div className="space-y-4">
-          {GEM_TYPES.map(cat => (
+          {(shopType === 'gems' ? GEM_TYPES : JEWELRY_TYPES).map(cat => (
             <div key={cat} className="flex justify-between items-center cursor-pointer group" onClick={() => handleToggleCategory(cat)}>
               <div className="flex items-center gap-3">
                 <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${selectedCategories.includes(cat) ? 'bg-gemRed border-gemRed' : 'border-stone-200 group-hover:border-gemRed'
@@ -237,12 +235,40 @@ function Shop() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Page Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-6">
           <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Our Collection</span>
           <h1 className="text-4xl md:text-5xl font-serif text-stone-900 mt-3 mb-4">
-            {keyword ? `Search Results for "${keyword}"` : 'Gemstone Gallery'}
+            {keyword ? `Search Results for "${keyword}"` : (shopType === 'gems' ? 'Gemstone Gallery' : 'Jewelry Gallery')}
           </h1>
-          <div className="h-0.5 w-24 bg-gemRed mx-auto"></div>
+          <div className="h-0.5 w-24 bg-gemRed mx-auto mb-6"></div>
+        </div>
+
+        {/* Gems / Jewelry Toggle Tabs */}
+        <div className="flex justify-center mb-10">
+          <div className="bg-stone-100 p-1.5 rounded-full inline-flex border border-stone-200/60 shadow-inner">
+            <button
+              onClick={() => dispatch(setShopType('gems'))}
+              className={`px-8 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
+                shopType === 'gems'
+                  ? 'bg-gemRed text-white shadow-md'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/45'
+              }`}
+            >
+              <Gem size={14} />
+              Gemstones
+            </button>
+            <button
+              onClick={() => dispatch(setShopType('jewelry'))}
+              className={`px-8 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
+                shopType === 'jewelry'
+                  ? 'bg-gemRed text-white shadow-md'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/45'
+              }`}
+            >
+              <Sparkles size={14} />
+              Jewelry
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-10">
@@ -453,7 +479,9 @@ function Shop() {
 
             {!loading && products.length === 0 && (
               <div className="text-center py-20 bg-stone-50 rounded-lg border border-stone-200/60">
-                <p className="text-stone-600 text-lg mb-4">No gemstones match your filters.</p>
+                <p className="text-stone-600 text-lg mb-4">
+                  {shopType === 'gems' ? 'No gemstones match your filters.' : 'No jewelry items match your filters.'}
+                </p>
                 <button onClick={handleClearFilters} className="text-gemRed hover:underline uppercase tracking-widest text-sm font-semibold border-none bg-transparent cursor-pointer">
                   Clear Filters
                 </button>

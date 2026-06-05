@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShoppingCart, Heart, User, Menu, X, LogOut } from 'lucide-react';
+import { useDispatch } from 'react-redux';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { setShopType, clearFilters } from '../../store/slices/productSlice';
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -13,6 +15,12 @@ function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  const handleShopClick = () => {
+    dispatch(setShopType('gems'));
+    dispatch(clearFilters());
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -103,7 +111,7 @@ function Navbar() {
             ) : (
               <>
                 <Link to="/" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Home</Link>
-                <Link to="/shop" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Shop</Link>
+                <Link to="/shop" onClick={handleShopClick} className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Shop</Link>
                 <Link to="/about" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">About Us</Link>
                 <Link to="/contact" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Contact</Link>
                 <Link to="/reviews" className="text-sm uppercase tracking-widest text-gemText hover:text-gemRed transition-colors duration-300 font-medium">Reviews</Link>
@@ -181,7 +189,7 @@ function Navbar() {
         <div className="md:hidden bg-gemBg border-b border-gemBorder absolute w-full pb-4 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center">
             <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">HOME</Link>
-            <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">SHOP</Link>
+            <Link to="/shop" onClick={() => { setIsMobileMenuOpen(false); handleShopClick(); }} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">SHOP</Link>
             <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">ABOUT US</Link>
             <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">CONTACT</Link>
             <Link to="/reviews" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-serif tracking-widest text-gemText hover:text-gemRed">REVIEWS</Link>

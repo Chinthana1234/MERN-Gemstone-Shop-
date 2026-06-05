@@ -1,6 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import API from '../../utils/api';
 
+export const GEM_TYPES = [
+  'Blue Sapphire',
+  'Yellow Sapphire',
+  'White Sapphire',
+  'Spessartine Garnet',
+  'Ruby',
+  'Emerald',
+  "Cat's Eye"
+];
+
+export const JEWELRY_TYPES = [
+  'Rings',
+  'Necklaces',
+  'Earrings',
+  'Bracelets'
+];
+
+
 export const fetchAllProducts = createAsyncThunk(
   'products/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -22,14 +40,25 @@ export const fetchFilteredProducts = createAsyncThunk(
   async (pageNumber = 1, { getState, rejectWithValue }) => {
     try {
       const { products: productState } = getState();
-      const { selectedCategories, caratRange, priceRange, sort, keyword } = productState;
+      const { selectedCategories, caratRange, priceRange, sort, keyword, shopType } = productState;
 
       const queryParams = new URLSearchParams();
-      if (selectedCategories.length > 0) {
-        queryParams.append('category', selectedCategories.join(','));
+      
+      let categoriesToSend = [...selectedCategories];
+      if (categoriesToSend.length === 0) {
+        if (shopType === 'gems') {
+          categoriesToSend = GEM_TYPES;
+        } else {
+          categoriesToSend = JEWELRY_TYPES;
+        }
       }
-      queryParams.append('minCarat', caratRange[0]);
-      queryParams.append('maxCarat', caratRange[1]);
+      queryParams.append('category', categoriesToSend.join(','));
+
+      if (shopType === 'gems') {
+        queryParams.append('minCarat', caratRange[0]);
+        queryParams.append('maxCarat', caratRange[1]);
+      }
+      
       queryParams.append('minPrice', priceRange[0]);
       queryParams.append('maxPrice', priceRange[1]);
       queryParams.append('pageNumber', pageNumber);
@@ -73,6 +102,7 @@ const initialState = {
   selectedCategories: [],
   sort: 'priceAsc',
   keyword: '',
+  shopType: 'gems', // 'gems' or 'jewelry'
 };
 
 const productSlice = createSlice({
@@ -104,6 +134,14 @@ const productSlice = createSlice({
     },
     setKeyword: (state, action) => {
       state.keyword = action.payload;
+    },
+    setShopType: (state, action) => {
+      state.shopType = action.payload;
+      state.selectedCategories = [];
+      state.page = 1;
+      // Also reset bounds to active limit defaults
+      state.caratRange = [0, state.maxCaratLimit];
+      state.priceRange = [0, state.maxPriceLimit];
     },
     clearFilters: (state) => {
       state.selectedCategories = [];
@@ -163,6 +201,7 @@ export const {
   setPage,
   setKeyword,
   clearFilters,
+  setShopType,
 } = productSlice.actions;
 
 export default productSlice.reducer;
