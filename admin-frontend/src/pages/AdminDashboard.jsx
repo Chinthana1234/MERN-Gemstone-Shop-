@@ -2,6 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/api';
 import { Package, ShoppingCart, TrendingUp, Edit, Trash2, CheckCircle, Clock, Truck, XCircle, X, User, Mail, MapPin, CreditCard } from 'lucide-react';
 
+const GEMSTONE_CATEGORIES = [
+    'Blue Sapphire',
+    'Yellow Sapphire',
+    'White Sapphire',
+    'Spessartine Garnet',
+    'Ruby',
+    'Emerald',
+    "Cat's Eye"
+];
+
+const JEWELRY_CATEGORIES = [
+    'Rings',
+    'Necklaces',
+    'Earrings',
+    'Bracelets'
+];
+
 function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
     const [orders, setOrders] = useState([]);
@@ -13,6 +30,7 @@ function AdminDashboard() {
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
     const [productType, setProductType] = useState('Gemstone'); // 'Gemstone' or 'Jewelry'
+    const [isCustomCategory, setIsCustomCategory] = useState(false);
     const [uploading, setUploading] = useState(false);
     const formRef = useRef(null);
 
@@ -170,6 +188,7 @@ function AdminDashboard() {
             setEditingProduct(null);
             setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
             setProductType('Gemstone');
+            setIsCustomCategory(false);
             fetchData();
         } catch (error) {
             console.error("Error saving product:", error);
@@ -256,7 +275,39 @@ function AdminDashboard() {
                                             </select>
                                         </div>
                                         <input type="text" placeholder="Product Name" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
-                                        <input type="text" placeholder="Category (e.g. Sapphire)" required value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                        <div className="flex flex-col gap-2">
+                                            <select 
+                                                value={isCustomCategory ? 'custom' : productForm.category}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (val === 'custom') {
+                                                        setIsCustomCategory(true);
+                                                        setProductForm(prev => ({ ...prev, category: '' }));
+                                                    } else {
+                                                        setIsCustomCategory(false);
+                                                        setProductForm(prev => ({ ...prev, category: val }));
+                                                    }
+                                                }}
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none cursor-pointer rounded w-full"
+                                                required
+                                            >
+                                                <option value="" disabled>Select Category</option>
+                                                {(productType === 'Gemstone' ? GEMSTONE_CATEGORIES : JEWELRY_CATEGORIES).map(cat => (
+                                                    <option key={cat} value={cat}>{cat}</option>
+                                                ))}
+                                                <option value="custom">+ Add Custom Category...</option>
+                                            </select>
+                                            {isCustomCategory && (
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Enter Custom Category" 
+                                                    required 
+                                                    value={productForm.category} 
+                                                    onChange={e => setProductForm({...productForm, category: e.target.value})} 
+                                                    className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" 
+                                                />
+                                            )}
+                                        </div>
                                         <input type="number" placeholder="Price ($)" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <input type="number" placeholder="Stock Quantity" required value={productForm.stock} onChange={e => setProductForm({...productForm, stock: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         
@@ -284,7 +335,7 @@ function AdminDashboard() {
                                                 {editingProduct ? 'Update Product' : 'Add Product'}
                                             </button>
                                             {editingProduct && (
-                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' }); setProductType('Gemstone'); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
+                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' }); setProductType('Gemstone'); setIsCustomCategory(false); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
                                                     Cancel
                                                 </button>
                                             )}
@@ -325,6 +376,8 @@ function AdminDashboard() {
                                                                 imageUrl: product.imageUrl || '',
                                                                 description: product.description || ''
                                                             });
+                                                            const isPredef = GEMSTONE_CATEGORIES.includes(product.category) || JEWELRY_CATEGORIES.includes(product.category);
+                                                            setIsCustomCategory(!isPredef);
                                                             setProductType(product.carat > 0 ? 'Gemstone' : 'Jewelry');
                                                             setTimeout(() => {
                                                                 formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
