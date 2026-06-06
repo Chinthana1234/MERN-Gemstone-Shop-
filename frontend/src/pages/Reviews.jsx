@@ -3,7 +3,11 @@ import { Star, User, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import reviewBanner from '../assets/images/review page/Gemini_Generated_Image_agdsayagdsayagds.png';
 
-const DEFAULT_REVIEWS = [];
+const DEFAULT_REVIEWS = [
+    { rating: 5, text: "The quality of the sapphire I purchased was beyond my expectations. The GIA certification was provided and verified instantly.", customer: "EMILY R." },
+    { rating: 5, text: "Outstanding service. They guided me through selecting the perfect emerald for my custom engagement ring.", customer: "DAVID K." },
+    { rating: 5, text: "Stunning craftsmanship on the ruby pendant. The ethical sourcing policy gave me complete peace of mind.", customer: "SOPHIA M." }
+];
 
 function Reviews() {
     const { user } = useAuth();
@@ -68,7 +72,7 @@ function Reviews() {
         <div className="pb-24 bg-white min-h-screen">
             {/* Hero Banner */}
             <section 
-                className="w-full h-[65vh] bg-cover bg-center bg-no-repeat mb-20 relative"
+                className="w-full h-[55vh] md:h-[60vh] lg:h-[65vh] bg-contain md:bg-cover bg-center bg-no-repeat bg-stone-950 mb-12 md:mb-20 relative"
                 style={{ backgroundImage: `url("${reviewBanner}")` }}
             >
                 {/* Subtle dark overlay for premium texture */}

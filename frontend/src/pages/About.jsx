@@ -22,35 +22,35 @@ const STATS = [
 
 function About() {
     return (
-        <div className="pb-20 min-h-screen bg-white">
+        <div className="pb-12 md:pb-20 min-h-screen bg-white">
             {/* Hero */}
             <section
-                className="w-full h-screen bg-cover bg-center bg-no-repeat mb-20"
+                className="w-full h-[60vh] md:h-[60vh] lg:h-screen bg-contain md:bg-cover bg-center bg-no-repeat bg-stone-950 mb-12 md:mb-20"
                 style={{ backgroundImage: `url("${aboutBg}")` }}
             >
             </section>
 
             {/* Mission */}
-            <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 md:mb-20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                     <div>
                         <span className="text-gemRed tracking-[0.3em] text-xs uppercase font-semibold">Our Mission</span>
-                        <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mt-3 mb-6">Bridging the Gap Between Mine and Collector</h2>
-                        <p className="text-stone-600 font-light leading-relaxed mb-4">
+                        <h2 className="text-2xl md:text-4xl font-serif text-stone-900 mt-3 mb-4 md:mb-6">Bridging the Gap Between Mine and Collector</h2>
+                        <p className="text-stone-600 font-light leading-relaxed mb-4 text-sm md:text-base">
                             Founded with a passion for rare gemstones, Aura Gems has grown from a small family
                             operation into a trusted name in the industry. We work directly with miners and cutting
                             houses across Sri Lanka, Myanmar, Colombia, and beyond.
                         </p>
-                        <p className="text-stone-600 font-light leading-relaxed mb-6">
+                        <p className="text-stone-600 font-light leading-relaxed mb-6 text-sm md:text-base">
                             Our commitment to transparency means every stone is fully documented — from its
                             geological origin to its final certification. We provide provenance, education,
                             and the confidence that you're investing in something truly exceptional.
                         </p>
-                        <Link to="/shop" className="inline-block bg-gemRed text-white font-semibold uppercase tracking-widest text-sm px-8 py-3 hover:bg-gemRedDark transition-all duration-300 rounded">
+                        <Link to="/shop" className="inline-block bg-gemRed text-white font-semibold uppercase tracking-widest text-xs md:text-sm px-6 md:px-8 py-3 hover:bg-gemRedDark transition-all duration-300 rounded">
                             Explore Collection
                         </Link>
                     </div>
-                    <div className="relative group">
+                    <div className="relative group mt-6 lg:mt-0">
                         <div className="aspect-square bg-gradient-to-br from-gemRed/10 via-transparent to-gemRed/5 rounded-2xl overflow-hidden border border-stone-200/60 shadow-xl flex items-center justify-center">
                             <img
                                 src={aboutMission}
@@ -58,8 +58,8 @@ function About() {
                                 className="w-full h-full object-cover rounded-2xl animate-fade-in group-hover:scale-105 transition-transform duration-700 ease-out"
                             />
                         </div>
-                        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gemRed/10 rounded-2xl -z-10 group-hover:-translate-x-3 group-hover:translate-y-3 transition-transform duration-500"></div>
-                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-gemRed/5 rounded-full -z-10 group-hover:translate-x-3 group-hover:-translate-y-3 transition-transform duration-500"></div>
+                        <div className="hidden md:block absolute -bottom-6 -left-6 w-32 h-32 bg-gemRed/10 rounded-2xl -z-10 group-hover:-translate-x-3 group-hover:translate-y-3 transition-transform duration-500"></div>
+                        <div className="hidden md:block absolute -top-6 -right-6 w-24 h-24 bg-gemRed/5 rounded-full -z-10 group-hover:translate-x-3 group-hover:-translate-y-3 transition-transform duration-500"></div>
                     </div>
                 </div>
             </section>
@@ -101,15 +101,15 @@ function About() {
             </section>
 
             {/* CTA */}
-            <section className="max-w-4xl mx-auto px-4 text-center">
-                <div className="bg-stone-50 border border-stone-200/60 rounded-2xl p-12 shadow-sm">
-                    <h2 className="text-2xl md:text-3xl font-serif text-stone-900 mb-4">Ready to Find Your Perfect Gem?</h2>
-                    <p className="text-stone-600 font-light max-w-xl mx-auto mb-8">
+            <section className="max-w-4xl mx-auto px-4 text-center mb-8">
+                <div className="bg-stone-50 border border-stone-200/60 rounded-2xl p-6 md:p-12 shadow-sm">
+                    <h2 className="text-xl md:text-3xl font-serif text-stone-900 mb-4">Ready to Find Your Perfect Gem?</h2>
+                    <p className="text-stone-600 font-light max-w-xl mx-auto mb-8 text-sm md:text-base">
                         Browse our curated collection of certified gemstones, each hand-selected for exceptional quality.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link to="/shop" className="bg-gemRed text-white font-semibold uppercase tracking-widest text-sm px-8 py-3 hover:bg-gemRedDark transition-all duration-300 rounded">Shop Now</Link>
-                        <Link to="/contact" className="border-2 border-stone-200 text-stone-600 font-semibold uppercase tracking-widest text-sm px-8 py-3 hover:border-gemRed hover:text-gemRed transition-all duration-300 rounded">Get in Touch</Link>
+                        <Link to="/shop" className="bg-gemRed text-white font-semibold uppercase tracking-widest text-xs md:text-sm px-8 py-3 hover:bg-gemRedDark transition-all duration-300 rounded">Shop Now</Link>
+                        <Link to="/contact" className="border-2 border-stone-200 text-stone-600 font-semibold uppercase tracking-widest text-xs md:text-sm px-8 py-3 hover:border-gemRed hover:text-gemRed transition-all duration-300 rounded">Get in Touch</Link>
                     </div>
                 </div>
             </section>

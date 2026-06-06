@@ -27,7 +27,7 @@ function Contact() {
         <div className="pb-20 min-h-screen bg-white">
             {/* Hero */}
             <section 
-                className="w-full h-screen bg-cover bg-center bg-no-repeat mb-20 relative"
+                className="w-full h-[60vh] md:h-[60vh] lg:h-screen bg-contain md:bg-cover bg-center bg-no-repeat bg-stone-950 mb-12 md:mb-20 relative"
                 style={{ backgroundImage: `url("${contactBanner}")` }}
             >
                 {/* Subtle dark overlay for premium texture */}
@@ -51,9 +51,9 @@ function Contact() {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="bg-white border border-stone-100 rounded-3xl p-10 md:p-12 shadow-sm space-y-10">
+                            <form onSubmit={handleSubmit} className="bg-white border border-stone-100 rounded-3xl p-6 md:p-12 shadow-sm space-y-10">
                                 <div>
-                                    <h2 className="text-4xl font-serif text-slate-900 mb-2 font-normal leading-tight">Compose a Message</h2>
+                                    <h2 className="text-3xl md:text-4xl font-serif text-slate-900 mb-2 font-normal leading-tight">Compose a Message</h2>
                                     <span className="text-[10px] font-bold tracking-[0.2em] text-stone-400 block uppercase">Expected Response: 24h</span>
                                 </div>
                                 
@@ -79,7 +79,7 @@ function Contact() {
                                 </div>
                                 <div className="pt-2">
                                     <button type="submit" disabled={loading}
-                                        className="bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 px-10 rounded-full shadow-lg shadow-gemRed/20 duration-300 disabled:opacity-50">
+                                        className="w-full sm:w-auto bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 px-10 rounded-full shadow-lg shadow-gemRed/20 duration-300 disabled:opacity-50">
                                         {loading ? 'Sending...' : 'SEND MESSAGE'}
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@ function Contact() {
                     </div>
 
                     {/* Image on the Right */}
-                    <div className="relative overflow-hidden rounded-3xl h-[450px] lg:h-full shadow-md border border-stone-100/80 group">
+                    <div className="relative overflow-hidden rounded-3xl h-[300px] md:h-[450px] lg:h-full shadow-md border border-stone-100/80 group">
                         <img 
                             src={contactGemImage} 
                             alt="Golden Citrine Gemstone" 

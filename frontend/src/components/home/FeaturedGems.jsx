@@ -34,40 +34,43 @@ function FeaturedGems() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {featuredGems.map((gem) => (
-            <Link to={`/product/${gem._id}`} key={gem._id} className="group cursor-pointer block">
-              {/* Image Container */}
-              <div className="relative overflow-hidden bg-stone-50 aspect-[4/5] mb-4 rounded-lg shadow-sm border border-stone-200/50 hover:border-gemRed/40 flex items-center justify-center p-6">
-                <img
-                  src={gem.imageUrl}
-                  alt={gem.name}
-                  className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl"
-                />
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
+          {featuredGems.map((gem) => {
+            const isJewelry = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(gem.category) || gem.carat === 0;
+            return (
+              <Link to={`/product/${gem._id}`} key={gem._id} className="group cursor-pointer block">
+                {/* Image Container */}
+                <div className={`relative overflow-hidden bg-stone-50 aspect-[4/5] mb-4 rounded-lg shadow-sm border border-stone-200/50 hover:border-gemRed/40 flex items-center justify-center ${isJewelry ? 'p-0' : 'p-6'}`}>
+                  <img
+                    src={gem.imageUrl}
+                    alt={gem.name}
+                    className={`${isJewelry ? 'w-full h-full object-cover' : 'max-w-[75%] max-h-[75%] object-contain'} object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl`}
+                  />
 
-                {/* Hover Actions Overlay */}
-                <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button
-                    onClick={(e) => { e.preventDefault(); addToCart(gem, 1); }}
-                    className="bg-white text-stone-900 p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-md">
-                    <ShoppingCart size={20} />
-                  </button>
-                  <button
-                    onClick={(e) => { e.preventDefault(); toggleWishlist(gem._id); }}
-                    className={`p-3 rounded-full transition-colors shadow-md ${isInWishlist(gem._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-900 hover:bg-gemRed hover:text-white'}`}>
-                    <Heart size={20} className={isInWishlist(gem._id) ? 'fill-white' : ''} />
-                  </button>
+                  {/* Hover Actions Overlay */}
+                  <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      onClick={(e) => { e.preventDefault(); addToCart(gem, 1); }}
+                      className="bg-white text-stone-900 p-3 rounded-full hover:bg-gemRed hover:text-white transition-colors shadow-md">
+                      <ShoppingCart size={20} />
+                    </button>
+                    <button
+                      onClick={(e) => { e.preventDefault(); toggleWishlist(gem._id); }}
+                      className={`p-3 rounded-full transition-colors shadow-md ${isInWishlist(gem._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-900 hover:bg-gemRed hover:text-white'}`}>
+                      <Heart size={20} className={isInWishlist(gem._id) ? 'fill-white' : ''} />
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Product Info */}
-              <div className="text-center">
-                <p className="text-gemRed text-xs uppercase tracking-widest mb-2">{gem.category}</p>
-                <h3 className="text-lg font-serif text-stone-800 mb-1 group-hover:text-gemRed transition-colors">{gem.name}</h3>
-                <p className="text-stone-900 font-medium font-serif">${gem.price.toLocaleString()}</p>
-              </div>
-            </Link>
-          ))}
+                {/* Product Info */}
+                <div className="text-center">
+                  <p className="text-gemRed text-xs uppercase tracking-widest mb-2">{gem.category}</p>
+                  <h3 className="text-lg font-serif text-stone-800 mb-1 group-hover:text-gemRed transition-colors truncate">{gem.name}</h3>
+                  <p className="text-stone-900 font-medium font-serif">${gem.price.toLocaleString()}</p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         {/* View All Button */}
