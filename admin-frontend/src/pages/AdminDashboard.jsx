@@ -12,6 +12,7 @@ function AdminDashboard() {
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
+    const [productType, setProductType] = useState('Gemstone'); // 'Gemstone' or 'Jewelry'
     const [uploading, setUploading] = useState(false);
     const formRef = useRef(null);
 
@@ -168,6 +169,7 @@ function AdminDashboard() {
             }
             setEditingProduct(null);
             setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
+            setProductType('Gemstone');
             fetchData();
         } catch (error) {
             console.error("Error saving product:", error);
@@ -236,11 +238,36 @@ function AdminDashboard() {
                                 <div ref={formRef} className="bg-gemCard border border-gemBorder p-6 rounded mb-8">
                                     <h3 className="text-lg text-gemText mb-4">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
                                     <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-1 md:col-span-2">
+                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Product Type</label>
+                                            <select 
+                                                value={productType} 
+                                                onChange={(e) => {
+                                                    const type = e.target.value;
+                                                    setProductType(type);
+                                                    if (type === 'Jewelry') {
+                                                        setProductForm(prev => ({ ...prev, carat: '0' }));
+                                                    }
+                                                }} 
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none cursor-pointer rounded w-full"
+                                            >
+                                                <option value="Gemstone">Gemstone (requires Carat Weight)</option>
+                                                <option value="Jewelry">Jewelry (no Carat Weight)</option>
+                                            </select>
+                                        </div>
                                         <input type="text" placeholder="Product Name" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <input type="text" placeholder="Category (e.g. Sapphire)" required value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <input type="number" placeholder="Price ($)" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <input type="number" placeholder="Stock Quantity" required value={productForm.stock} onChange={e => setProductForm({...productForm, stock: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
-                                        <input type="number" step="0.01" placeholder="Carat Weight" required value={productForm.carat} onChange={e => setProductForm({...productForm, carat: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                        
+                                        {productType === 'Gemstone' ? (
+                                            <input type="number" step="0.01" placeholder="Carat Weight" required value={productForm.carat} onChange={e => setProductForm({...productForm, carat: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                        ) : (
+                                            <div className="bg-gemBgAlt/30 border border-gemBorder/50 text-gemTextLight p-3 select-none flex items-center justify-center text-sm italic rounded">
+                                                No Carat weight required for Jewelry
+                                            </div>
+                                        )}
+                                        
                                         <div className="flex flex-col gap-2">
                                             <input type="text" placeholder="Image URL (will auto-populate on upload)" required value={productForm.imageUrl} onChange={e => setProductForm({...productForm, imageUrl: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
                                             <div className="flex items-center gap-3">
@@ -257,7 +284,7 @@ function AdminDashboard() {
                                                 {editingProduct ? 'Update Product' : 'Add Product'}
                                             </button>
                                             {editingProduct && (
-                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' }); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
+                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' }); setProductType('Gemstone'); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
                                                     Cancel
                                                 </button>
                                             )}
@@ -298,6 +325,7 @@ function AdminDashboard() {
                                                                 imageUrl: product.imageUrl || '',
                                                                 description: product.description || ''
                                                             });
+                                                            setProductType(product.carat > 0 ? 'Gemstone' : 'Jewelry');
                                                             setTimeout(() => {
                                                                 formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                                             }, 100);

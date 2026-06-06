@@ -12,11 +12,11 @@ const __dirname = path.dirname(__filename);
 // Load env vars
 dotenv.config();
 
-// Configure Cloudinary with dummy keys for unsigned upload
+// Configure Cloudinary with keys from .env
 cloudinary.config({ 
-  cloud_name: 'dzdhkmytt', 
-  api_key: 'dummy', 
-  api_secret: 'dummy' 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET 
 });
 
 // Import Product Model
@@ -48,9 +48,9 @@ async function migrateImages() {
                     console.log(`Uploading to Cloudinary...`);
                     
                     try {
-                        const result = await cloudinary.uploader.unsigned_upload(
+                        const result = await cloudinary.uploader.upload(
                             localImagePath, 
-                            'gemstone_shop_preset'
+                            { folder: 'gemstones' }
                         );
                         
                         console.log(`Upload successful! New Cloudinary URL: ${result.secure_url}`);
