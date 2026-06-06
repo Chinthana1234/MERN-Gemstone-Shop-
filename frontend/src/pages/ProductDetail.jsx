@@ -102,6 +102,8 @@ function ProductDetail() {
     );
   }
 
+  const isJewelry = product && (['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(product.category) || product.carat === 0 || !!product.imageUrl2);
+
   return (
     <div className="pt-28 pb-20 min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,8 +114,8 @@ function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Image */}
           <div className="flex flex-col gap-4">
-            <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 aspect-square rounded-lg shadow-sm flex items-center justify-center p-12">
-              <img src={activeImage || product.imageUrl} alt={product.name} className="max-w-[75%] max-h-[75%] object-contain drop-shadow-md" />
+            <div className={`relative overflow-hidden bg-stone-50 border border-stone-200/50 aspect-square rounded-lg shadow-sm flex items-center justify-center ${isJewelry ? 'p-0' : 'p-12'}`}>
+              <img src={activeImage || product.imageUrl} alt={product.name} className={`drop-shadow-md ${isJewelry ? 'w-full h-full object-cover' : 'max-w-[75%] max-h-[75%] object-contain'}`} />
               {product.stock <= 3 && product.stock > 0 && (
                 <span className="absolute top-6 left-6 bg-gemRed text-white text-xs px-4 py-1.5 uppercase tracking-wider rounded">Only {product.stock} Left</span>
               )}
@@ -123,19 +125,19 @@ function ProductDetail() {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => setActiveImage(product.imageUrl)}
-                  className={`w-20 h-20 bg-stone-50 border rounded p-2 flex items-center justify-center cursor-pointer transition-all ${
+                  className={`w-20 h-20 bg-stone-50 border rounded flex items-center justify-center cursor-pointer transition-all ${
                     activeImage === product.imageUrl ? 'border-gemRed shadow-md scale-105' : 'border-stone-200 hover:border-stone-400'
                   }`}
                 >
-                  <img src={product.imageUrl} alt={`${product.name} view 1`} className="max-w-full max-h-full object-contain" />
+                  <img src={product.imageUrl} alt={`${product.name} view 1`} className="w-full h-full object-cover rounded" />
                 </button>
                 <button
                   onClick={() => setActiveImage(product.imageUrl2)}
-                  className={`w-20 h-20 bg-stone-50 border rounded p-2 flex items-center justify-center cursor-pointer transition-all ${
+                  className={`w-20 h-20 bg-stone-50 border rounded flex items-center justify-center cursor-pointer transition-all ${
                     activeImage === product.imageUrl2 ? 'border-gemRed shadow-md scale-105' : 'border-stone-200 hover:border-stone-400'
                   }`}
                 >
-                  <img src={product.imageUrl2} alt={`${product.name} view 2`} className="max-w-full max-h-full object-contain" />
+                  <img src={product.imageUrl2} alt={`${product.name} view 2`} className="w-full h-full object-cover rounded" />
                 </button>
               </div>
             )}

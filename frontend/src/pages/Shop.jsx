@@ -359,45 +359,48 @@ function Shop() {
             {/* Product Grid */}
             {!loading && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {products.map(product => (
-                  <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block text-stone-800 no-underline">
-                    <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center p-6">
-                      <img src={product.imageUrl} alt={product.name}
-                        className="max-w-[75%] max-h-[75%] object-contain object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl" />
+                {products.map(product => {
+                  const isJewelry = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(product.category) || product.carat === 0 || !!product.imageUrl2;
+                  return (
+                    <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block text-stone-800 no-underline">
+                      <div className={`relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center ${isJewelry ? 'p-0' : 'p-6'}`}>
+                        <img src={product.imageUrl} alt={product.name}
+                          className={`${isJewelry ? 'w-full h-full object-cover' : 'max-w-[75%] max-h-[75%] object-contain'} object-center transition-transform duration-700 group-hover:scale-110 drop-shadow-xl`} />
 
-                      {product.stock <= 3 && product.stock > 0 && (
-                        <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">
-                          Only {product.stock} Left
-                        </span>
-                      )}
+                        {product.stock <= 3 && product.stock > 0 && (
+                          <span className="absolute top-4 left-4 bg-gemRed text-white text-xs px-3 py-1 uppercase tracking-wider rounded">
+                            Only {product.stock} Left
+                          </span>
+                        )}
 
-                      <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button onClick={(e) => handleAddToCart(e, product)}
-                          className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
-                            }`}>
-                          <ShoppingCart size={20} />
-                        </button>
-                        <button
-                          onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
-                          className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${isInWishlist(product._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'}`}>
-                          <Heart size={20} className={isInWishlist(product._id) ? 'fill-white' : ''} />
-                        </button>
+                        <div className="absolute inset-0 bg-black/5 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button onClick={(e) => handleAddToCart(e, product)}
+                            className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${addedId === product._id ? 'bg-green-500 text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'
+                              }`}>
+                            <ShoppingCart size={20} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+                            className={`p-3 rounded-full transition-colors shadow-md border-none cursor-pointer ${isInWishlist(product._id) ? 'bg-gemRed text-white' : 'bg-white text-stone-800 hover:bg-gemRed hover:text-white'}`}>
+                            <Heart size={20} className={isInWishlist(product._id) ? 'fill-white' : ''} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="text-center px-2">
-                      <p className="text-gemRed text-xs uppercase tracking-widest mb-1 font-semibold">{product.category}</p>
-                      <h3 className="text-lg font-serif text-stone-800 mb-1 group-hover:text-gemRed transition-colors truncate">{product.name}</h3>
-                      <div className="flex items-center justify-center gap-1 mb-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-200'} />
-                        ))}
-                        <span className="text-xs text-stone-400 ml-1">({product.numReviews})</span>
+                      <div className="text-center px-2">
+                        <p className="text-gemRed text-xs uppercase tracking-widest mb-1 font-semibold">{product.category}</p>
+                        <h3 className="text-lg font-serif text-stone-800 mb-1 group-hover:text-gemRed transition-colors truncate">{product.name}</h3>
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} size={12} className={i < Math.round(product.rating) ? 'fill-gemGold text-gemGold' : 'text-stone-200'} />
+                          ))}
+                          <span className="text-xs text-stone-400 ml-1">({product.numReviews})</span>
+                        </div>
+                        <p className="text-stone-900 font-medium font-serif">${product.price.toLocaleString()}</p>
                       </div>
-                      <p className="text-stone-900 font-medium font-serif">${product.price.toLocaleString()}</p>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
