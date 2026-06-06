@@ -27,7 +27,7 @@ function Wishlist() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {wishlistItems.map((product) => {
-              const isJewelry = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(product.category) || product.carat === 0 || !!product.imageUrl2;
+              const isJewelry = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(product.category) || product.carat === 0;
               return (
                 <div key={product._id} className="bg-stone-50 border border-stone-200/60 rounded-lg overflow-hidden group shadow-sm hover:border-gemRed/40 transition-colors">
                   <div className={`relative aspect-square overflow-hidden bg-white border-b border-stone-200/50 flex items-center justify-center ${isJewelry ? 'p-0' : 'p-6'}`}>

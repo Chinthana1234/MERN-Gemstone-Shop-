@@ -112,9 +112,9 @@ export const getProductById = async (req, res) => {
 // @access  Private/Admin
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, imageUrl, imageUrl2, category, stock, carat, origin } = req.body;
+    const { name, description, price, imageUrl, category, stock, carat, origin } = req.body;
     const product = new Product({
-      name, description, price, imageUrl, imageUrl2: imageUrl2 || '', category,
+      name, description, price, imageUrl, category,
       stock: stock || 0, carat: carat || 0, origin: origin || ''
     });
     const savedProduct = await product.save();
@@ -137,12 +137,11 @@ export const updateProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    const { name, description, price, imageUrl, imageUrl2, category, stock, carat, origin } = req.body;
+    const { name, description, price, imageUrl, category, stock, carat, origin } = req.body;
     product.name = name || product.name;
     product.description = description || product.description;
     product.price = price || product.price;
     product.imageUrl = imageUrl || product.imageUrl;
-    product.imageUrl2 = imageUrl2 !== undefined ? imageUrl2 : product.imageUrl2;
     product.category = category || product.category;
     product.stock = stock ?? product.stock;
     product.carat = carat ?? product.carat;

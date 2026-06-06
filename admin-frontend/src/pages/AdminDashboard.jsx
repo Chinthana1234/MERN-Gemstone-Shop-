@@ -28,7 +28,7 @@ function AdminDashboard() {
 
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
-    const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', imageUrl2: '', description: '' });
+    const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
     const [productType, setProductType] = useState('Gemstone'); // 'Gemstone' or 'Jewelry'
     const [isCustomCategory, setIsCustomCategory] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -145,7 +145,7 @@ function AdminDashboard() {
         }
     };
 
-    const handleImageUpload = async (e, field = 'primary') => {
+    const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -163,11 +163,7 @@ function AdminDashboard() {
             });
 
             if (data.url) {
-                if (field === 'secondary') {
-                    setProductForm(prev => ({ ...prev, imageUrl2: data.url }));
-                } else {
-                    setProductForm(prev => ({ ...prev, imageUrl: data.url }));
-                }
+                setProductForm(prev => ({ ...prev, imageUrl: data.url }));
             } else {
                 throw new Error("Failed to upload image");
             }
@@ -190,7 +186,7 @@ function AdminDashboard() {
                 await API.post('/products', productForm);
             }
             setEditingProduct(null);
-            setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', imageUrl2: '', description: '' });
+            setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
             setProductType('Gemstone');
             setIsCustomCategory(false);
             fetchData();
@@ -324,10 +320,9 @@ function AdminDashboard() {
                                         )}
 
                                         <div className="flex flex-col gap-2">
-                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Primary Image</label>
                                             <input type="text" placeholder="Image URL (will auto-populate on upload)" required value={productForm.imageUrl} onChange={e => setProductForm({ ...productForm, imageUrl: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
                                             <div className="flex items-center gap-3">
-                                                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'primary')} className="hidden" id="admin-image-upload-file" />
+                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="admin-image-upload-file" />
                                                 <label htmlFor="admin-image-upload-file" className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2.5 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors text-center">
                                                     Upload File
                                                 </label>
@@ -335,30 +330,13 @@ function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        {productType === 'Jewelry' ? (
-                                            <div className="flex flex-col gap-2">
-                                                <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Secondary Image (Jewelry Only)</label>
-                                                <input type="text" placeholder="Secondary Image URL (will auto-populate on upload)" value={productForm.imageUrl2 || ''} onChange={e => setProductForm({ ...productForm, imageUrl2: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
-                                                <div className="flex items-center gap-3">
-                                                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'secondary')} className="hidden" id="admin-image-upload-file-2" />
-                                                    <label htmlFor="admin-image-upload-file-2" className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2.5 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors text-center">
-                                                        Upload Secondary File
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="bg-gemBgAlt/30 border border-gemBorder/50 text-gemTextLight p-3 select-none flex items-center justify-center text-sm italic rounded">
-                                                No Secondary Image for Gemstones
-                                            </div>
-                                        )}
-
                                         <textarea placeholder="Product Description" required value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none md:col-span-2" rows="3"></textarea>
                                         <div className="md:col-span-2 flex gap-4">
                                             <button type="submit" className="bg-gemRed text-white p-3 uppercase tracking-widest font-semibold hover:bg-gemRedDark w-full transition-colors">
                                                 {editingProduct ? 'Update Product' : 'Add Product'}
                                             </button>
                                             {editingProduct && (
-                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', imageUrl2: '', description: '' }); setProductType('Gemstone'); setIsCustomCategory(false); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
+                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' }); setProductType('Gemstone'); setIsCustomCategory(false); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
                                                     Cancel
                                                 </button>
                                             )}
@@ -397,7 +375,6 @@ function AdminDashboard() {
                                                                 stock: product.stock || '',
                                                                 carat: product.carat || '',
                                                                 imageUrl: product.imageUrl || '',
-                                                                imageUrl2: product.imageUrl2 || '',
                                                                 description: product.description || ''
                                                             });
                                                             const isPredef = GEMSTONE_CATEGORIES.includes(product.category) || JEWELRY_CATEGORIES.includes(product.category);
