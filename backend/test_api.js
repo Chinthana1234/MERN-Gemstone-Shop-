@@ -24,7 +24,16 @@ async function run() {
     
     console.log('Testing /api/products...');
     const res1 = await get('http://localhost:5050/api/products');
-    console.log('No filters response:', JSON.stringify(res1).substring(0, 500));
+    const products = res1.products || [];
+    const jewelry = products.find(p => p.carat === 0);
+    if (jewelry) {
+      console.log('Found jewelry:', jewelry.name);
+      console.log('Testing single product detail...');
+      const detail = await get(`http://localhost:5050/api/products/${jewelry._id}`);
+      console.log('Product detail response:', JSON.stringify(detail, null, 2));
+    } else {
+      console.log('No jewelry items found in the product listing.');
+    }
   } catch (err) {
     console.error('Error:', err);
   }

@@ -25,10 +25,10 @@ function AdminDashboard() {
     const [products, setProducts] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
-    const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
+    const [productForm, setProductForm] = useState({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', imageUrl2: '', description: '' });
     const [productType, setProductType] = useState('Gemstone'); // 'Gemstone' or 'Jewelry'
     const [isCustomCategory, setIsCustomCategory] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -108,15 +108,15 @@ function AdminDashboard() {
     const getOrderStatusBadge = (status) => {
         switch (status) {
             case 'Confirmed':
-                return <span className="inline-flex items-center gap-1 text-green-500 bg-green-500/10 px-2.5 py-1 rounded w-max"><CheckCircle size={14}/> Confirmed</span>;
+                return <span className="inline-flex items-center gap-1 text-green-500 bg-green-500/10 px-2.5 py-1 rounded w-max"><CheckCircle size={14} /> Confirmed</span>;
             case 'Processing':
-                return <span className="inline-flex items-center gap-1 text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded w-max"><Clock size={14}/> Processing</span>;
+                return <span className="inline-flex items-center gap-1 text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded w-max"><Clock size={14} /> Processing</span>;
             case 'Shipped':
-                return <span className="inline-flex items-center gap-1 text-blue-500 bg-blue-500/10 px-2.5 py-1 rounded w-max"><Truck size={14}/> Shipped</span>;
+                return <span className="inline-flex items-center gap-1 text-blue-500 bg-blue-500/10 px-2.5 py-1 rounded w-max"><Truck size={14} /> Shipped</span>;
             case 'Delivered':
-                return <span className="inline-flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded w-max"><CheckCircle size={14}/> Delivered</span>;
+                return <span className="inline-flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded w-max"><CheckCircle size={14} /> Delivered</span>;
             case 'Cancelled':
-                return <span className="inline-flex items-center gap-1 text-red-500 bg-red-500/10 px-2.5 py-1 rounded w-max"><XCircle size={14}/> Cancelled</span>;
+                return <span className="inline-flex items-center gap-1 text-red-500 bg-red-500/10 px-2.5 py-1 rounded w-max"><XCircle size={14} /> Cancelled</span>;
             default:
                 return <span className="inline-flex items-center gap-1 text-stone-500 bg-stone-500/10 px-2.5 py-1 rounded w-max">{status}</span>;
         }
@@ -145,7 +145,7 @@ function AdminDashboard() {
         }
     };
 
-    const handleImageUpload = async (e) => {
+    const handleImageUpload = async (e, field = 'primary') => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -163,7 +163,11 @@ function AdminDashboard() {
             });
 
             if (data.url) {
-                setProductForm(prev => ({ ...prev, imageUrl: data.url }));
+                if (field === 'secondary') {
+                    setProductForm(prev => ({ ...prev, imageUrl2: data.url }));
+                } else {
+                    setProductForm(prev => ({ ...prev, imageUrl: data.url }));
+                }
             } else {
                 throw new Error("Failed to upload image");
             }
@@ -186,7 +190,7 @@ function AdminDashboard() {
                 await API.post('/products', productForm);
             }
             setEditingProduct(null);
-            setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
+            setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', imageUrl2: '', description: '' });
             setProductType('Gemstone');
             setIsCustomCategory(false);
             fetchData();
@@ -201,7 +205,7 @@ function AdminDashboard() {
     return (
         <div className="pt-24 pb-20 min-h-screen bg-gemBgAlt">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
+
                 <h1 className="text-3xl font-serif text-gemText mb-8">Admin Dashboard</h1>
 
                 {/* Tabs */}
@@ -223,21 +227,21 @@ function AdminDashboard() {
                         {activeTab === 'overview' && (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="bg-gemCard p-6 rounded border border-gemBorder flex items-center gap-4">
-                                    <div className="p-3 bg-gemBgAlt rounded text-gemRed"><TrendingUp size={24}/></div>
+                                    <div className="p-3 bg-gemBgAlt rounded text-gemRed"><TrendingUp size={24} /></div>
                                     <div>
                                         <p className="text-sm text-gemTextLight uppercase tracking-widest">Total Sales</p>
                                         <p className="text-2xl font-serif text-gemText">${totalSales.toLocaleString()}</p>
                                     </div>
                                 </div>
                                 <div className="bg-gemCard p-6 rounded border border-gemBorder flex items-center gap-4">
-                                    <div className="p-3 bg-gemBgAlt rounded text-gemRed"><ShoppingCart size={24}/></div>
+                                    <div className="p-3 bg-gemBgAlt rounded text-gemRed"><ShoppingCart size={24} /></div>
                                     <div>
                                         <p className="text-sm text-gemTextLight uppercase tracking-widest">Total Orders</p>
                                         <p className="text-2xl font-serif text-gemText">{orders.length}</p>
                                     </div>
                                 </div>
                                 <div className="bg-gemCard p-6 rounded border border-gemBorder flex items-center gap-4">
-                                    <div className="p-3 bg-gemBgAlt rounded text-gemRed"><Package size={24}/></div>
+                                    <div className="p-3 bg-gemBgAlt rounded text-gemRed"><Package size={24} /></div>
                                     <div>
                                         <p className="text-sm text-gemTextLight uppercase tracking-widest">Total Products</p>
                                         <p className="text-2xl font-serif text-gemText">{products.length}</p>
@@ -259,24 +263,24 @@ function AdminDashboard() {
                                     <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="flex flex-col gap-1 md:col-span-2">
                                             <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Product Type</label>
-                                            <select 
-                                                value={productType} 
+                                            <select
+                                                value={productType}
                                                 onChange={(e) => {
                                                     const type = e.target.value;
                                                     setProductType(type);
                                                     if (type === 'Jewelry') {
                                                         setProductForm(prev => ({ ...prev, carat: '0' }));
                                                     }
-                                                }} 
+                                                }}
                                                 className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none cursor-pointer rounded w-full"
                                             >
                                                 <option value="Gemstone">Gemstone (requires Carat Weight)</option>
                                                 <option value="Jewelry">Jewelry (no Carat Weight)</option>
                                             </select>
                                         </div>
-                                        <input type="text" placeholder="Product Name" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                        <input type="text" placeholder="Product Name" required value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         <div className="flex flex-col gap-2">
-                                            <select 
+                                            <select
                                                 value={isCustomCategory ? 'custom' : productForm.category}
                                                 onChange={(e) => {
                                                     const val = e.target.value;
@@ -298,44 +302,63 @@ function AdminDashboard() {
                                                 <option value="custom">+ Add Custom Category...</option>
                                             </select>
                                             {isCustomCategory && (
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Enter Custom Category" 
-                                                    required 
-                                                    value={productForm.category} 
-                                                    onChange={e => setProductForm({...productForm, category: e.target.value})} 
-                                                    className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" 
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter Custom Category"
+                                                    required
+                                                    value={productForm.category}
+                                                    onChange={e => setProductForm({ ...productForm, category: e.target.value })}
+                                                    className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full"
                                                 />
                                             )}
                                         </div>
-                                        <input type="number" placeholder="Price ($)" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
-                                        <input type="number" placeholder="Stock Quantity" required value={productForm.stock} onChange={e => setProductForm({...productForm, stock: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
-                                        
+                                        <input type="number" placeholder="Price ($)" required value={productForm.price} onChange={e => setProductForm({ ...productForm, price: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                        <input type="number" placeholder="Stock Quantity" required value={productForm.stock} onChange={e => setProductForm({ ...productForm, stock: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+
                                         {productType === 'Gemstone' ? (
-                                            <input type="number" step="0.01" placeholder="Carat Weight" required value={productForm.carat} onChange={e => setProductForm({...productForm, carat: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
+                                            <input type="number" step="0.01" placeholder="Carat Weight" required value={productForm.carat} onChange={e => setProductForm({ ...productForm, carat: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none" />
                                         ) : (
                                             <div className="bg-gemBgAlt/30 border border-gemBorder/50 text-gemTextLight p-3 select-none flex items-center justify-center text-sm italic rounded">
                                                 No Carat weight required for Jewelry
                                             </div>
                                         )}
-                                        
+
                                         <div className="flex flex-col gap-2">
-                                            <input type="text" placeholder="Image URL (will auto-populate on upload)" required value={productForm.imageUrl} onChange={e => setProductForm({...productForm, imageUrl: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
+                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Primary Image</label>
+                                            <input type="text" placeholder="Image URL (will auto-populate on upload)" required value={productForm.imageUrl} onChange={e => setProductForm({ ...productForm, imageUrl: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
                                             <div className="flex items-center gap-3">
-                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="admin-image-upload-file" />
+                                                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'primary')} className="hidden" id="admin-image-upload-file" />
                                                 <label htmlFor="admin-image-upload-file" className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2.5 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors text-center">
                                                     Upload File
                                                 </label>
                                                 {uploading && <span className="text-xs text-gemGold animate-pulse">Uploading to Cloudinary...</span>}
                                             </div>
                                         </div>
-                                        <textarea placeholder="Product Description" required value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none md:col-span-2" rows="3"></textarea>
+
+                                        {productType === 'Jewelry' ? (
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Secondary Image (Jewelry Only)</label>
+                                                <input type="text" placeholder="Secondary Image URL (will auto-populate on upload)" value={productForm.imageUrl2 || ''} onChange={e => setProductForm({ ...productForm, imageUrl2: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none w-full" />
+                                                <div className="flex items-center gap-3">
+                                                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'secondary')} className="hidden" id="admin-image-upload-file-2" />
+                                                    <label htmlFor="admin-image-upload-file-2" className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2.5 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors text-center">
+                                                        Upload Secondary File
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-gemBgAlt/30 border border-gemBorder/50 text-gemTextLight p-3 select-none flex items-center justify-center text-sm italic rounded">
+                                                No Secondary Image for Gemstones
+                                            </div>
+                                        )}
+
+                                        <textarea placeholder="Product Description" required value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none md:col-span-2" rows="3"></textarea>
                                         <div className="md:col-span-2 flex gap-4">
                                             <button type="submit" className="bg-gemRed text-white p-3 uppercase tracking-widest font-semibold hover:bg-gemRedDark w-full transition-colors">
                                                 {editingProduct ? 'Update Product' : 'Add Product'}
                                             </button>
                                             {editingProduct && (
-                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' }); setProductType('Gemstone'); setIsCustomCategory(false); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
+                                                <button type="button" onClick={() => { setEditingProduct(null); setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', imageUrl2: '', description: '' }); setProductType('Gemstone'); setIsCustomCategory(false); }} className="bg-gemBorder text-gemText p-3 uppercase tracking-widest font-semibold hover:bg-gemTextLight hover:text-black w-full transition-colors">
                                                     Cancel
                                                 </button>
                                             )}
@@ -365,8 +388,8 @@ function AdminDashboard() {
                                                     <td className="p-3">${product.price.toLocaleString()}</td>
                                                     <td className="p-3">{product.stock}</td>
                                                     <td className="p-3 text-right">
-                                                        <button onClick={() => { 
-                                                            setEditingProduct(product); 
+                                                        <button onClick={() => {
+                                                            setEditingProduct(product);
                                                             setProductForm({
                                                                 name: product.name || '',
                                                                 price: product.price || '',
@@ -374,6 +397,7 @@ function AdminDashboard() {
                                                                 stock: product.stock || '',
                                                                 carat: product.carat || '',
                                                                 imageUrl: product.imageUrl || '',
+                                                                imageUrl2: product.imageUrl2 || '',
                                                                 description: product.description || ''
                                                             });
                                                             const isPredef = GEMSTONE_CATEGORIES.includes(product.category) || JEWELRY_CATEGORIES.includes(product.category);
@@ -382,8 +406,8 @@ function AdminDashboard() {
                                                             setTimeout(() => {
                                                                 formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                                             }, 100);
-                                                        }} className="text-gemTextLight hover:text-gemText p-2 transition-colors"><Edit size={16}/></button>
-                                                        <button onClick={() => handleDeleteProduct(product._id)} className="text-gemRed p-2 hover:bg-gemRed/10 rounded transition-colors ml-2"><Trash2 size={16}/></button>
+                                                        }} className="text-gemTextLight hover:text-gemText p-2 transition-colors"><Edit size={16} /></button>
+                                                        <button onClick={() => handleDeleteProduct(product._id)} className="text-gemRed p-2 hover:bg-gemRed/10 rounded transition-colors ml-2"><Trash2 size={16} /></button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -401,29 +425,29 @@ function AdminDashboard() {
                                 {/* Search & Filters */}
                                 <div className="bg-gemCard border border-gemBorder p-5 rounded mb-6 flex flex-col md:flex-row md:items-center gap-4 justify-between">
                                     <div className="flex-1 max-w-md w-full relative">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Search by Order ID or Customer Name..." 
+                                        <input
+                                            type="text"
+                                            placeholder="Search by Order ID or Customer Name..."
                                             value={orderSearchTerm}
                                             onChange={(e) => setOrderSearchTerm(e.target.value)}
                                             className="w-full bg-gemBgAlt border border-gemBorder text-gemText p-2.5 text-sm focus:border-gemRed outline-none rounded"
                                         />
                                         {orderSearchTerm && (
-                                            <button 
-                                                onClick={() => setOrderSearchTerm('')} 
+                                            <button
+                                                onClick={() => setOrderSearchTerm('')}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gemTextLight hover:text-gemText text-xs font-semibold cursor-pointer"
                                             >
                                                 Clear
                                             </button>
                                         )}
                                     </div>
-                                    
+
                                     <div className="flex flex-wrap gap-4">
                                         {/* Status Filter */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-xs text-gemTextLight uppercase tracking-wider">Status:</span>
-                                            <select 
-                                                value={orderStatusFilter} 
+                                            <select
+                                                value={orderStatusFilter}
                                                 onChange={(e) => setOrderStatusFilter(e.target.value)}
                                                 className="bg-gemBgAlt border border-gemBorder text-gemText p-2 text-xs outline-none focus:border-gemRed rounded cursor-pointer"
                                             >
@@ -435,12 +459,12 @@ function AdminDashboard() {
                                                 <option value="Cancelled">Cancelled</option>
                                             </select>
                                         </div>
-                                        
+
                                         {/* Payment Filter */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-xs text-gemTextLight uppercase tracking-wider">Payment:</span>
-                                            <select 
-                                                value={orderPaymentFilter} 
+                                            <select
+                                                value={orderPaymentFilter}
                                                 onChange={(e) => setOrderPaymentFilter(e.target.value)}
                                                 className="bg-gemBgAlt border border-gemBorder text-gemText p-2 text-xs outline-none focus:border-gemRed rounded cursor-pointer"
                                             >
@@ -470,8 +494,8 @@ function AdminDashboard() {
                                             {filteredOrders.map(order => (
                                                 <tr key={order._id} className="border-b border-gemBorder/50 text-gemText text-sm hover:bg-gemCard transition-colors animate-fadeIn">
                                                     <td className="p-3 font-mono text-xs text-gemTextLight">
-                                                        <button 
-                                                            onClick={() => setSelectedOrder(order)} 
+                                                        <button
+                                                            onClick={() => setSelectedOrder(order)}
                                                             className="text-gemRed hover:underline cursor-pointer font-bold text-left outline-none"
                                                         >
                                                             {order._id.substring(0, 8).toUpperCase()}...
@@ -483,17 +507,17 @@ function AdminDashboard() {
                                                     <td className="p-3 text-xs text-gemTextLight">{order.paymentMethod || 'Cash on Delivery'}</td>
                                                     <td className="p-3">
                                                         {order.isPaid ? (
-                                                            <span className="flex items-center gap-1 text-green-500 bg-green-500/10 px-2 py-1 rounded w-max"><CheckCircle size={14}/> Paid</span>
+                                                            <span className="flex items-center gap-1 text-green-500 bg-green-500/10 px-2 py-1 rounded w-max"><CheckCircle size={14} /> Paid</span>
                                                         ) : (
-                                                            <span className="flex items-center gap-1 text-red-500 bg-red-500/10 px-2 py-1 rounded w-max"><Clock size={14}/> Unpaid</span>
+                                                            <span className="flex items-center gap-1 text-red-500 bg-red-500/10 px-2 py-1 rounded w-max"><Clock size={14} /> Unpaid</span>
                                                         )}
                                                     </td>
                                                     <td className="p-3 font-medium">
                                                         {getOrderStatusBadge(order.status)}
                                                     </td>
                                                     <td className="p-3 text-right">
-                                                        <button 
-                                                            onClick={() => setSelectedOrder(order)} 
+                                                        <button
+                                                            onClick={() => setSelectedOrder(order)}
                                                             className="bg-gemBg border border-gemBorder text-gemText text-xs uppercase tracking-widest px-3 py-1.5 hover:border-gemRed hover:text-gemRed transition-colors rounded cursor-pointer"
                                                         >
                                                             Manage
@@ -550,7 +574,7 @@ function AdminDashboard() {
                                                         </td>
                                                         <td className="p-4 text-gemTextLight">{new Date(review.createdAt).toLocaleDateString()}</td>
                                                         <td className="p-4">
-                                                            <button 
+                                                            <button
                                                                 onClick={() => handleDeleteReview(review.productId, review._id)}
                                                                 className="text-red-500 hover:text-red-700 hover:bg-red-500/10 p-1.5 rounded transition-all duration-200 cursor-pointer"
                                                                 title="Delete Review"
@@ -576,17 +600,17 @@ function AdminDashboard() {
                     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                         <div className="bg-gemCard border border-gemBorder text-gemText max-w-2xl w-full rounded shadow-2xl p-6 relative overflow-y-auto max-h-[90vh] animate-fadeIn">
                             {/* Close Button */}
-                            <button 
-                                onClick={() => setSelectedOrder(null)} 
+                            <button
+                                onClick={() => setSelectedOrder(null)}
                                 className="absolute top-4 right-4 text-gemTextLight hover:text-gemText transition-colors cursor-pointer"
                             >
                                 <X size={20} />
                             </button>
-                            
+
                             <h3 className="text-2xl font-serif mb-6 pb-3 border-b border-gemBorder text-gemRed">
                                 Order Details
                             </h3>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 {/* Customer Details */}
                                 <div className="space-y-4">
@@ -617,16 +641,16 @@ function AdminDashboard() {
                                         <h4 className="text-xs uppercase tracking-widest text-gemTextLight mb-3 flex items-center gap-1.5 font-semibold">
                                             Status Controls
                                         </h4>
-                                        
+
                                         <div className="space-y-3">
                                             <div>
                                                 <p className="text-[10px] uppercase tracking-widest text-gemTextLight mb-1">Current Status</p>
                                                 {getOrderStatusBadge(selectedOrder.status)}
                                             </div>
-                                            
+
                                             <div>
                                                 <p className="text-[10px] uppercase tracking-widest text-gemTextLight mb-1">Update Status</p>
-                                                <select 
+                                                <select
                                                     value={selectedOrder.status}
                                                     onChange={(e) => handleUpdateStatus(selectedOrder._id, e.target.value)}
                                                     disabled={statusUpdating}
@@ -656,9 +680,8 @@ function AdminDashboard() {
                                             </div>
                                             <div>
                                                 <p className="text-[10px] uppercase tracking-widest text-gemTextLight">Status</p>
-                                                <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider mt-0.5 ${
-                                                    selectedOrder.isPaid ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
-                                                }`}>
+                                                <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider mt-0.5 ${selectedOrder.isPaid ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                                                    }`}>
                                                     {selectedOrder.isPaid ? 'Paid' : 'Unpaid'}
                                                 </span>
                                             </div>
@@ -706,8 +729,8 @@ function AdminDashboard() {
 
                             {/* Actions */}
                             <div className="flex justify-end">
-                                <button 
-                                    onClick={() => setSelectedOrder(null)} 
+                                <button
+                                    onClick={() => setSelectedOrder(null)}
                                     className="bg-gemBorder hover:bg-gemTextLight hover:text-black text-gemText px-6 py-2.5 uppercase tracking-widest text-xs font-semibold transition-colors rounded cursor-pointer"
                                 >
                                     Close

@@ -19,6 +19,7 @@ function ProductDetail() {
   const [comment, setComment] = useState('');
   const [reviewError, setReviewError] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
+  const [activeImage, setActiveImage] = useState('');
 
   // Calculate review distribution
   const reviewsCount = product?.reviews ? product.reviews.length : 0;
@@ -35,6 +36,7 @@ function ProductDetail() {
       try {
         const { data } = await API.get(`/products/${id}`);
         setProduct(data);
+        setActiveImage(data.imageUrl);
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
@@ -106,21 +108,44 @@ function ProductDetail() {
         <Link to="/shop" className="inline-flex items-center gap-2 text-stone-500 hover:text-gemRed transition-colors mb-10 text-sm uppercase tracking-widest">
           <ArrowLeft size={16} /> Back to Collection
         </Link>
- 
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Image */}
-          <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 aspect-square rounded-lg shadow-sm flex items-center justify-center p-12">
-            <img src={product.imageUrl} alt={product.name} className="max-w-[75%] max-h-[75%] object-contain drop-shadow-md" />
-            {product.stock <= 3 && product.stock > 0 && (
-              <span className="absolute top-6 left-6 bg-gemRed text-white text-xs px-4 py-1.5 uppercase tracking-wider rounded">Only {product.stock} Left</span>
+          <div className="flex flex-col gap-4">
+            <div className="relative overflow-hidden bg-stone-50 border border-stone-200/50 aspect-square rounded-lg shadow-sm flex items-center justify-center p-12">
+              <img src={activeImage || product.imageUrl} alt={product.name} className="max-w-[75%] max-h-[75%] object-contain drop-shadow-md" />
+              {product.stock <= 3 && product.stock > 0 && (
+                <span className="absolute top-6 left-6 bg-gemRed text-white text-xs px-4 py-1.5 uppercase tracking-wider rounded">Only {product.stock} Left</span>
+              )}
+            </div>
+            {/* Thumbnails (for Jewelry only if imageUrl2 is present) */}
+            {product.imageUrl2 && (
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => setActiveImage(product.imageUrl)}
+                  className={`w-20 h-20 bg-stone-50 border rounded p-2 flex items-center justify-center cursor-pointer transition-all ${
+                    activeImage === product.imageUrl ? 'border-gemRed shadow-md scale-105' : 'border-stone-200 hover:border-stone-400'
+                  }`}
+                >
+                  <img src={product.imageUrl} alt={`${product.name} view 1`} className="max-w-full max-h-full object-contain" />
+                </button>
+                <button
+                  onClick={() => setActiveImage(product.imageUrl2)}
+                  className={`w-20 h-20 bg-stone-50 border rounded p-2 flex items-center justify-center cursor-pointer transition-all ${
+                    activeImage === product.imageUrl2 ? 'border-gemRed shadow-md scale-105' : 'border-stone-200 hover:border-stone-400'
+                  }`}
+                >
+                  <img src={product.imageUrl2} alt={`${product.name} view 2`} className="max-w-full max-h-full object-contain" />
+                </button>
+              </div>
             )}
           </div>
- 
+
           {/* Info */}
           <div className="flex flex-col justify-center">
             <p className="text-gemRed text-xs uppercase tracking-[0.3em] font-semibold mb-3">{product.category}</p>
             <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-4">{product.name}</h1>
- 
+
             <div className="flex items-center gap-2 mb-6">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
@@ -129,10 +154,10 @@ function ProductDetail() {
               </div>
               <span className="text-stone-500 text-sm">({product.numReviews} reviews)</span>
             </div>
- 
+
             <p className="text-3xl font-light text-stone-900 mb-6">${product.price.toLocaleString()}</p>
             <p className="text-stone-600 font-light leading-relaxed mb-8">{product.description}</p>
- 
+
             {/* Specs */}
             <div className="grid grid-cols-2 gap-4 mb-8 border-t border-b border-stone-200 py-6">
               <div>
@@ -154,7 +179,7 @@ function ProductDetail() {
                 <p className="text-stone-800 font-light mt-1">{product.category}</p>
               </div>
             </div>
- 
+
             {/* Add to Cart */}
             {product.stock > 0 && (
               <div className="flex items-center gap-4 mb-8">
@@ -164,15 +189,14 @@ function ProductDetail() {
                   <button onClick={() => setQty(q => Math.min(product.stock, q + 1))} className="px-4 py-3 text-stone-500 hover:text-stone-800">+</button>
                 </div>
                 <button onClick={handleAddToCart}
-                  className={`flex-1 flex items-center justify-center gap-3 py-3.5 font-semibold uppercase tracking-widest text-sm transition-all duration-300 rounded ${
-                    added ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark hover:shadow-lg'
-                  }`}>
+                  className={`flex-1 flex items-center justify-center gap-3 py-3.5 font-semibold uppercase tracking-widest text-sm transition-all duration-300 rounded ${added ? 'bg-green-600 text-white' : 'bg-gemRed text-white hover:bg-gemRedDark hover:shadow-lg'
+                    }`}>
                   <ShoppingCart size={18} />
                   {added ? 'Added to Cart ✓' : 'Add to Cart'}
                 </button>
               </div>
             )}
- 
+
             {/* Trust Badges */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-stone-200">
               <div className="text-center">
@@ -216,8 +240,8 @@ function ProductDetail() {
                   <div key={stars} className="flex items-center gap-4 text-xs tracking-wider uppercase text-stone-600">
                     <span className="w-14 font-medium">{stars} star</span>
                     <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gemGold rounded-full transition-all duration-500" 
+                      <div
+                        className="h-full bg-gemGold rounded-full transition-all duration-500"
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
@@ -263,14 +287,14 @@ function ProductDetail() {
                 ))}
               </div>
             </div>
- 
+
             <div className="bg-stone-50 border border-stone-200/60 p-8 rounded-xl h-fit">
               <h3 className="text-xl font-serif text-stone-900 mb-6">Write a Review</h3>
               {user ? (
                 <form onSubmit={handleReviewSubmit}>
                   {reviewError && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 mb-4 rounded">{reviewError}</div>}
                   {reviewSuccess && <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-sm p-3 mb-4 rounded">{reviewSuccess}</div>}
-                  
+
                   <div className="mb-5">
                     <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Rating</label>
                     <div className="flex items-center gap-1.5">
@@ -283,13 +307,12 @@ function ProductDetail() {
                           onMouseLeave={() => setHoverRating(0)}
                           className="focus:outline-none transition-transform active:scale-95 cursor-pointer"
                         >
-                          <Star 
-                            size={28} 
-                            className={`transition-colors duration-200 ${
-                              starVal <= (hoverRating || rating)
+                          <Star
+                            size={28}
+                            className={`transition-colors duration-200 ${starVal <= (hoverRating || rating)
                                 ? 'fill-gemGold text-gemGold'
                                 : 'text-stone-300 fill-transparent'
-                            }`}
+                              }`}
                           />
                         </button>
                       ))}
@@ -297,11 +320,11 @@ function ProductDetail() {
                   </div>
                   <div className="mb-6">
                     <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Comment</label>
-                    <textarea 
-                      rows="4" 
-                      value={comment} 
-                      onChange={(e) => setComment(e.target.value)} 
-                      required 
+                    <textarea
+                      rows="4"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      required
                       placeholder="Share details of your experience with this gemstone..."
                       className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed"
                     ></textarea>

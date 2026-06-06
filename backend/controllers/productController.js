@@ -8,7 +8,7 @@ import { getCache, setCache, clearProductCache } from '../utils/redis.js';
 export const getProducts = async (req, res) => {
   try {
     const cacheKey = `products:listings:${JSON.stringify(req.query)}`;
-    
+
     // Attempt cache retrieval
     const cachedData = await getCache(cacheKey);
     if (cachedData) {
@@ -59,10 +59,10 @@ export const getProducts = async (req, res) => {
 
     // If we want all products (e.g. for counting in frontend), fetchAll
     if (req.query.fetchAll === 'true') {
-        const products = await Product.find(filter).sort(sortOption);
-        const result = { products, page: 1, pages: 1, count: products.length };
-        await setCache(cacheKey, result, 3600); // cache for 1 hour
-        return res.json(result);
+      const products = await Product.find(filter).sort(sortOption);
+      const result = { products, page: 1, pages: 1, count: products.length };
+      await setCache(cacheKey, result, 3600); // cache for 1 hour
+      return res.json(result);
     }
 
     const count = await Product.countDocuments(filter);
@@ -86,7 +86,7 @@ export const getProducts = async (req, res) => {
 export const getProductById = async (req, res) => {
   try {
     const cacheKey = `products:single:${req.params.id}`;
-    
+
     // Attempt cache retrieval
     const cachedProduct = await getCache(cacheKey);
     if (cachedProduct) {
@@ -112,16 +112,16 @@ export const getProductById = async (req, res) => {
 // @access  Private/Admin
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, imageUrl, category, stock, carat, origin } = req.body;
+    const { name, description, price, imageUrl, imageUrl2, category, stock, carat, origin } = req.body;
     const product = new Product({
-      name, description, price, imageUrl, category,
+      name, description, price, imageUrl, imageUrl2: imageUrl2 || '', category,
       stock: stock || 0, carat: carat || 0, origin: origin || ''
     });
     const savedProduct = await product.save();
-    
+
     // Invalidate product caches
     await clearProductCache();
-    
+
     res.status(201).json(savedProduct);
   } catch (error) {
     console.error("Error creating product:", error);
@@ -137,21 +137,22 @@ export const updateProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    const { name, description, price, imageUrl, category, stock, carat, origin } = req.body;
+    const { name, description, price, imageUrl, imageUrl2, category, stock, carat, origin } = req.body;
     product.name = name || product.name;
     product.description = description || product.description;
     product.price = price || product.price;
     product.imageUrl = imageUrl || product.imageUrl;
+    product.imageUrl2 = imageUrl2 !== undefined ? imageUrl2 : product.imageUrl2;
     product.category = category || product.category;
     product.stock = stock ?? product.stock;
     product.carat = carat ?? product.carat;
     product.origin = origin || product.origin;
 
     const updatedProduct = await product.save();
-    
+
     // Invalidate product caches
     await clearProductCache(product._id);
-    
+
     res.json(updatedProduct);
   } catch (error) {
     console.error("Error updating product:", error);
@@ -167,10 +168,10 @@ export const deleteProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
     await product.deleteOne();
-    
+
     // Invalidate product caches
     await clearProductCache(product._id);
-    
+
     res.json({ message: 'Product removed' });
   } catch (error) {
     console.error("Error deleting product:", error);
@@ -215,10 +216,10 @@ export const createProductReview = async (req, res) => {
       product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
 
       await product.save();
-      
+
       // Invalidate product caches
       await clearProductCache(product._id);
-      
+
       res.status(201).json({ message: 'Review added' });
     } else {
       res.status(404).json({ message: 'Product not found' });
@@ -288,10 +289,10 @@ export const deleteProductReviewAdmin = async (req, res) => {
       }
 
       await product.save();
-      
+
       // Invalidate product caches
       await clearProductCache(id);
-      
+
       res.json({ message: 'Review removed' });
     } else {
       res.status(404).json({ message: 'Product not found' });
