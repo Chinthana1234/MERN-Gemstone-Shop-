@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
+import API from '../utils/api';
 import contactBanner from '../assets/images/contact page/Gemini_Generated_Image_klb2feklb2feklb2.png';
 import contactGemImage from '../assets/images/contact page/lucid-origin_Macro_product_photography_of_a_brilliant_cut_insert_gemstone_e.g._golden_citrine-0.jpg';
 
@@ -7,20 +8,26 @@ function Contact() {
     const [form, setForm] = useState({ name: '', email: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate sending
-        setTimeout(() => {
-            setLoading(false);
+        setError('');
+        try {
+            await API.post('/contact', form);
             setSubmitted(true);
             setForm({ name: '', email: '', message: '' });
-        }, 1500);
+        } catch (err) {
+            console.error('Contact submission error:', err);
+            setError(err.response?.data?.message || 'SMTP Server configuration needed in backend .env to send email.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -82,6 +89,7 @@ function Contact() {
                                         className="w-full sm:w-auto bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 px-10 rounded-full shadow-lg shadow-gemRed/20 duration-300 disabled:opacity-50">
                                         {loading ? 'Sending...' : 'SEND MESSAGE'}
                                     </button>
+                                    {error && <p className="text-red-500 text-xs mt-3 uppercase tracking-wider font-semibold">{error}</p>}
                                 </div>
                             </form>
                         )}
