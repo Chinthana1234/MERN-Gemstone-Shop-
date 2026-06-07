@@ -100,7 +100,7 @@ function ProductDetail() {
     );
   }
 
-  const isJewelry = product && (['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(product.category) || product.carat === 0);
+  const isJewelry = product && (['ring', 'necklace', 'earring', 'bracelet'].includes(product.category?.toLowerCase().replace(/s$/, '')) || product.carat === 0);
 
   return (
     <div className="pt-28 pb-20 min-h-screen bg-white">

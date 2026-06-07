@@ -36,7 +36,7 @@ function FeaturedGems() {
         {/* Product Grid */}
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
           {featuredGems.map((gem) => {
-            const isJewelry = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(gem.category) || gem.carat === 0;
+            const isJewelry = ['ring', 'necklace', 'earring', 'bracelet'].includes(gem.category?.toLowerCase().replace(/s$/, '')) || gem.carat === 0;
             return (
               <Link to={`/product/${gem._id}`} key={gem._id} className="group cursor-pointer block">
                 {/* Image Container */}

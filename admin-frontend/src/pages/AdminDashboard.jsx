@@ -411,7 +411,9 @@ function AdminDashboard() {
                                                                 imageUrl: product.imageUrl || '',
                                                                 description: product.description || ''
                                                             });
-                                                            const isPredef = GEMSTONE_CATEGORIES.includes(product.category) || JEWELRY_CATEGORIES.includes(product.category);
+                                                            const cleanCat = product.category?.trim().toLowerCase().replace(/s$/, '');
+                                                            const isPredef = GEMSTONE_CATEGORIES.some(cat => cat.trim().toLowerCase().replace(/s$/, '') === cleanCat) || 
+                                                                             JEWELRY_CATEGORIES.some(cat => cat.trim().toLowerCase().replace(/s$/, '') === cleanCat);
                                                             setIsCustomCategory(!isPredef);
                                                             setProductType(product.carat > 0 ? 'Gemstone' : 'Jewelry');
                                                             setTimeout(() => {

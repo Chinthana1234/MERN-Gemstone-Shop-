@@ -94,7 +94,11 @@ function Shop() {
   }, [selectedCategories, sort, caratRange, priceRange, keyword, shopType, dispatch]);
 
   const getCategoryCount = (cat) => {
-    return allProducts.filter(p => p.category.toLowerCase() === cat.toLowerCase()).length;
+    const cleanCat = cat.trim().toLowerCase().replace(/s$/, '');
+    return allProducts.filter(p => {
+      const cleanProdCat = p.category?.trim().toLowerCase().replace(/s$/, '');
+      return cleanProdCat === cleanCat;
+    }).length;
   };
 
   const handlePageChange = (pageNumber) => {
@@ -360,7 +364,7 @@ function Shop() {
             {!loading && (
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                 {products.map(product => {
-                  const isJewelry = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'].includes(product.category) || product.carat === 0;
+                  const isJewelry = ['ring', 'necklace', 'earring', 'bracelet'].includes(product.category?.toLowerCase().replace(/s$/, '')) || product.carat === 0;
                   return (
                     <Link to={`/product/${product._id}`} key={product._id} className="group cursor-pointer block text-stone-800 no-underline">
                       <div className={`relative overflow-hidden bg-stone-50 border border-stone-200/50 hover:border-gemRed/40 shadow-sm hover:shadow-md transition-all duration-300 aspect-[4/5] mb-4 rounded-lg flex items-center justify-center ${isJewelry ? 'p-0' : 'p-6'}`}>

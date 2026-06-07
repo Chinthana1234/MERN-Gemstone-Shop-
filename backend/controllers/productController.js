@@ -31,7 +31,10 @@ export const getProducts = async (req, res) => {
 
     // Categories (comma separated)
     if (category && category !== 'All') {
-      const categories = category.split(',').map(c => new RegExp(c.trim(), 'i'));
+      const categories = category.split(',').map(c => {
+        const clean = c.trim().replace(/s$/i, '');
+        return new RegExp(`^${clean}(s)?$`, 'i');
+      });
       filter.category = { $in: categories };
     }
 
