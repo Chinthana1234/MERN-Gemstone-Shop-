@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../utils/api';
 
+const getClientUrl = () => {
+  if (import.meta.env.VITE_CLIENT_URL) return import.meta.env.VITE_CLIENT_URL;
+  const hostname = window.location.hostname;
+  if (hostname.includes('vercel.app')) {
+    if (hostname.includes('-admin')) return `https://${hostname.replace('-admin', '-client')}`;
+    return 'https://auragems-client.vercel.app';
+  }
+  return 'http://localhost:5173';
+};
+
 function AdminLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -52,8 +62,7 @@ function AdminLogin() {
             const { data } = await API.post('/auth/login', { email, password });
             if (data.isAdmin) {
                 localStorage.setItem('adminInfo', JSON.stringify(data));
-                const clientUrl = import.meta.env.VITE_CLIENT_URL || 
-                  (window.location.hostname.includes('vercel.app') ? 'https://auragems-client.vercel.app' : 'http://localhost:5173');
+                const clientUrl = getClientUrl();
                 window.open(`${clientUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
                 navigate('/dashboard');
             } else {

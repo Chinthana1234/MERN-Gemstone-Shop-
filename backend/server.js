@@ -8,6 +8,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.get('/api/config/paypal', (req, res) => {
     res.json({ clientId: process.env.PAYPAL_CLIENT_ID || 'sb' });
@@ -75,5 +77,5 @@ if (!process.env.VERCEL) {
     });
 }
 
-// Force nodemon reload after env update: SMTP credentials added
+// Force nodemon reload after env update: Verify server start
 export default app;

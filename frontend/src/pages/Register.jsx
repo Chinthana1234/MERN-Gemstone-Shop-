@@ -5,6 +5,17 @@ import { Mail, Lock, User } from 'lucide-react';
 import API from '../utils/api';
 import registerBg from '../assets/images/login register pages/gpt-image-2_Prompt_Macro_product_photography_of_a_loose_sparkling_insert_gemstone_e.g._ruby_-0.jpg';
 
+const getAdminUrl = () => {
+  if (import.meta.env.VITE_ADMIN_URL) return import.meta.env.VITE_ADMIN_URL;
+  const hostname = window.location.hostname;
+  if (hostname.includes('vercel.app')) {
+    if (hostname.includes('-client')) return `https://${hostname.replace('-client', '-admin')}`;
+    if (hostname.includes('-frontend')) return `https://${hostname.replace('-frontend', '-admin')}`;
+    return 'https://auragems-admin.vercel.app';
+  }
+  return 'http://localhost:5174';
+};
+
 function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,8 +33,7 @@ function Register() {
       const { data } = await API.post('/auth/google', { token: response.credential });
       syncLogin(data);
       if (data.isAdmin) {
-        const adminUrl = import.meta.env.VITE_ADMIN_URL || 
-          (window.location.hostname.includes('vercel.app') ? 'https://auragems-admin.vercel.app' : 'http://localhost:5174');
+        const adminUrl = getAdminUrl();
         window.open(`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
       }
       navigate('/');

@@ -33,8 +33,18 @@ function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  const adminUrl = import.meta.env.VITE_ADMIN_URL ||
-    (window.location.hostname.includes('vercel.app') ? 'https://auragems-admin.vercel.app' : 'http://localhost:5174');
+  const getAdminUrl = () => {
+    if (import.meta.env.VITE_ADMIN_URL) return import.meta.env.VITE_ADMIN_URL;
+    const hostname = window.location.hostname;
+    if (hostname.includes('vercel.app')) {
+      if (hostname.includes('-client')) return `https://${hostname.replace('-client', '-admin')}`;
+      if (hostname.includes('-frontend')) return `https://${hostname.replace('-frontend', '-admin')}`;
+      return 'https://auragems-admin.vercel.app';
+    }
+    return 'http://localhost:5174';
+  };
+  const adminUrl = getAdminUrl();
+
 
   const handleSearch = (e) => {
     e.preventDefault();

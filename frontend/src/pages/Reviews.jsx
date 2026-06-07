@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, User, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import API from '../utils/api';
 import reviewBanner from '../assets/images/review page/Gemini_Generated_Image_agdsayagdsayagds.png';
 
 const DEFAULT_REVIEWS = [
@@ -17,55 +18,59 @@ function Reviews() {
     const [hoverRating, setHoverRating] = useState(0);
     const [customer, setCustomer] = useState('');
     const [text, setText] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    // Load custom reviews from localStorage on mount and sync with user state
-    useEffect(() => {
-        const stored = localStorage.getItem('site_reviews');
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                setReviews([...DEFAULT_REVIEWS, ...parsed]);
-            } catch (e) {
-                setReviews(DEFAULT_REVIEWS);
-            }
-        } else {
+    const fetchReviews = async () => {
+        try {
+            const { data } = await API.get('/reviews');
+            setReviews([...data, ...DEFAULT_REVIEWS]);
+        } catch (err) {
+            console.error('Error fetching site reviews:', err);
             setReviews(DEFAULT_REVIEWS);
         }
+    };
 
+    // Load reviews on mount and sync user info
+    useEffect(() => {
+        fetchReviews();
         if (user && user.name) {
             setCustomer(user.name);
+        } else {
+            setCustomer('');
         }
     }, [user]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!customer.trim() || !text.trim()) return;
-
-        const newReview = {
-            rating,
-            text,
-            customer: customer.toUpperCase()
-        };
-
-        const stored = localStorage.getItem('site_reviews');
-        let currentStored = [];
-        if (stored) {
-            try {
-                currentStored = JSON.parse(stored);
-            } catch (err) {
-                currentStored = [];
-            }
+        if (!user) {
+            setError('You must be logged in to submit a review.');
+            return;
         }
+        if (!text.trim()) return;
 
-        const updatedStored = [...currentStored, newReview];
-        localStorage.setItem('site_reviews', JSON.stringify(updatedStored));
-        setReviews([...reviews, newReview]);
+        setLoading(true);
+        setError('');
 
-        // Reset form and close modal
-        setCustomer(user?.name || '');
-        setText('');
-        setRating(5);
-        setIsModalOpen(false);
+        try {
+            await API.post('/reviews', {
+                rating,
+                comment: text
+            });
+
+            // Reload reviews list
+            await fetchReviews();
+
+            // Reset form and close modal
+            setText('');
+            setRating(5);
+            setIsModalOpen(false);
+        } catch (err) {
+            console.error('Submit review error:', err);
+            setError(err.response?.data?.message || 'Failed to submit review. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -132,7 +137,7 @@ function Reviews() {
 
                                     {/* Review Text in Italic Serif */}
                                     <p className="text-stone-800 font-serif italic text-lg leading-relaxed font-light">
-                                        "{review.text}"
+                                        "{review.comment || review.text}"
                                     </p>
                                 </div>
 
@@ -149,7 +154,7 @@ function Reviews() {
                                         </div>
                                         <div>
                                             <h4 className="font-sans font-bold text-stone-900 text-sm tracking-wider uppercase">
-                                                {review.customer}
+                                                {review.name || review.customer}
                                             </h4>
                                             <p className="text-[10px] font-bold text-stone-400 tracking-widest uppercase mt-0.5">
                                                 Verified Purchase
@@ -218,11 +223,9 @@ function Reviews() {
                                 <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1 block">Your Name</label>
                                 <input 
                                     type="text" 
-                                    value={customer} 
-                                    onChange={(e) => setCustomer(e.target.value)} 
-                                    required
-                                    placeholder="E.g. Gabriel Blanc"
-                                    className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-0 focus:border-stone-800 transition-colors" 
+                                    value={customer || 'Anonymous'} 
+                                    disabled
+                                    className="w-full bg-stone-50 border-t-0 border-x-0 border-b border-stone-200 rounded-none px-0 py-3 text-stone-500 focus:outline-none cursor-not-allowed" 
                                 />
                             </div>
 
@@ -243,10 +246,12 @@ function Reviews() {
                             <div className="pt-2">
                                 <button 
                                     type="submit"
-                                    className="w-full bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 rounded-full shadow-lg shadow-gemRed/20 duration-300"
+                                    disabled={loading}
+                                    className="w-full bg-gemRed text-white hover:bg-gemRedDark transition-colors uppercase tracking-[0.2em] text-xs font-bold py-4 rounded-full shadow-lg shadow-gemRed/20 duration-300 disabled:opacity-50"
                                 >
-                                    Submit Review
+                                    {loading ? 'Submitting...' : 'Submit Review'}
                                 </button>
+                                {error && <p className="text-red-500 text-xs mt-3 text-center font-semibold uppercase tracking-wider">{error}</p>}
                             </div>
                         </form>
                     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/api';
 import { Package, ShoppingCart, TrendingUp, Edit, Trash2, CheckCircle, Clock, Truck, XCircle, X, User, Mail, MapPin, CreditCard } from 'lucide-react';
+import { compressImage } from '../utils/compressImage';
 
 const GEMSTONE_CATEGORIES = [
     'Blue Sapphire',
@@ -24,6 +25,7 @@ function AdminDashboard() {
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
     const [reviews, setReviews] = useState([]);
+    const [siteReviews, setSiteReviews] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // For editing/adding products
@@ -32,6 +34,7 @@ function AdminDashboard() {
     const [productType, setProductType] = useState('Gemstone'); // 'Gemstone' or 'Jewelry'
     const [isCustomCategory, setIsCustomCategory] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState('');
     const formRef = useRef(null);
 
     // For order search/filters/modal
@@ -48,17 +51,22 @@ function AdminDashboard() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [ordersRes, productsRes, reviewsRes] = await Promise.all([
+            const [ordersRes, productsRes, reviewsRes, siteReviewsRes] = await Promise.all([
                 API.get('/orders'),
                 API.get('/products?fetchAll=true'),
                 API.get('/products/reviews/all').catch((err) => {
                     console.error("Error fetching reviews:", err);
+                    return { data: [] };
+                }),
+                API.get('/reviews').catch((err) => {
+                    console.error("Error fetching site reviews:", err);
                     return { data: [] };
                 })
             ]);
             setOrders(ordersRes.data);
             setProducts(productsRes.data.products || []);
             setReviews(reviewsRes.data || []);
+            setSiteReviews(siteReviewsRes.data || []);
         } catch (error) {
             console.error("Error fetching admin data:", error);
         } finally {
@@ -74,6 +82,18 @@ function AdminDashboard() {
             } catch (error) {
                 console.error("Error deleting review:", error);
                 alert(error.response?.data?.message || "Failed to delete review");
+            }
+        }
+    };
+
+    const handleDeleteSiteReview = async (id) => {
+        if (window.confirm("Are you sure you want to delete this general testimonial?")) {
+            try {
+                await API.delete(`/reviews/${id}`);
+                fetchData();
+            } catch (error) {
+                console.error("Error deleting site review:", error);
+                alert(error.response?.data?.message || "Failed to delete testimonial");
             }
         }
     };
@@ -149,12 +169,24 @@ function AdminDashboard() {
         const file = e.target.files[0];
         if (!file) return;
 
-        const formData = new FormData();
-        formData.append('image', file);
+        // Validation: Ensure the selected file is an image
+        if (!file.type.startsWith('image/')) {
+            alert("Please select a valid image file (JPEG, PNG, WEBP, etc.)");
+            return;
+        }
 
         setUploading(true);
+        setUploadStatus('Compressing image...');
 
         try {
+            // Compress image browser-side if it is larger than 1MB
+            const processedFile = await compressImage(file, { maxSizeMB: 1, quality: 0.8 });
+
+            setUploadStatus('Uploading to Cloudinary...');
+
+            const formData = new FormData();
+            formData.append('image', processedFile);
+
             // Securely upload through our backend /api/upload endpoint
             const { data } = await API.post('/upload', formData, {
                 headers: {
@@ -169,11 +201,13 @@ function AdminDashboard() {
             }
 
             setUploading(false);
+            setUploadStatus('');
         } catch (error) {
             console.error("Error uploading image:", error);
             const errMsg = error.response?.data?.message || error.message;
             alert("Image upload failed: " + errMsg);
             setUploading(false);
+            setUploadStatus('');
         }
     };
 
@@ -326,7 +360,7 @@ function AdminDashboard() {
                                                 <label htmlFor="admin-image-upload-file" className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2.5 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors text-center">
                                                     Upload File
                                                 </label>
-                                                {uploading && <span className="text-xs text-gemGold animate-pulse">Uploading to Cloudinary...</span>}
+                                                {uploading && <span className="text-xs text-gemGold animate-pulse">{uploadStatus || 'Uploading to Cloudinary...'}</span>}
                                             </div>
                                         </div>
 
@@ -515,55 +549,101 @@ function AdminDashboard() {
 
                         {/* REVIEWS TAB */}
                         {activeTab === 'reviews' && (
-                            <div>
-                                <h2 className="text-xl font-serif text-gemText mb-6">Customer Reviews Management</h2>
-                                <div className="bg-gemCard border border-gemBorder rounded overflow-hidden">
-                                    <table className="w-full text-left text-gemText border-collapse">
-                                        <thead>
-                                            <tr className="bg-gemBgAlt border-b border-gemBorder text-gemTextLight uppercase tracking-wider text-xs">
-                                                <th className="p-4 font-semibold">Gemstone</th>
-                                                <th className="p-4 font-semibold">Customer</th>
-                                                <th className="p-4 font-semibold">Rating</th>
-                                                <th className="p-4 font-semibold">Comment</th>
-                                                <th className="p-4 font-semibold">Verified</th>
-                                                <th className="p-4 font-semibold">Date</th>
-                                                <th className="p-4 font-semibold">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gemBorder text-sm font-light">
-                                            {reviews.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan="7" className="p-8 text-center text-gemTextLight">No customer reviews found.</td>
+                            <div className="space-y-10">
+                                {/* SECTION 1: General Testimonials */}
+                                <div>
+                                    <h2 className="text-xl font-serif text-gemText mb-4">General Site Testimonials</h2>
+                                    <div className="bg-gemCard border border-gemBorder rounded overflow-hidden">
+                                        <table className="w-full text-left text-gemText border-collapse">
+                                            <thead>
+                                                <tr className="bg-gemBgAlt border-b border-gemBorder text-gemTextLight uppercase tracking-wider text-xs">
+                                                    <th className="p-4 font-semibold">Customer</th>
+                                                    <th className="p-4 font-semibold">Rating</th>
+                                                    <th className="p-4 font-semibold">Comment</th>
+                                                    <th className="p-4 font-semibold">Date</th>
+                                                    <th className="p-4 font-semibold">Actions</th>
                                                 </tr>
-                                            ) : (
-                                                reviews.map((review) => (
-                                                    <tr key={review._id} className="hover:bg-gemBgAlt/50 transition-colors animate-fadeIn">
-                                                        <td className="p-4 font-medium">{review.productName}</td>
-                                                        <td className="p-4">{review.name}</td>
-                                                        <td className="p-4 text-gemGold font-serif">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</td>
-                                                        <td className="p-4 max-w-xs truncate" title={review.comment}>{review.comment}</td>
-                                                        <td className="p-4">
-                                                            {review.isVerifiedPurchase ? (
-                                                                <span className="text-green-500 bg-green-500/10 px-2 py-0.5 rounded text-xs font-bold">Yes</span>
-                                                            ) : (
-                                                                <span className="text-stone-500 bg-stone-500/10 px-2 py-0.5 rounded text-xs">No</span>
-                                                            )}
-                                                        </td>
-                                                        <td className="p-4 text-gemTextLight">{new Date(review.createdAt).toLocaleDateString()}</td>
-                                                        <td className="p-4">
-                                                            <button
-                                                                onClick={() => handleDeleteReview(review.productId, review._id)}
-                                                                className="text-red-500 hover:text-red-700 hover:bg-red-500/10 p-1.5 rounded transition-all duration-200 cursor-pointer"
-                                                                title="Delete Review"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </td>
+                                            </thead>
+                                            <tbody className="divide-y divide-gemBorder text-sm font-light">
+                                                {siteReviews.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan="5" className="p-8 text-center text-gemTextLight">No general testimonials found.</td>
                                                     </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
+                                                ) : (
+                                                    siteReviews.map((review) => (
+                                                        <tr key={review._id} className="hover:bg-gemBgAlt/50 transition-colors animate-fadeIn">
+                                                            <td className="p-4 font-medium">{review.name}</td>
+                                                            <td className="p-4 text-gemGold font-serif">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</td>
+                                                            <td className="p-4 max-w-xs truncate" title={review.comment}>{review.comment}</td>
+                                                            <td className="p-4 text-gemTextLight">{new Date(review.createdAt).toLocaleDateString()}</td>
+                                                            <td className="p-4">
+                                                                <button
+                                                                    onClick={() => handleDeleteSiteReview(review._id)}
+                                                                    className="text-red-500 hover:text-red-700 hover:bg-red-500/10 p-1.5 rounded transition-all duration-200 cursor-pointer"
+                                                                    title="Delete Review"
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* SECTION 2: Product Reviews */}
+                                <div>
+                                    <h2 className="text-xl font-serif text-gemText mb-4">Product Reviews</h2>
+                                    <div className="bg-gemCard border border-gemBorder rounded overflow-hidden">
+                                        <table className="w-full text-left text-gemText border-collapse">
+                                            <thead>
+                                                <tr className="bg-gemBgAlt border-b border-gemBorder text-gemTextLight uppercase tracking-wider text-xs">
+                                                    <th className="p-4 font-semibold">Gemstone</th>
+                                                    <th className="p-4 font-semibold">Customer</th>
+                                                    <th className="p-4 font-semibold">Rating</th>
+                                                    <th className="p-4 font-semibold">Comment</th>
+                                                    <th className="p-4 font-semibold">Verified</th>
+                                                    <th className="p-4 font-semibold">Date</th>
+                                                    <th className="p-4 font-semibold">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gemBorder text-sm font-light">
+                                                {reviews.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan="7" className="p-8 text-center text-gemTextLight">No product reviews found.</td>
+                                                    </tr>
+                                                ) : (
+                                                    reviews.map((review) => (
+                                                        <tr key={review._id} className="hover:bg-gemBgAlt/50 transition-colors animate-fadeIn">
+                                                            <td className="p-4 font-medium">{review.productName}</td>
+                                                            <td className="p-4">{review.name}</td>
+                                                            <td className="p-4 text-gemGold font-serif">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</td>
+                                                            <td className="p-4 max-w-xs truncate" title={review.comment}>{review.comment}</td>
+                                                            <td className="p-4">
+                                                                {review.isVerifiedPurchase ? (
+                                                                    <span className="text-green-500 bg-green-500/10 px-2 py-0.5 rounded text-xs font-bold">Yes</span>
+                                                                ) : (
+                                                                    <span className="text-stone-500 bg-stone-500/10 px-2 py-0.5 rounded text-xs">No</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="p-4 text-gemTextLight">{new Date(review.createdAt).toLocaleDateString()}</td>
+                                                            <td className="p-4">
+                                                                <button
+                                                                    onClick={() => handleDeleteReview(review.productId, review._id)}
+                                                                    className="text-red-500 hover:text-red-700 hover:bg-red-500/10 p-1.5 rounded transition-all duration-200 cursor-pointer"
+                                                                    title="Delete Review"
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         )}
