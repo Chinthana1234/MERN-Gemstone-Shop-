@@ -37,6 +37,10 @@ const connectDB = async (req, res, next) => {
         console.log('Connecting to MongoDB...');
         await mongoose.connect(process.env.MONGO_URI);
         console.log('MongoDB Connected Successfully');
+        
+        // Auto-seed jewelry on startup (after successful connection)
+        autoSeedJewelry();
+        
         next();
     } catch (err) {
         console.error('MongoDB Connection Error: ', err);

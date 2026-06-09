@@ -225,20 +225,17 @@ const seedGems = async () => {
 
         if (redisClient) {
             try {
-                await redisClient.quit();
+                // Do not quit redis here because server needs it
+                // await redisClient.quit();
             } catch (err) {
-                try {
-                    await redisClient.disconnect();
-                } catch (discErr) {
-                    // ignore
-                }
+                // ignore
             }
         }
-        process.exit();
+        return true;
     } catch (error) {
         console.error('Error during seeding:', error);
-        process.exit(1);
+        return false;
     }
 };
 
-seedGems();
+export { seedGems };

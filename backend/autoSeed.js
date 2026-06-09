@@ -379,7 +379,7 @@ export const autoSeedJewelry = async () => {
   try {
     const count = await Product.countDocuments({ category: { $in: ['Rings', 'Necklaces', 'Earrings', 'Bracelets'] } });
     if (count !== 30) {
-      console.log(`[Auto-Seed] Found ${count} jewelry items instead of 30. Re-seeding exactly 30 jewelry products...`);
+      console.log(`[Auto-Seed] Found ${count} jewelry items instead of exactly 30. Re-seeding exactly 30 jewelry products...`);
       // Delete existing jewelry products
       await Product.deleteMany({ category: { $in: ['Rings', 'Necklaces', 'Earrings', 'Bracelets'] } });
       // Insert exactly 30 items
