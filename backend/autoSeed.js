@@ -1,5 +1,5 @@
-import Product from '../models/Product.js';
-import { clearProductCache } from './redis.js';
+import Product from './models/Product.js';
+import { clearProductCache } from './utils/redis.js';
 
 const jewelryProducts = [
   // Rings (8)
@@ -370,6 +370,7 @@ const jewelryProducts = [
     origin: 'Colombia'
   }
 ];
+
 let isSeeding = false;
 
 export const autoSeedJewelry = async () => {
