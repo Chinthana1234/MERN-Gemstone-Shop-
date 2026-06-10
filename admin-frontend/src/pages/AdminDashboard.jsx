@@ -27,6 +27,9 @@ function AdminDashboard() {
     const [reviews, setReviews] = useState([]);
     const [siteReviews, setSiteReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
+    const [userForm, setUserForm] = useState({ name: '', email: '', password: '', role: 'Customer' });
+    const [userSubmitting, setUserSubmitting] = useState(false);
 
     // For editing/adding products
     const [editingProduct, setEditingProduct] = useState(null);
@@ -51,7 +54,7 @@ function AdminDashboard() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [ordersRes, productsRes, reviewsRes, siteReviewsRes] = await Promise.all([
+            const [ordersRes, productsRes, reviewsRes, siteReviewsRes, usersRes] = await Promise.all([
                 API.get('/orders'),
                 API.get('/products?fetchAll=true'),
                 API.get('/products/reviews/all').catch((err) => {
@@ -61,12 +64,17 @@ function AdminDashboard() {
                 API.get('/reviews').catch((err) => {
                     console.error("Error fetching site reviews:", err);
                     return { data: [] };
+                }),
+                API.get('/auth').catch((err) => {
+                    console.error("Error fetching users:", err);
+                    return { data: [] };
                 })
             ]);
             setOrders(ordersRes.data);
             setProducts(productsRes.data.products || []);
             setReviews(reviewsRes.data || []);
             setSiteReviews(siteReviewsRes.data || []);
+            setUsers(usersRes.data || []);
         } catch (error) {
             console.error("Error fetching admin data:", error);
         } finally {
@@ -230,6 +238,53 @@ function AdminDashboard() {
         }
     };
 
+    const handleSaveUser = async (e) => {
+        e.preventDefault();
+        try {
+            setUserSubmitting(true);
+            const payload = {
+                name: userForm.name,
+                email: userForm.email,
+                password: userForm.password,
+                isAdmin: userForm.role === 'Admin'
+            };
+            const { data } = await API.post('/auth', payload);
+            setUsers(prev => [...prev, data]);
+            setUserForm({ name: '', email: '', password: '', role: 'Customer' });
+            alert("User created successfully!");
+        } catch (error) {
+            console.error("Error creating user:", error);
+            alert(error.response?.data?.message || "Failed to create user");
+        } finally {
+            setUserSubmitting(false);
+        }
+    };
+
+    const handleUpdateUserRole = async (userId, newRole) => {
+        try {
+            const isAdminVal = newRole === 'Admin';
+            const { data } = await API.put(`/auth/${userId}`, { isAdmin: isAdminVal });
+            setUsers(prev => prev.map(u => u._id === userId ? { ...u, isAdmin: data.isAdmin } : u));
+            alert("User role updated successfully!");
+        } catch (error) {
+            console.error("Error updating user role:", error);
+            alert(error.response?.data?.message || "Failed to update user role");
+        }
+    };
+
+    const handleDeleteUser = async (userId) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            try {
+                await API.delete(`/auth/${userId}`);
+                setUsers(prev => prev.filter(u => u._id !== userId));
+                alert("User deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                alert(error.response?.data?.message || "Failed to delete user");
+            }
+        }
+    };
+
     const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
 
     return (
@@ -255,6 +310,7 @@ function AdminDashboard() {
                     <button onClick={() => setActiveTab('products')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'products' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Products</button>
                     <button onClick={() => setActiveTab('orders')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'orders' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Orders</button>
                     <button onClick={() => setActiveTab('reviews')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'reviews' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Reviews</button>
+                    <button onClick={() => setActiveTab('users')} className={`whitespace-nowrap pb-3 uppercase tracking-widest text-sm font-semibold transition-colors ${activeTab === 'users' ? 'text-gemRed border-b-2 border-gemRed' : 'text-gemTextLight hover:text-gemText'}`}>Users</button>
                 </div>
 
                 {loading ? (
@@ -661,6 +717,115 @@ function AdminDashboard() {
                             </div>
                         )}
 
+                        {/* USERS TAB */}
+                        {activeTab === 'users' && (
+                            <div>
+                                <h2 className="text-xl font-serif text-gemText mb-6">User Management</h2>
+
+                                {/* Add New User Form */}
+                                <div className="bg-gemCard border border-gemBorder p-6 rounded mb-8 max-w-2xl">
+                                    <h3 className="text-lg text-gemText mb-4">Add New User</h3>
+                                    <form onSubmit={handleSaveUser} className="space-y-4">
+                                        <div className="flex flex-col gap-1">
+                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Name</label>
+                                            <input 
+                                                type="text" 
+                                                required 
+                                                value={userForm.name} 
+                                                onChange={e => setUserForm({ ...userForm, name: e.target.value })} 
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none rounded w-full text-sm" 
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Email</label>
+                                            <input 
+                                                type="email" 
+                                                required 
+                                                value={userForm.email} 
+                                                onChange={e => setUserForm({ ...userForm, email: e.target.value })} 
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none rounded w-full text-sm" 
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Password</label>
+                                            <input 
+                                                type="password" 
+                                                required 
+                                                value={userForm.password} 
+                                                onChange={e => setUserForm({ ...userForm, password: e.target.value })} 
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none rounded w-full text-sm" 
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <label className="text-xs text-gemTextLight uppercase tracking-wider font-semibold">Role</label>
+                                            <select
+                                                value={userForm.role}
+                                                onChange={e => setUserForm({ ...userForm, role: e.target.value })}
+                                                className="bg-gemBgAlt border border-gemBorder text-gemText p-3 focus:border-gemRed outline-none cursor-pointer rounded w-full text-sm"
+                                            >
+                                                <option value="Customer">Customer</option>
+                                                <option value="Admin">Admin</option>
+                                            </select>
+                                        </div>
+                                        <button 
+                                            type="submit" 
+                                            disabled={userSubmitting}
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 uppercase tracking-widest text-xs font-semibold transition-colors rounded cursor-pointer disabled:opacity-50"
+                                        >
+                                            {userSubmitting ? 'Adding...' : 'Add User'}
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {/* Users Table */}
+                                <div className="bg-gemCard border border-gemBorder rounded overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-collapse text-gemText">
+                                            <thead>
+                                                <tr className="bg-gemBgAlt border-b border-gemBorder text-gemTextLight uppercase text-xs tracking-widest">
+                                                    <th className="p-4 font-semibold">Name</th>
+                                                    <th className="p-4 font-semibold">Email</th>
+                                                    <th className="p-4 font-semibold">Role</th>
+                                                    <th className="p-4 font-semibold text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gemBorder text-sm font-light">
+                                                {users.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan="4" className="p-8 text-center text-gemTextLight">No users found.</td>
+                                                    </tr>
+                                                ) : (
+                                                    users.map(user => (
+                                                        <tr key={user._id} className="hover:bg-gemBgAlt/50 transition-colors animate-fadeIn">
+                                                            <td className="p-4 font-semibold">{user.name}</td>
+                                                            <td className="p-4 text-gemTextLight">{user.email}</td>
+                                                            <td className="p-4">
+                                                                <select
+                                                                    value={user.isAdmin ? 'Admin' : 'Customer'}
+                                                                    onChange={e => handleUpdateUserRole(user._id, e.target.value)}
+                                                                    className="bg-gemBgAlt border border-gemBorder text-gemText p-2 text-xs outline-none focus:border-gemRed rounded cursor-pointer"
+                                                                >
+                                                                    <option value="Customer">Customer</option>
+                                                                    <option value="Admin">Admin</option>
+                                                                </select>
+                                                            </td>
+                                                            <td className="p-4 text-right">
+                                                                <button 
+                                                                    onClick={() => handleDeleteUser(user._id)} 
+                                                                    className="bg-red-500 hover:bg-red-700 text-white px-3 py-1.5 uppercase tracking-widest text-[10px] font-bold transition-colors rounded cursor-pointer"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                     </>
                 )}
