@@ -236,7 +236,18 @@ function AdminDashboard() {
         <div className="pt-24 pb-20 min-h-screen bg-gemBgAlt">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <h1 className="text-3xl font-serif text-gemText mb-8">Admin Dashboard</h1>
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-3xl font-serif text-gemText">Admin Dashboard</h1>
+                    <button 
+                        onClick={() => {
+                            localStorage.removeItem('adminInfo');
+                            window.location.reload();
+                        }}
+                        className="bg-gemRed/20 border border-gemRed/40 hover:bg-gemRed/40 text-gemText px-4 py-2 text-xs uppercase tracking-wider font-semibold cursor-pointer rounded transition-colors"
+                    >
+                        Log Out
+                    </button>
+                </div>
 
                 {/* Tabs */}
                 <div className="flex gap-4 border-b border-gemBorder mb-8 overflow-x-auto">
