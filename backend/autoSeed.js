@@ -378,16 +378,14 @@ export const autoSeedJewelry = async () => {
   isSeeding = true;
   try {
     const count = await Product.countDocuments({ category: { $in: ['Rings', 'Necklaces', 'Earrings', 'Bracelets'] } });
-    if (count !== 30) {
-      console.log(`[Auto-Seed] Found ${count} jewelry items instead of exactly 30. Re-seeding exactly 30 jewelry products...`);
-      // Delete existing jewelry products
-      await Product.deleteMany({ category: { $in: ['Rings', 'Necklaces', 'Earrings', 'Bracelets'] } });
+    if (count === 0) {
+      console.log(`[Auto-Seed] No jewelry items found. Seeding 30 jewelry products...`);
       // Insert exactly 30 items
       await Product.insertMany(jewelryProducts);
       console.log('[Auto-Seed] Successfully seeded exactly 30 jewelry products!');
       await clearProductCache();
     } else {
-      console.log(`[Auto-Seed] Already has exactly 30 jewelry items. Skipping auto-seed.`);
+      console.log(`[Auto-Seed] Jewelry items already present (${count} items). Skipping auto-seed.`);
     }
   } catch (err) {
     console.error('[Auto-Seed Error] Failed to seed jewelry:', err.message);

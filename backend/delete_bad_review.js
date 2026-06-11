@@ -13,7 +13,7 @@ async function deleteReview() {
         console.log('Connected Successfully!');
 
         // Find product containing the review using case-insensitive matches
-        const authorName = "Shashikala Samaranayaka";
+        const authorName = "Dilsha Jayasekara";
         const commentSubstr = "this website is not recommended";
 
         const products = await Product.find({
@@ -32,18 +32,18 @@ async function deleteReview() {
 
         for (const product of products) {
             console.log(`Processing Product: "${product.name}" (ID: ${product._id})`);
-            
+
             // Filter out the bad review (case-insensitively)
             const initialCount = product.reviews.length;
-            product.reviews = product.reviews.filter(r => 
-                r.name.toLowerCase() !== authorName.toLowerCase() && 
+            product.reviews = product.reviews.filter(r =>
+                r.name.toLowerCase() !== authorName.toLowerCase() &&
                 !r.comment.toLowerCase().includes(commentSubstr)
             );
-            
+
             const deletedCount = initialCount - product.reviews.length;
             if (deletedCount > 0) {
                 console.log(`Removing ${deletedCount} review(s) from "${product.name}"`);
-                
+
                 // Recalculate averages
                 product.numReviews = product.reviews.length;
                 if (product.reviews.length > 0) {
