@@ -262,22 +262,20 @@ function Shop() {
           <div className="bg-stone-100 p-1.5 rounded-full inline-flex border border-stone-200/60 shadow-inner">
             <button
               onClick={() => dispatch(setShopType('gems'))}
-              className={`px-8 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                shopType === 'gems'
+              className={`px-8 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2 ${shopType === 'gems'
                   ? 'bg-gemRed text-white shadow-md'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/45'
-              }`}
+                }`}
             >
               <Gem size={14} />
               Gemstones
             </button>
             <button
               onClick={() => dispatch(setShopType('jewelry'))}
-              className={`px-8 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                shopType === 'jewelry'
+              className={`px-8 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2 ${shopType === 'jewelry'
                   ? 'bg-gemRed text-white shadow-md'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/45'
-              }`}
+                }`}
             >
               <Sparkles size={14} />
               Jewelry
