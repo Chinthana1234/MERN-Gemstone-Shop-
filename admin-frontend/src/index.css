@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark Luxury Theme */
-  --color-gemBg: #050505;
-  --color-gemBgAlt: #0a0a0a;
-  --color-gemBgMarble: #111111;
-  --color-gemCard: #141414;
+  /* Light Professional Theme */
+  --color-gemBg: #f3f4f6;
+  --color-gemBgAlt: #f9fafb;
+  --color-gemBgMarble: #e5e7eb;
+  --color-gemCard: #ffffff;
   --color-gemRed: #C41230;
   --color-gemRedDark: #9B0E26;
   --color-gemRedLight: #E8304A;
   --color-gemGold: #d4af37;
-  --color-gemGoldLight: #f3e5ab;
-  --color-gemText: #f5f5f5;
-  --color-gemTextLight: #a3a3a3;
-  --color-gemTextMuted: #737373;
-  --color-gemBorder: #262626;
-  --color-gemBorderDark: #404040;
+  --color-gemGoldLight: #b45309;
+  --color-gemText: #111827;
+  --color-gemTextLight: #374151;
+  --color-gemTextMuted: #6b7280;
+  --color-gemBorder: #e5e7eb;
+  --color-gemBorderDark: #d1d5db;
   
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
@@ -36,10 +36,10 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: var(--color-gemBgAlt);
 }
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: var(--color-gemBorderDark);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -48,7 +48,7 @@
 
 /* Marble texture background */
 .marble-bg {
-  background: linear-gradient(135deg, #0a0a0a 0%, #111111 25%, #050505 50%, #111111 75%, #0a0a0a 100%);
+  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 25%, #ffffff 50%, #e5e7eb 75%, #f9fafb 100%);
   background-size: 400% 400%;
   animation: marble-shift 15s ease infinite;
 }
