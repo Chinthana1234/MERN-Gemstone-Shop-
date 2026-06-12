@@ -76,11 +76,18 @@ function Shop() {
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const keywordFromUrl = new URLSearchParams(location.search).get('keyword') || '';
+  const typeFromUrl = new URLSearchParams(location.search).get('type') || '';
 
-  // Synchronize URL search keyword with Redux store
+  // Synchronize URL search parameters with Redux store
   useEffect(() => {
     dispatch(setKeyword(keywordFromUrl));
   }, [keywordFromUrl, dispatch]);
+
+  useEffect(() => {
+    if (typeFromUrl === 'gems' || typeFromUrl === 'jewelry') {
+      dispatch(setShopType(typeFromUrl));
+    }
+  }, [typeFromUrl, dispatch]);
 
   // Initial fetch for all products to get accurate category counts and max limits
   useEffect(() => {
@@ -228,7 +235,10 @@ function Shop() {
         </div>
       </div>
 
-      <button onClick={handleClearFilters} className="w-full text-xs uppercase tracking-widest text-gemRed hover:underline py-2 text-center border-none bg-transparent cursor-pointer">
+      <button
+        onClick={handleClearFilters}
+        className="w-max mx-auto block px-6 text-xs uppercase tracking-widest text-gemRed border border-solid border-gemRed hover:bg-gemRed hover:text-white py-2 text-center rounded transition-all duration-300 font-bold cursor-pointer bg-transparent"
+      >
         Clear All Filters
       </button>
     </div>
