@@ -56,7 +56,7 @@ function ToastItem({ toast, onClose }) {
   
   if (type === 'success') {
     Icon = Check;
-    badgeClass = 'bg-black text-white';
+    badgeClass = 'bg-gemGreen text-white';
   } else if (type === 'error') {
     Icon = X;
     badgeClass = 'bg-gemRed text-white';
