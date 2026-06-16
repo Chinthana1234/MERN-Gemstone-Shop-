@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, Star, ArrowLeft, Shield, Truck, Award, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import API from '../utils/api';
 
 function ProductDetail() {
@@ -13,6 +14,7 @@ function ProductDetail() {
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -54,6 +56,7 @@ function ProductDetail() {
     e.preventDefault();
     if (rating === 0) {
       setReviewError('Please select a rating');
+      toast.warning('Please select a rating.');
       return;
     }
     try {
@@ -61,13 +64,16 @@ function ProductDetail() {
       setReviewSuccess('');
       await API.post(`/products/${id}/reviews`, { rating, comment });
       setReviewSuccess('Review submitted successfully!');
+      toast.success('Review submitted.');
       setRating(0);
       setComment('');
       // Refetch product to show new review
       const { data } = await API.get(`/products/${id}`);
       setProduct(data);
     } catch (err) {
-      setReviewError(err.response?.data?.message || 'Error submitting review');
+      const errMsg = err.response?.data?.message || 'Error submitting review';
+      setReviewError(errMsg);
+      toast.error('Review failed.');
     }
   };
 

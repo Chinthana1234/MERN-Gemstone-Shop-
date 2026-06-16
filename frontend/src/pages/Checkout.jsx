@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, CreditCard, Package, ChevronRight, ChevronLeft, Check, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import API from '../utils/api';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -22,6 +23,7 @@ function Checkout() {
     const { cartItems, cartTotal, clearCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -122,9 +124,12 @@ function Checkout() {
 
             const { data } = await API.post('/orders', orderData);
             clearCart();
+            toast.success('Order placed successfully!');
             navigate(`/order/${data._id}`);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to place order. Please try again.');
+            const errMsg = err.response?.data?.message || 'Failed to place order. Please try again.';
+            setError(errMsg);
+            toast.error('Order failed.');
         } finally {
             setLoading(false);
         }

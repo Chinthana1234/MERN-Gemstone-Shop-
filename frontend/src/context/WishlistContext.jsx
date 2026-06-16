@@ -28,15 +28,15 @@ export function WishlistProvider({ children }) {
 
   const handleToggleWishlist = async (productId) => {
     if (!user) {
-      toast.warning('Please log in to manage your wishlist.', 'Authentication Required');
+      toast.warning('Please log in first.');
       return;
     }
     const alreadyInWishlist = isInWishlist(productId);
     await dispatch(toggleWishlist(productId));
     if (alreadyInWishlist) {
-      toast.info('Item removed from wishlist.', 'Wishlist');
+      toast.info('Removed from wishlist.');
     } else {
-      toast.success('Item added to wishlist!', 'Wishlist');
+      toast.success('Added to wishlist!');
     }
   };
 

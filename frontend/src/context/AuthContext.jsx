@@ -21,11 +21,11 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const resultAction = await dispatch(loginUser({ email, password }));
     if (loginUser.fulfilled.match(resultAction)) {
-      toast.success(`Welcome back, ${resultAction.payload.name}!`, 'Logged In');
+      toast.success('Logged in successfully!');
       return resultAction.payload;
     } else {
       const errMsg = resultAction.payload || 'Login failed';
-      toast.error(errMsg, 'Login Failed');
+      toast.error('Login failed.');
       throw new Error(errMsg);
     }
   };
@@ -33,11 +33,11 @@ export function AuthProvider({ children }) {
   const register = async (name, email, password) => {
     const resultAction = await dispatch(registerUser({ name, email, password }));
     if (registerUser.fulfilled.match(resultAction)) {
-      toast.success('Your account has been created successfully!', 'Account Created');
+      toast.success('Account created!');
       return resultAction.payload;
     } else {
       const errMsg = resultAction.payload || 'Registration failed';
-      toast.error(errMsg, 'Registration Failed');
+      toast.error('Registration failed.');
       throw new Error(errMsg);
     }
   };
@@ -45,23 +45,23 @@ export function AuthProvider({ children }) {
   const updateProfile = async (name, email, password) => {
     const resultAction = await dispatch(updateUserProfile({ name, email, password }));
     if (updateUserProfile.fulfilled.match(resultAction)) {
-      toast.success('Your profile details have been updated.', 'Profile Updated');
+      toast.success('Profile updated.');
       return resultAction.payload;
     } else {
       const errMsg = resultAction.payload || 'Failed to update profile';
-      toast.error(errMsg, 'Update Failed');
+      toast.error('Update failed.');
       throw new Error(errMsg);
     }
   };
 
   const logout = () => {
     dispatch(logoutUser());
-    toast.success('Logged out successfully.', 'Logged Out');
+    toast.success('Logged out.');
   };
 
   const syncLogin = (userData) => {
     dispatch(syncLoginUser(userData));
-    toast.success(`Welcome, ${userData.name}!`, 'Logged In');
+    toast.success('Logged in successfully!');
   };
 
   return (

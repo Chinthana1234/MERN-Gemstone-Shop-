@@ -24,14 +24,14 @@ export function CartProvider({ children }) {
 
   const addToCart = (product, qty = 1) => {
     dispatch(addToCartAction({ product, qty }));
-    toast.success(`${product.name} added to cart!`, 'Cart Updated');
+    toast.success('Added to cart!');
   };
 
   const removeFromCart = (productId) => {
     const item = cartItems.find(i => i._id === productId);
     dispatch(removeFromCartAction(productId));
     if (item) {
-      toast.info(`${item.name} removed from cart.`, 'Cart Updated');
+      toast.info('Removed from cart.');
     }
   };
 
@@ -41,7 +41,7 @@ export function CartProvider({ children }) {
 
   const clearCart = () => {
     dispatch(clearCartAction());
-    toast.info('All items removed from cart.', 'Cart Cleared');
+    toast.info('Cart cleared.');
   };
 
   return (

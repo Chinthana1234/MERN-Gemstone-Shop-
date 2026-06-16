@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircle2, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
+import { Check, AlertTriangle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext();
 
@@ -38,7 +38,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed top-20 right-4 z-[9999] flex flex-col gap-3 max-w-md w-[calc(100%-2rem)] sm:w-96 pointer-events-none">
+      <div className="fixed top-20 right-4 z-[9999] flex flex-col gap-2.5 items-end max-w-md pointer-events-none">
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onClose={() => removeToast(t.id)} />
         ))}
@@ -48,47 +48,42 @@ export function ToastProvider({ children }) {
 }
 
 function ToastItem({ toast, onClose }) {
-  const { message, type, title } = toast;
+  const { message, type } = toast;
   
-  // Icon and border configuration mapping
+  // Icon and badge styling configuration
   let Icon = Info;
-  let iconColor = 'text-gemGold';
-  let borderStyle = 'border-l-4 border-l-gemGold';
+  let badgeClass = 'bg-stone-800 text-white';
   
   if (type === 'success') {
-    Icon = CheckCircle2;
-    iconColor = 'text-emerald-500';
-    borderStyle = 'border-l-4 border-l-emerald-500';
+    Icon = Check;
+    badgeClass = 'bg-black text-white';
   } else if (type === 'error') {
-    Icon = AlertCircle;
-    iconColor = 'text-gemRed';
-    borderStyle = 'border-l-4 border-l-gemRed';
+    Icon = X;
+    badgeClass = 'bg-gemRed text-white';
   } else if (type === 'warning') {
     Icon = AlertTriangle;
-    iconColor = 'text-amber-500';
-    borderStyle = 'border-l-4 border-l-amber-500';
+    badgeClass = 'bg-amber-500 text-white';
+  } else if (type === 'info') {
+    Icon = Info;
+    badgeClass = 'bg-gemGold text-white';
   }
 
   return (
-    <div className={`pointer-events-auto bg-stone-900/95 border border-stone-850 backdrop-blur-md shadow-2xl p-4 rounded-md flex items-start gap-3 w-full transition-all duration-300 animate-toast-in ${borderStyle}`}>
-      <div className={`${iconColor} shrink-0 mt-0.5`}>
-        <Icon size={18} />
+    <div className="pointer-events-auto bg-white border border-stone-200/90 shadow-md py-2.5 px-4 rounded-lg flex items-center gap-3 w-fit max-w-sm transition-all duration-300 animate-toast-in">
+      <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${badgeClass}`}>
+        <Icon size={12} strokeWidth={3} />
       </div>
-      <div className="flex-1 min-w-0">
-        {title && (
-          <h4 className="text-white font-serif font-bold text-xs tracking-wider uppercase mb-1">
-            {title}
-          </h4>
-        )}
-        <p className="text-stone-300 text-xs font-light tracking-wide leading-relaxed">
-          {message}
-        </p>
-      </div>
+      
+      <span className="text-black text-xs font-semibold tracking-wide pr-1">
+        {message}
+      </span>
+      
       <button 
         onClick={onClose} 
-        className="text-stone-500 hover:text-white transition-colors cursor-pointer shrink-0"
+        className="text-stone-400 hover:text-stone-800 transition-colors cursor-pointer shrink-0 ml-1"
+        aria-label="Close notification"
       >
-        <X size={14} />
+        <X size={13} />
       </button>
     </div>
   );
