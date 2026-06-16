@@ -287,8 +287,8 @@ function ProductDetail() {
                           <Star
                             size={28}
                             className={`transition-colors duration-200 ${starVal <= (hoverRating || rating)
-                                ? 'fill-gemGold text-gemGold'
-                                : 'text-stone-300 fill-transparent'
+                              ? 'fill-gemGold text-gemGold'
+                              : 'text-stone-300 fill-transparent'
                               }`}
                           />
                         </button>

@@ -147,10 +147,10 @@ function Checkout() {
                         <React.Fragment key={step.id}>
                             <div className="flex flex-col items-center">
                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep > step.id
-                                        ? 'bg-green-500 border-green-500 text-white'
-                                        : currentStep === step.id
-                                            ? 'bg-gemRed border-gemRed text-white scale-110 shadow-lg shadow-gemRed/25'
-                                            : 'bg-stone-50 border-stone-200 text-stone-400'
+                                    ? 'bg-green-500 border-green-500 text-white'
+                                    : currentStep === step.id
+                                        ? 'bg-gemRed border-gemRed text-white scale-110 shadow-lg shadow-gemRed/25'
+                                        : 'bg-stone-50 border-stone-200 text-stone-400'
                                     }`}>
                                     {currentStep > step.id ? <Check size={20} /> : <step.icon size={20} />}
                                 </div>
@@ -271,8 +271,8 @@ function Checkout() {
                                         <label key={method}
                                             onClick={() => setPaymentMethod(method)}
                                             className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${paymentMethod === method
-                                                    ? 'border-gemRed bg-gemRed/5 shadow-sm'
-                                                    : 'border-stone-200 bg-white hover:border-stone-400'
+                                                ? 'border-gemRed bg-gemRed/5 shadow-sm'
+                                                : 'border-stone-200 bg-white hover:border-stone-400'
                                                 }`}>
                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${paymentMethod === method ? 'border-gemRed' : 'border-stone-200'
                                                 }`}>

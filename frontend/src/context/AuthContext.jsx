@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useToast } from './ToastContext';
 import {
   loginUser,
   registerUser,
@@ -14,41 +15,53 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const dispatch = useDispatch();
+  const { toast } = useToast();
   const { user, loading } = useSelector((state) => state.auth);
 
   const login = async (email, password) => {
     const resultAction = await dispatch(loginUser({ email, password }));
     if (loginUser.fulfilled.match(resultAction)) {
+      toast.success(`Welcome back, ${resultAction.payload.name}!`, 'Logged In');
       return resultAction.payload;
     } else {
-      throw new Error(resultAction.payload || 'Login failed');
+      const errMsg = resultAction.payload || 'Login failed';
+      toast.error(errMsg, 'Login Failed');
+      throw new Error(errMsg);
     }
   };
 
   const register = async (name, email, password) => {
     const resultAction = await dispatch(registerUser({ name, email, password }));
     if (registerUser.fulfilled.match(resultAction)) {
+      toast.success('Your account has been created successfully!', 'Account Created');
       return resultAction.payload;
     } else {
-      throw new Error(resultAction.payload || 'Registration failed');
+      const errMsg = resultAction.payload || 'Registration failed';
+      toast.error(errMsg, 'Registration Failed');
+      throw new Error(errMsg);
     }
   };
 
   const updateProfile = async (name, email, password) => {
     const resultAction = await dispatch(updateUserProfile({ name, email, password }));
     if (updateUserProfile.fulfilled.match(resultAction)) {
+      toast.success('Your profile details have been updated.', 'Profile Updated');
       return resultAction.payload;
     } else {
-      throw new Error(resultAction.payload || 'Failed to update profile');
+      const errMsg = resultAction.payload || 'Failed to update profile';
+      toast.error(errMsg, 'Update Failed');
+      throw new Error(errMsg);
     }
   };
 
   const logout = () => {
     dispatch(logoutUser());
+    toast.success('Logged out successfully.', 'Logged Out');
   };
 
   const syncLogin = (userData) => {
     dispatch(syncLoginUser(userData));
+    toast.success(`Welcome, ${userData.name}!`, 'Logged In');
   };
 
   return (

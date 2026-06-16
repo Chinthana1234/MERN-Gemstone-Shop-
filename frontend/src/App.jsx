@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -28,47 +29,49 @@ function App() {
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <ScrollToTop />
-          <div className="min-h-screen bg-white text-stone-800 font-sans flex flex-col">
-            {!isAuthPage && <Navbar />}
-            <div className="flex-1">
-              <PageTransition>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/reviews" element={<Reviews />} />
-                  <Route path="/checkout" element={
-                    <PrivateRoute><Checkout /></PrivateRoute>
-                  } />
-                  <Route path="/order/:id" element={
-                    <PrivateRoute><OrderConfirmation /></PrivateRoute>
-                  } />
-                  <Route path="/my-orders" element={
-                    <PrivateRoute><MyOrders /></PrivateRoute>
-                  } />
-                  <Route path="/wishlist" element={
-                    <PrivateRoute><Wishlist /></PrivateRoute>
-                  } />
-                  <Route path="/profile" element={
-                    <PrivateRoute><Profile /></PrivateRoute>
-                  } />
-                </Routes>
-              </PageTransition>
+    <ToastProvider>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <ScrollToTop />
+            <div className="min-h-screen bg-white text-stone-800 font-sans flex flex-col">
+              {!isAuthPage && <Navbar />}
+              <div className="flex-1">
+                <PageTransition>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/reviews" element={<Reviews />} />
+                    <Route path="/checkout" element={
+                      <PrivateRoute><Checkout /></PrivateRoute>
+                    } />
+                    <Route path="/order/:id" element={
+                      <PrivateRoute><OrderConfirmation /></PrivateRoute>
+                    } />
+                    <Route path="/my-orders" element={
+                      <PrivateRoute><MyOrders /></PrivateRoute>
+                    } />
+                    <Route path="/wishlist" element={
+                      <PrivateRoute><Wishlist /></PrivateRoute>
+                    } />
+                    <Route path="/profile" element={
+                      <PrivateRoute><Profile /></PrivateRoute>
+                    } />
+                  </Routes>
+                </PageTransition>
+              </div>
+              {!isAuthPage && <Footer />}
             </div>
-            {!isAuthPage && <Footer />}
-          </div>
-        </WishlistProvider>
-      </CartProvider>
-    </AuthProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 

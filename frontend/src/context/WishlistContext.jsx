@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useToast } from './ToastContext';
 import {
   fetchWishlist,
   toggleWishlist,
@@ -13,6 +14,7 @@ export const useWishlist = () => useContext(WishlistContext);
 
 export function WishlistProvider({ children }) {
   const dispatch = useDispatch();
+  const { toast } = useToast();
   const { user } = useSelector((state) => state.auth);
   const wishlistItems = useSelector(selectWishlistItems);
 
@@ -25,8 +27,17 @@ export function WishlistProvider({ children }) {
   }, [user, dispatch]);
 
   const handleToggleWishlist = async (productId) => {
-    if (!user) return;
+    if (!user) {
+      toast.warning('Please log in to manage your wishlist.', 'Authentication Required');
+      return;
+    }
+    const alreadyInWishlist = isInWishlist(productId);
     await dispatch(toggleWishlist(productId));
+    if (alreadyInWishlist) {
+      toast.info('Item removed from wishlist.', 'Wishlist');
+    } else {
+      toast.success('Item added to wishlist!', 'Wishlist');
+    }
   };
 
   const isInWishlist = (productId) => {
