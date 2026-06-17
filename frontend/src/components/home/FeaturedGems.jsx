@@ -65,15 +65,15 @@ function FeaturedGems() {
         </div>
 
         {/* Product Slider Wrapper */}
-        <div className="relative group/slider px-2 md:px-12">
+        <div className="relative group/slider px-12 md:px-20">
           {/* Left Arrow Button */}
           {allGems.length > 3 && (
             <button
               onClick={handlePrev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/95 text-stone-800 hover:text-white hover:bg-gemRed p-2.5 md:p-3 rounded-full shadow-md border border-stone-200 hover:border-gemRed transition-all duration-300 -translate-x-1/2 md:translate-x-0 opacity-100 md:opacity-0 md:group-hover/slider:opacity-100 focus:opacity-100 cursor-pointer"
+              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 bg-white/95 text-stone-800 hover:text-white hover:bg-gemRed w-8 h-8 md:w-12 md:h-12 rounded-full shadow-md border border-stone-200 hover:border-gemRed transition-all duration-300 opacity-100 md:opacity-0 md:group-hover/slider:opacity-100 focus:opacity-100 cursor-pointer flex items-center justify-center"
               aria-label="Previous products"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 shrink-0" />
             </button>
           )}
 
@@ -81,10 +81,10 @@ function FeaturedGems() {
           {allGems.length > 3 && (
             <button
               onClick={handleNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/95 text-stone-800 hover:text-white hover:bg-gemRed p-2.5 md:p-3 rounded-full shadow-md border border-stone-200 hover:border-gemRed transition-all duration-300 translate-x-1/2 md:translate-x-0 opacity-100 md:opacity-0 md:group-hover/slider:opacity-100 focus:opacity-100 cursor-pointer"
+              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 bg-white/95 text-stone-800 hover:text-white hover:bg-gemRed w-8 h-8 md:w-12 md:h-12 rounded-full shadow-md border border-stone-200 hover:border-gemRed transition-all duration-300 opacity-100 md:opacity-0 md:group-hover/slider:opacity-100 focus:opacity-100 cursor-pointer flex items-center justify-center"
               aria-label="Next products"
             >
-              <ChevronRight size={24} />
+              <ChevronRight className="w-4 h-4 md:w-6 md:h-6 shrink-0" />
             </button>
           )}
 

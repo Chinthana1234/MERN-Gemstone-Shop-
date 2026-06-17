@@ -119,11 +119,11 @@ function Categories() {
                 className="group text-center flex flex-col items-center"
               >
                 {/* Jewelry Image with Professional Styling */}
-                <div className="w-full relative overflow-hidden bg-white aspect-square rounded-lg shadow-sm border border-stone-200 group-hover:border-gemRed transition-colors duration-300 mb-4 flex items-center justify-center p-6">
+                <div className="w-full relative overflow-hidden bg-white aspect-square rounded-lg shadow-sm border border-stone-200 group-hover:border-gemRed transition-colors duration-300 mb-4">
                   <img
                     src={cat.image}
                     alt={cat.name}
-                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-xl"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
                 <span className="text-stone-800 font-serif text-sm tracking-wide group-hover:text-gemRed transition-colors">

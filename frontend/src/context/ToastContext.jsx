@@ -56,31 +56,31 @@ function ToastItem({ toast, onClose }) {
   
   if (type === 'success') {
     Icon = Check;
-    badgeClass = 'bg-gemGreen text-white';
+    badgeClass = 'bg-stone-900 text-white';
   } else if (type === 'error') {
     Icon = X;
-    badgeClass = 'bg-gemRed text-white';
+    badgeClass = 'bg-red-600 text-white';
   } else if (type === 'warning') {
     Icon = AlertTriangle;
     badgeClass = 'bg-amber-500 text-white';
   } else if (type === 'info') {
     Icon = Info;
-    badgeClass = 'bg-gemGold text-white';
+    badgeClass = 'bg-blue-600 text-white';
   }
 
   return (
-    <div className="pointer-events-auto bg-gemCard/95 backdrop-blur-sm border border-gemBorder/80 shadow-2xl py-2.5 px-4 rounded-lg flex items-center gap-3 w-fit max-w-sm transition-all duration-300 animate-toast-in">
+    <div className="pointer-events-auto bg-white border border-stone-200/80 shadow-lg py-2.5 px-4 rounded-lg flex items-center gap-3 w-fit max-w-sm transition-all duration-300 animate-toast-in">
       <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${badgeClass}`}>
         <Icon size={12} strokeWidth={3} />
       </div>
       
-      <span className="text-gemText text-xs font-semibold tracking-wide pr-1">
+      <span className="text-stone-900 text-xs font-semibold tracking-wide pr-1">
         {message}
       </span>
       
       <button 
         onClick={onClose} 
-        className="text-stone-400 hover:text-gemText transition-colors cursor-pointer shrink-0 ml-1"
+        className="text-stone-400 hover:text-stone-900 transition-colors cursor-pointer shrink-0 ml-1"
         aria-label="Close notification"
       >
         <X size={13} />
