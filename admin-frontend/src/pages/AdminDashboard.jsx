@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/api';
 import { Package, ShoppingCart, TrendingUp, Edit, Trash2, CheckCircle, Clock, Truck, XCircle, X, User, Mail, MapPin, CreditCard } from 'lucide-react';
 import { compressImage } from '../utils/compressImage';
+import { useToast } from '../context/ToastContext';
 
 const GEMSTONE_CATEGORIES = [
     'Blue Sapphire',
@@ -21,6 +22,7 @@ const JEWELRY_CATEGORIES = [
 ];
 
 function AdminDashboard() {
+    const { toast } = useToast();
     const [activeTab, setActiveTab] = useState('overview');
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
@@ -86,10 +88,11 @@ function AdminDashboard() {
         if (window.confirm("Are you sure you want to delete this review?")) {
             try {
                 await API.delete(`/products/${productId}/reviews/${reviewId}`);
+                toast.success("Review deleted successfully!");
                 fetchData();
             } catch (error) {
                 console.error("Error deleting review:", error);
-                alert(error.response?.data?.message || "Failed to delete review");
+                toast.error(error.response?.data?.message || "Failed to delete review");
             }
         }
     };
@@ -98,10 +101,11 @@ function AdminDashboard() {
         if (window.confirm("Are you sure you want to delete this general testimonial?")) {
             try {
                 await API.delete(`/reviews/${id}`);
+                toast.success("Testimonial deleted successfully!");
                 fetchData();
             } catch (error) {
                 console.error("Error deleting site review:", error);
-                alert(error.response?.data?.message || "Failed to delete testimonial");
+                toast.error(error.response?.data?.message || "Failed to delete testimonial");
             }
         }
     };
@@ -111,9 +115,11 @@ function AdminDashboard() {
     const handleDeliverOrder = async (id) => {
         try {
             await API.put(`/orders/${id}/deliver`);
+            toast.success("Order marked as delivered!");
             fetchData(); // Refresh data
         } catch (error) {
             console.error("Error updating order:", error);
+            toast.error("Failed to mark order as delivered.");
         }
     };
 
@@ -124,10 +130,11 @@ function AdminDashboard() {
             if (selectedOrder && selectedOrder._id === id) {
                 setSelectedOrder(data);
             }
+            toast.success(`Order status updated to ${newStatus}!`);
             fetchData();
         } catch (error) {
             console.error("Error updating order status:", error);
-            alert(error.response?.data?.message || "Failed to update order status");
+            toast.error(error.response?.data?.message || "Failed to update order status");
         } finally {
             setStatusUpdating(false);
         }
@@ -166,9 +173,11 @@ function AdminDashboard() {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
                 await API.delete(`/products/${id}`);
+                toast.success("Product deleted successfully!");
                 fetchData();
             } catch (error) {
                 console.error("Error deleting product:", error);
+                toast.error("Failed to delete product.");
             }
         }
     };
@@ -179,7 +188,7 @@ function AdminDashboard() {
 
         // Validation: Ensure the selected file is an image
         if (!file.type.startsWith('image/')) {
-            alert("Please select a valid image file (JPEG, PNG, WEBP, etc.)");
+            toast.warning("Please select a valid image file (JPEG, PNG, WEBP, etc.)");
             return;
         }
 
@@ -204,6 +213,7 @@ function AdminDashboard() {
 
             if (data.url) {
                 setProductForm(prev => ({ ...prev, imageUrl: data.url }));
+                toast.success("Image uploaded successfully!");
             } else {
                 throw new Error("Failed to upload image");
             }
@@ -213,7 +223,7 @@ function AdminDashboard() {
         } catch (error) {
             console.error("Error uploading image:", error);
             const errMsg = error.response?.data?.message || error.message;
-            alert("Image upload failed: " + errMsg);
+            toast.error("Image upload failed: " + errMsg);
             setUploading(false);
             setUploadStatus('');
         }
@@ -224,8 +234,10 @@ function AdminDashboard() {
         try {
             if (editingProduct) {
                 await API.put(`/products/${editingProduct._id}`, productForm);
+                toast.success("Product updated successfully!");
             } else {
                 await API.post('/products', productForm);
+                toast.success("Product added successfully!");
             }
             setEditingProduct(null);
             setProductForm({ name: '', price: '', category: '', stock: '', carat: '', imageUrl: '', description: '' });
@@ -234,7 +246,7 @@ function AdminDashboard() {
             fetchData();
         } catch (error) {
             console.error("Error saving product:", error);
-            alert("Error saving product. Make sure all fields are filled properly.");
+            toast.error("Error saving product. Make sure all fields are filled properly.");
         }
     };
 
@@ -251,10 +263,10 @@ function AdminDashboard() {
             const { data } = await API.post('/auth', payload);
             setUsers(prev => [...prev, data]);
             setUserForm({ name: '', email: '', password: '', role: 'Customer' });
-            alert("User created successfully!");
+            toast.success("User created successfully!");
         } catch (error) {
             console.error("Error creating user:", error);
-            alert(error.response?.data?.message || "Failed to create user");
+            toast.error(error.response?.data?.message || "Failed to create user");
         } finally {
             setUserSubmitting(false);
         }
@@ -265,10 +277,10 @@ function AdminDashboard() {
             const isAdminVal = newRole === 'Admin';
             const { data } = await API.put(`/auth/${userId}`, { isAdmin: isAdminVal });
             setUsers(prev => prev.map(u => u._id === userId ? { ...u, isAdmin: data.isAdmin } : u));
-            alert("User role updated successfully!");
+            toast.success("User role updated successfully!");
         } catch (error) {
             console.error("Error updating user role:", error);
-            alert(error.response?.data?.message || "Failed to update user role");
+            toast.error(error.response?.data?.message || "Failed to update user role");
         }
     };
 
@@ -277,10 +289,10 @@ function AdminDashboard() {
             try {
                 await API.delete(`/auth/${userId}`);
                 setUsers(prev => prev.filter(u => u._id !== userId));
-                alert("User deleted successfully!");
+                toast.success("User deleted successfully!");
             } catch (error) {
                 console.error("Error deleting user:", error);
-                alert(error.response?.data?.message || "Failed to delete user");
+                toast.error(error.response?.data?.message || "Failed to delete user");
             }
         }
     };

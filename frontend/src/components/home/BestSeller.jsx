@@ -145,7 +145,7 @@ function BestSeller() {
 
             <button 
               onClick={handleAddToCart}
-              className="w-full flex items-center justify-center gap-3 py-3.5 px-8 bg-stone-950 hover:bg-stone-900 text-white font-semibold uppercase tracking-widest text-sm transition-all duration-300 rounded-sm shadow hover:shadow-md border-none cursor-pointer"
+              className="mt-4 w-full flex items-center justify-center gap-3 py-3.5 px-8 bg-gemRed hover:bg-gemRedDark text-white font-semibold uppercase tracking-widest text-sm transition-all duration-300 rounded-sm shadow hover:shadow-md border-none cursor-pointer"
             >
               <ShoppingCart size={18} />
               Add to Cart

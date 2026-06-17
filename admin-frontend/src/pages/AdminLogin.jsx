@@ -63,7 +63,11 @@ function AdminLogin() {
             if (data.isAdmin) {
                 localStorage.setItem('adminInfo', JSON.stringify(data));
                 const clientUrl = getClientUrl();
-                window.open(`${clientUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
+                try {
+                    window.open(`${clientUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
+                } catch (e) {
+                    console.warn('Popup blocked for client session sync:', e);
+                }
                 navigate('/dashboard');
             } else {
                 setError('You do not have admin privileges.');

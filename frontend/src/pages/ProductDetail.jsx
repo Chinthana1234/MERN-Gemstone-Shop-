@@ -312,14 +312,17 @@ function ProductDetail() {
                       className="w-full bg-white border border-stone-200 text-stone-800 p-3 rounded focus:outline-none focus:border-gemRed"
                     ></textarea>
                   </div>
-                  <button type="submit" className="w-full bg-gemRed text-white py-3.5 uppercase tracking-widest text-xs font-semibold hover:bg-gemRedDark transition-colors rounded">
+                  <button type="submit" className="w-full bg-gemRed text-white py-3.5 uppercase tracking-widest text-xs font-semibold hover:bg-gemRedDark transition-colors rounded cursor-pointer">
                     Submit Review
                   </button>
                 </form>
               ) : (
-                <div className="text-stone-600 bg-white p-6 rounded border border-stone-200 text-center">
-                  Please <Link to="/login" className="text-gemRed hover:underline">sign in</Link> to write a review.
-                </div>
+                <button
+                  onClick={() => toast.warning('Please login to write a review.')}
+                  className="w-full bg-gemRed text-white py-3.5 uppercase tracking-widest text-xs font-semibold hover:bg-gemRedDark transition-colors rounded cursor-pointer"
+                >
+                  Submit Review
+                </button>
               )}
             </div>
           </div>

@@ -50,9 +50,10 @@ function Login() {
       syncLogin(data);
       if (data.isAdmin) {
         const adminUrl = getAdminUrl();
-        window.open(`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`, '_blank');
+        window.location.href = `${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(data))}`;
+      } else {
+        navigate('/');
       }
-      navigate('/');
     } catch (err) {
       const serverError = err.response?.data;
       if (serverError?.debug) {
@@ -86,8 +87,7 @@ function Login() {
       const userData = await login(email, password);
       if (userData && userData.isAdmin) {
         const adminUrl = getAdminUrl();
-        window.open(`${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(userData))}`, '_blank');
-        navigate('/');
+        window.location.href = `${adminUrl}/login?adminData=${encodeURIComponent(JSON.stringify(userData))}`;
       } else {
         navigate('/');
       }
