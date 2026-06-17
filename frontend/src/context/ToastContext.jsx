@@ -69,18 +69,18 @@ function ToastItem({ toast, onClose }) {
   }
 
   return (
-    <div className="pointer-events-auto bg-white border border-stone-200/90 shadow-md py-2.5 px-4 rounded-lg flex items-center gap-3 w-fit max-w-sm transition-all duration-300 animate-toast-in">
+    <div className="pointer-events-auto bg-gemCard/95 backdrop-blur-sm border border-gemBorder/80 shadow-2xl py-2.5 px-4 rounded-lg flex items-center gap-3 w-fit max-w-sm transition-all duration-300 animate-toast-in">
       <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${badgeClass}`}>
         <Icon size={12} strokeWidth={3} />
       </div>
       
-      <span className="text-black text-xs font-semibold tracking-wide pr-1">
+      <span className="text-gemText text-xs font-semibold tracking-wide pr-1">
         {message}
       </span>
       
       <button 
         onClick={onClose} 
-        className="text-stone-400 hover:text-stone-800 transition-colors cursor-pointer shrink-0 ml-1"
+        className="text-stone-400 hover:text-gemText transition-colors cursor-pointer shrink-0 ml-1"
         aria-label="Close notification"
       >
         <X size={13} />
