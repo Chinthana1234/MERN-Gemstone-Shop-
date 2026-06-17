@@ -36,6 +36,7 @@ function Checkout() {
         fullName: user?.name || '',
         address: '',
         city: '',
+        state: '',
         postalCode: '',
         country: 'Sri Lanka',
         phone: ''
@@ -83,8 +84,8 @@ function Checkout() {
     };
 
     const validateShipping = () => {
-        const { fullName, address, city, postalCode, country } = shipping;
-        if (!fullName || !address || !city || !postalCode || !country) {
+        const { fullName, address, city, state, postalCode, country } = shipping;
+        if (!fullName || !address || !city || !state || !postalCode || !country) {
             setError('Please fill in all required fields.');
             return false;
         }
@@ -203,6 +204,12 @@ function Checkout() {
                                             className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors" />
                                     </div>
                                     <div>
+                                        <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">State / Province *</label>
+                                        <input type="text" name="state" value={shipping.state} onChange={handleShippingChange} required
+                                            placeholder="e.g. Western Province"
+                                            className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors" />
+                                    </div>
+                                    <div>
                                         <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">Postal Code *</label>
                                         <input type="text" name="postalCode" value={shipping.postalCode} onChange={handleShippingChange} required
                                             className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors" />
@@ -212,9 +219,10 @@ function Checkout() {
                                         <input type="text" name="country" value={shipping.country} onChange={handleShippingChange} required
                                             className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors" />
                                     </div>
-                                    <div>
+                                    <div className="sm:col-span-2">
                                         <label className="text-xs uppercase tracking-widest text-stone-500 mb-2 block">Phone (Optional)</label>
                                         <input type="tel" name="phone" value={shipping.phone} onChange={handleShippingChange}
+                                            placeholder="e.g. 0771234567"
                                             className="w-full bg-stone-50 border border-stone-200 p-3 text-stone-800 rounded focus:outline-none focus:border-gemRed transition-colors" />
                                     </div>
                                 </div>
@@ -235,7 +243,7 @@ function Checkout() {
                                             <p className="text-xs uppercase tracking-widest text-stone-500 mb-2">Shipping To</p>
                                             <p className="text-stone-900 font-medium">{shipping.fullName}</p>
                                             <p className="text-stone-600 text-sm">{shipping.address}</p>
-                                            <p className="text-stone-600 text-sm">{shipping.city}, {shipping.postalCode}</p>
+                                            <p className="text-stone-600 text-sm">{shipping.city}, {shipping.state && `${shipping.state}, `}{shipping.postalCode}</p>
                                             <p className="text-stone-600 text-sm">{shipping.country}</p>
                                             {shipping.phone && <p className="text-stone-600 text-sm mt-1">📞 {shipping.phone}</p>}
                                         </div>
@@ -274,7 +282,7 @@ function Checkout() {
                                 <div className="space-y-4 mb-8">
                                     {['Credit Card (Stripe)', 'PayPal', 'Cash on Delivery', 'Bank Transfer'].map(method => (
                                         <label key={method}
-                                            onClick={() => setPaymentMethod(method)}
+                                            onClick={() => { setPaymentMethod(method); setError(''); }}
                                             className={`flex items-center gap-4 p-5 border-2 rounded-lg cursor-pointer transition-all duration-300 ${paymentMethod === method
                                                 ? 'border-gemRed bg-gemRed/5 shadow-sm'
                                                 : 'border-stone-200 bg-white hover:border-stone-400'
@@ -325,14 +333,53 @@ function Checkout() {
                                         }}>
                                             <PayPalButtons
                                                 createOrder={(data, actions) => {
-                                                    return actions.order.create({
+                                                    // Clean phone number format for Sri Lanka
+                                                    let cleanPhone = (shipping.phone || '').replace(/[^0-9]/g, '');
+                                                    if (cleanPhone.startsWith('94')) {
+                                                        cleanPhone = cleanPhone.substring(2);
+                                                    }
+                                                    if (cleanPhone.startsWith('0')) {
+                                                        cleanPhone = cleanPhone.substring(1);
+                                                    }
+                                                    // Only pass phone if it has a valid length (e.g., 9 digits for Sri Lankan mobile)
+                                                    const hasValidPhone = cleanPhone.length >= 7 && cleanPhone.length <= 11;
+
+                                                    const countryMap = {
+                                                        'sri lanka': 'LK'
+                                                    };
+                                                    const cleanCountry = (shipping.country || '').trim().toLowerCase();
+                                                    const countryCode = countryMap[cleanCountry] || 'LK';
+
+                                                    const orderPayload = {
                                                         purchase_units: [{
                                                             amount: {
                                                                 value: finalTotal.toFixed(2),
                                                                 currency_code: 'USD'
+                                                            },
+                                                            shipping: {
+                                                                name: {
+                                                                    full_name: shipping.fullName
+                                                                },
+                                                                phone_number: hasValidPhone ? {
+                                                                    country_code: '94',
+                                                                    national_number: cleanPhone
+                                                                } : undefined,
+                                                                address: {
+                                                                    address_line_1: shipping.address,
+                                                                    admin_area_2: shipping.city,
+                                                                    admin_area_1: shipping.state || shipping.city,
+                                                                    postal_code: shipping.postalCode,
+                                                                    country_code: countryCode
+                                                                }
                                                             }
                                                         }]
-                                                    });
+                                                    };
+
+                                                    orderPayload.application_context = {
+                                                        shipping_preference: 'SET_PROVIDED_ADDRESS'
+                                                    };
+
+                                                    return actions.order.create(orderPayload);
                                                 }}
                                                 onApprove={async (data, actions) => {
                                                     try {

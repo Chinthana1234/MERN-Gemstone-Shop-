@@ -255,7 +255,7 @@ function OrderConfirmation() {
                             </h3>
                             <p className="text-stone-900 font-semibold">{order.shippingAddress.fullName}</p>
                             <p className="text-stone-600 text-sm mt-1">{order.shippingAddress.address}</p>
-                            <p className="text-stone-600 text-sm">{order.shippingAddress.city}, {order.shippingAddress.postalCode}</p>
+                            <p className="text-stone-600 text-sm">{order.shippingAddress.city}, {order.shippingAddress.state && `${order.shippingAddress.state}, `}{order.shippingAddress.postalCode}</p>
                             <p className="text-stone-600 text-sm">{order.shippingAddress.country}</p>
                         </div>
                     </div>

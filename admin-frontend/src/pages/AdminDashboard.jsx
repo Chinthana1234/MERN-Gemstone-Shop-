@@ -877,7 +877,7 @@ function AdminDashboard() {
                                         </h4>
                                         <p className="text-sm font-semibold">{selectedOrder.shippingAddress.fullName}</p>
                                         <p className="text-xs text-gemTextLight mt-1">{selectedOrder.shippingAddress.address}</p>
-                                        <p className="text-xs text-gemTextLight">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}</p>
+                                        <p className="text-xs text-gemTextLight">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state && `${selectedOrder.shippingAddress.state}, `}{selectedOrder.shippingAddress.postalCode}</p>
                                         <p className="text-xs text-gemTextLight">{selectedOrder.shippingAddress.country}</p>
                                     </div>
                                 </div>
