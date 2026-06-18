@@ -69,11 +69,55 @@ function Navbar() {
   return (
     <nav className={`fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${
       (isScrolled || !isHomePage)
-        ? 'bg-gemBg/90 backdrop-blur-md border-b border-gemBorder/80 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)] py-1' 
-        : 'bg-transparent border-b border-stone-200/10 py-3 shadow-none'
+        ? 'bg-gemBg/90 backdrop-blur-md border-b border-gemBorder/80 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)]' 
+        : 'bg-transparent border-b border-stone-200/10 shadow-none'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className={`w-full bg-gemRedDark text-stone-200 transition-all duration-500 ease-in-out overflow-hidden flex items-center ${
+        isScrolled ? 'h-0 opacity-0 border-b-0' : 'h-6 opacity-100 border-b border-gemRed/10'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex justify-between items-center text-[10px] font-sans tracking-wide">
+          {/* Social Links */}
+          <div className="flex items-center space-x-4">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-stone-300 hover:text-gemGold transition-colors duration-300 flex items-center" title="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+              </svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-stone-300 hover:text-gemGold transition-colors duration-300 flex items-center" title="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+              </svg>
+            </a>
+            <a href="https://x.com" target="_blank" rel="noreferrer" className="text-stone-300 hover:text-gemGold transition-colors duration-300 flex items-center" title="X (Twitter)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+              </svg>
+            </a>
+          </div>
+          
+          {/* Announcement Message */}
+          <div className="text-center font-medium tracking-widest uppercase text-[9px] sm:block hidden">
+            We ship worldwide — Fast and reliable shipping!
+          </div>
+          <div className="text-center font-medium tracking-widest uppercase text-[8px] sm:hidden block">
+            Worldwide Shipping
+          </div>
+
+          {/* Contact Phone */}
+          <div className="flex items-center">
+            <a href="tel:+94714604907" className="text-stone-300 hover:text-gemGold transition-colors duration-300 font-semibold tracking-wider">
+              +94714604907
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ease-in-out ${
+        (isScrolled || !isHomePage) ? 'py-0.5' : 'py-1.5'
+      }`}>
+        <div className="flex justify-between items-center h-12">
 
           {/* Logo */}
           <div className={`flex-shrink-0 flex items-center ${isSearchOpen ? 'hidden md:flex' : 'flex'}`}>
@@ -95,7 +139,7 @@ function Navbar() {
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     placeholder="Search gems..."
-                    className="w-full bg-stone-50 border border-stone-200/80 rounded-full py-1.5 pl-9 pr-9 focus:outline-none focus:border-gemRed transition-all text-xs"
+                    className="w-full bg-gemBg border border-gemBorder/80 rounded-full py-1.5 pl-9 pr-9 text-xs text-stone-200 placeholder-stone-500 focus:outline-none focus:border-gemRed transition-all"
                     autoFocus
                   />
                   <button type="button" onClick={() => setIsSearchOpen(false)} className="absolute right-3.5 text-stone-400 hover:text-gemRed transition-colors cursor-pointer border-none bg-transparent">
@@ -109,7 +153,7 @@ function Navbar() {
           {/* Desktop Navigation Links */}
           <div className={`hidden md:flex items-center justify-center ${isSearchOpen ? 'flex-1 px-8' : 'space-x-8'}`}>
             {isSearchOpen ? (
-              <form onSubmit={handleSearch} className="w-full max-w-2xl animate-fadeIn">
+              <form onSubmit={handleSearch} className="w-full max-w-md animate-fadeIn">
                 <div className="relative flex items-center">
                   <Search className="absolute left-4 text-stone-400" size={18} strokeWidth={1.5} />
                   <input
@@ -117,7 +161,7 @@ function Navbar() {
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     placeholder="Search our collection..."
-                    className="w-full bg-stone-50 border border-stone-200/80 rounded-full py-2 pl-11 pr-11 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:border-gemRed transition-all duration-300 shadow-sm"
+                    className="w-full bg-gemBg border border-gemBorder/80 rounded-full py-2 pl-11 pr-11 text-xs text-stone-200 placeholder-stone-500 focus:outline-none focus:border-gemRed transition-all duration-300 shadow-sm"
                     autoFocus
                   />
                   <button type="button" onClick={() => setIsSearchOpen(false)} className="absolute right-4 text-stone-400 hover:text-gemRed transition-colors border-none bg-transparent cursor-pointer">
