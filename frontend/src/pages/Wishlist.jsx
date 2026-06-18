@@ -25,28 +25,31 @@ function Wishlist() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {wishlistItems.map((product) => {
               const isJewelry = ['ring', 'necklace', 'earring', 'bracelet'].includes(product.category?.toLowerCase().replace(/s$/, '')) || product.carat === 0;
               return (
-                <div key={product._id} className="bg-stone-50 border border-stone-200/60 rounded-lg overflow-hidden group shadow-sm hover:border-gemRed/40 transition-colors">
-                  <div className={`relative aspect-square overflow-hidden bg-white border-b border-stone-200/50 flex items-center justify-center ${isJewelry ? 'p-0' : 'p-6'}`}>
-                    <img src={product.imageUrl} alt={product.name} className={`${isJewelry ? 'w-full h-full object-cover' : 'max-w-[75%] max-h-[75%] object-contain'} transition-transform duration-700 group-hover:scale-110 drop-shadow-md`} />
-                    <button onClick={() => toggleWishlist(product._id)} className="absolute top-4 right-4 p-2 bg-white/80 border border-stone-200 backdrop-blur-sm rounded-full text-gemRed hover:bg-gemRed hover:text-white transition-colors">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-2">
-                      <Link to={`/product/${product._id}`} className="hover:text-gemRed transition-colors">
-                        <h3 className="text-xl font-serif text-stone-900">{product.name}</h3>
-                      </Link>
-                      <span className="text-lg font-light text-stone-900">${product.price.toLocaleString()}</span>
+                <div key={product._id} className="bg-stone-50 border border-stone-200/60 rounded-lg overflow-hidden group shadow-sm hover:border-gemRed/40 transition-colors flex flex-col justify-between">
+                  <div>
+                    <div className={`relative aspect-square overflow-hidden bg-white border-b border-stone-200/50 flex items-center justify-center ${isJewelry ? 'p-0' : 'p-4'}`}>
+                      <img src={product.imageUrl} alt={product.name} className={`${isJewelry ? 'w-full h-full object-cover' : 'max-w-[75%] max-h-[75%] object-contain'} transition-transform duration-700 group-hover:scale-110 drop-shadow-md`} />
+                      <button onClick={() => toggleWishlist(product._id)} className="absolute top-3 right-3 p-1.5 bg-white/80 border border-stone-200 backdrop-blur-sm rounded-full text-gemRed hover:bg-gemRed hover:text-white transition-colors">
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                    <p className="text-xs uppercase tracking-widest text-stone-500 mb-6">{product.category}</p>
-                    
-                    <button onClick={() => addToCart(product, 1)} className="w-full flex items-center justify-center gap-2 bg-white border border-stone-200 text-stone-800 py-3 uppercase tracking-widest text-sm font-semibold hover:border-gemRed hover:text-gemRed hover:bg-stone-50 transition-colors rounded">
-                      <ShoppingCart size={16} /> Add to Cart
+                    <div className="p-4">
+                      <div className="flex flex-col justify-between gap-1 mb-1.5">
+                        <Link to={`/product/${product._id}`} className="hover:text-gemRed transition-colors">
+                          <h3 className="text-sm font-serif text-stone-900 font-medium line-clamp-1">{product.name}</h3>
+                        </Link>
+                        <span className="text-sm font-light text-stone-800">${product.price.toLocaleString()}</span>
+                      </div>
+                      <p className="text-[10px] uppercase tracking-widest text-stone-500 mb-4">{product.category}</p>
+                    </div>
+                  </div>
+                  <div className="px-4 pb-4">
+                    <button onClick={() => addToCart(product, 1)} className="w-full flex items-center justify-center gap-1.5 bg-gemRed border border-transparent text-white py-2 uppercase tracking-widest text-[10px] font-semibold hover:bg-gemRedDark transition-all rounded shadow-sm">
+                      <ShoppingCart size={13} /> Add to Cart
                     </button>
                   </div>
                 </div>
