@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, CreditCard, Package, ChevronRight, ChevronLeft, Check, ShoppingCart } from 'lucide-react';
+import { MapPin, CreditCard, Package, ChevronRight, ChevronLeft, Check, ShoppingCart, Clock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -29,6 +29,37 @@ function Checkout() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [clientSecret, setClientSecret] = useState('');
+    const [isSessionExpired, setIsSessionExpired] = useState(false);
+
+    // Inactivity Session Expiry Timer (Option 2)
+    useEffect(() => {
+        let timeoutId;
+        const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+        const resetTimer = () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                setIsSessionExpired(true);
+            }, TIMEOUT_DURATION);
+        };
+
+        // Initialize timer
+        resetTimer();
+
+        // Listen for user activity to extend the session
+        const activityEvents = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+        activityEvents.forEach(event => {
+            window.addEventListener(event, resetTimer);
+        });
+
+        // Cleanup on unmount
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            activityEvents.forEach(event => {
+                window.removeEventListener(event, resetTimer);
+            });
+        };
+    }, []);
 
     const finalTotal = cartTotal;
 
@@ -459,6 +490,27 @@ function Checkout() {
                     </div>
                 </div>
             </div>
+
+            {/* Inactivity Session Expiry Modal */}
+            {isSessionExpired && (
+                <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-500 animate-fadeIn">
+                    <div className="bg-white border border-stone-200 max-w-md w-full rounded-2xl p-8 shadow-2xl text-center transform scale-100 transition-transform duration-300">
+                        <div className="w-16 h-16 bg-gemRed/10 text-gemRed rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Clock size={32} className="animate-pulse" />
+                        </div>
+                        <h3 className="text-2xl font-serif text-stone-900 mb-3">Session Expired</h3>
+                        <p className="text-stone-600 text-sm mb-8 leading-relaxed">
+                            Your checkout session has expired due to inactivity. We need to refresh the page to update product prices and stock availability.
+                        </p>
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="w-full bg-gemRed text-white font-semibold uppercase tracking-widest text-sm py-4 hover:bg-gemRedDark transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl shadow-gemRed/25 hover:shadow-gemRed/35"
+                        >
+                            Refresh Checkout
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
