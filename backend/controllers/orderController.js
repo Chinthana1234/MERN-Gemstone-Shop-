@@ -12,18 +12,39 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ message: 'No order items provided' });
         }
 
-        // Verify stock and get current prices from DB
+        // Atomically verify and decrement stock
         const verifiedItems = [];
+        const reservedProducts = [];
+
         for (const item of orderItems) {
-            const product = await Product.findById(item.product);
+            // Atomically check if stock is sufficient and decrement it
+            const product = await Product.findOneAndUpdate(
+                { _id: item.product, stock: { $gte: item.qty } },
+                { $inc: { stock: -item.qty } },
+                { new: true }
+            );
+
             if (!product) {
-                return res.status(404).json({ message: `Product not found: ${item.name}` });
+                // Rollback previously reserved stock in this order
+                for (const reserved of reservedProducts) {
+                    await Product.findByIdAndUpdate(reserved.product, {
+                        $inc: { stock: reserved.qty }
+                    });
+                }
+
+                // Check why it failed
+                const existingProduct = await Product.findById(item.product);
+                if (!existingProduct) {
+                    return res.status(404).json({ message: `Product not found: ${item.name}` });
+                } else {
+                    return res.status(400).json({
+                        message: `Insufficient stock for ${existingProduct.name}. Only ${existingProduct.stock} available.`
+                    });
+                }
             }
-            if (product.stock < item.qty) {
-                return res.status(400).json({
-                    message: `Insufficient stock for ${product.name}. Only ${product.stock} available.`
-                });
-            }
+
+            reservedProducts.push({ product: product._id, qty: item.qty });
+
             verifiedItems.push({
                 name: product.name,
                 qty: item.qty,
@@ -60,13 +81,17 @@ export const createOrder = async (req, res) => {
             discountAmount
         });
 
-        const createdOrder = await order.save();
-
-        // Decrement stock for each product
-        for (const item of verifiedItems) {
-            await Product.findByIdAndUpdate(item.product, {
-                $inc: { stock: -item.qty }
-            });
+        let createdOrder;
+        try {
+            createdOrder = await order.save();
+        } catch (saveError) {
+            // Rollback stock if order creation fails
+            for (const reserved of reservedProducts) {
+                await Product.findByIdAndUpdate(reserved.product, {
+                    $inc: { stock: reserved.qty }
+                });
+            }
+            throw saveError;
         }
 
         res.status(201).json(createdOrder);
