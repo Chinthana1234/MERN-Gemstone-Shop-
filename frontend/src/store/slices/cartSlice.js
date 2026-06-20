@@ -1,4 +1,27 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import API from '../../utils/api';
+
+// Async Thunk to fetch updated details for cart items from backend database
+export const syncCartItems = createAsyncThunk(
+  'cart/syncItems',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const items = state.cart.cartItems;
+      if (!items || items.length === 0) return [];
+
+      const promises = items.map(item => API.get(`/products/${item._id}`));
+      const results = await Promise.all(promises);
+      return results.map(res => res.data);
+    } catch (error) {
+      return rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
 
 const savedCart = localStorage.getItem('cartItems');
 const initialState = {
@@ -43,6 +66,27 @@ const cartSlice = createSlice({
       state.cartItems = [];
       localStorage.setItem('cartItems', JSON.stringify([]));
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(syncCartItems.fulfilled, (state, action) => {
+        const updatedProducts = action.payload;
+        state.cartItems = state.cartItems.map(item => {
+          const updated = updatedProducts.find(p => p._id === item._id);
+          if (updated) {
+            return {
+              ...item,
+              price: updated.price,
+              stock: updated.stock,
+              name: updated.name,
+              imageUrl: updated.imageUrl,
+              category: updated.category
+            };
+          }
+          return item;
+        });
+        localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
+      });
   },
 });
 

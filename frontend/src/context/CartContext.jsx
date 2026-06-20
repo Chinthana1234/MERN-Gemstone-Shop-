@@ -8,7 +8,8 @@ import {
   clearCart as clearCartAction,
   selectCartItems,
   selectCartCount,
-  selectCartTotal
+  selectCartTotal,
+  syncCartItems
 } from '../store/slices/cartSlice';
 
 const CartContext = createContext();
@@ -44,10 +45,14 @@ export function CartProvider({ children }) {
     toast.info('Cart cleared.');
   };
 
+  const syncCart = () => {
+    return dispatch(syncCartItems());
+  };
+
   return (
     <CartContext.Provider value={{
       cartItems, cartCount, cartTotal,
-      addToCart, removeFromCart, updateQuantity, clearCart
+      addToCart, removeFromCart, updateQuantity, clearCart, syncCart
     }}>
       {children}
     </CartContext.Provider>

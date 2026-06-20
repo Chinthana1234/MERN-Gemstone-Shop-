@@ -16,7 +16,7 @@ function Footer() {
               </p>
             </div>
           </div>
-
+    
           {/* Shop Links */}
           <div className="md:col-span-2">
             <h4 className="text-xs uppercase tracking-[0.2em] text-gemRed mb-6 font-bold">Shop</h4>

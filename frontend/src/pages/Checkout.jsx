@@ -20,7 +20,7 @@ const STEPS = [
 ];
 
 function Checkout() {
-    const { cartItems, cartTotal, clearCart } = useCart();
+    const { cartItems, cartTotal, clearCart, syncCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -31,7 +31,14 @@ function Checkout() {
     const [clientSecret, setClientSecret] = useState('');
     const [isSessionExpired, setIsSessionExpired] = useState(false);
 
-    // Inactivity Session Expiry Timer (Option 2)
+    // Sync cart items from the database on mount to retrieve latest prices and stock levels
+    useEffect(() => {
+        if (syncCart) {
+            syncCart();
+        }
+    }, [syncCart]);
+
+    // Inactivity Session Expiry Timer (15 minutes in milliseconds)
     useEffect(() => {
         let timeoutId;
         const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
@@ -48,15 +55,17 @@ function Checkout() {
 
         // Listen for user activity to extend the session
         const activityEvents = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+        const handleActivity = () => resetTimer();
+
         activityEvents.forEach(event => {
-            window.addEventListener(event, resetTimer);
+            window.addEventListener(event, handleActivity);
         });
 
         // Cleanup on unmount
         return () => {
             if (timeoutId) clearTimeout(timeoutId);
             activityEvents.forEach(event => {
-                window.removeEventListener(event, resetTimer);
+                window.removeEventListener(event, handleActivity);
             });
         };
     }, []);
